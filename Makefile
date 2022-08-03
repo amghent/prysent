@@ -20,7 +20,10 @@ delete-db:
 superuser:
 	python src/manage.py auto_create_superuser
 
-reset-db: delete-db migrate superuser
+sample-data:
+	python src/manage.py sample_data
+
+reset-db: delete-db migrate superuser sample-data
 
 run: migrate
 	python ./src/manage.py runserver
