@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    '_bootstrap.apps.BootstrapConfig',
     'dashboard.apps.DashboardConfig'
 ]
 
@@ -90,7 +91,7 @@ WSGI_APPLICATION = 'prysent.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, '..', '..', 'database', 'db.sqlite3'),
     }
 }
 
