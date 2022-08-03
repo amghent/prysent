@@ -44,6 +44,9 @@ INSTALLED_APPS = [
     'dashboard.apps.DashboardConfig'
 ]
 
+if DEBUG:
+    INSTALLED_APPS.append('_world_api.apps.WorldApiConfig')
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
