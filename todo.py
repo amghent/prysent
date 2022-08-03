@@ -1,0 +1,1 @@
+# FIXME: favicon.ico
