@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     '_bootstrap.apps.BootstrapConfig',
-    'dashboard.apps.DashboardConfig'
+    'dashboard.apps.DashboardConfig',
+    'pages.apps.PagesConfig'
 ]
 
 if DEBUG:
