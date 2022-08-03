@@ -28,6 +28,7 @@ conda activate prysent
 conda install -c conda-forge python
 conda install -c conda-forge django
 conda install -c conda-forge jinja2
+conda install -c conda-forge pyyaml
 ````
 
 *Note: the above is for documentation purposes.  Once the environment is created, I will create an export of it. (sidviny)*
