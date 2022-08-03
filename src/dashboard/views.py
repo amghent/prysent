@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 
 def index(request):
-    return render(request=request, template_name="index.html", context=None)
+    return render(request=request, template_name="index.jinja2", context=None)
 
 
 def layout_static(request):
