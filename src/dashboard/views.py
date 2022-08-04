@@ -26,15 +26,15 @@ def register(request):
 
 
 def page_401(request):
-    return render(request=request, template_name="401.html", context=None)
+    return render(request=request, template_name="dashboard/401.jinja2", context=None)
 
 
 def page_404(request):
-    return render(request=request, template_name="404.html", context=None)
+    return render(request=request, template_name="dashboard/404.jinja2", context=None)
 
 
 def page_500(request):
-    return render(request=request, template_name="500.html", context=None)
+    return render(request=request, template_name="dashboard/500.jinja2", context=None)
 
 
 def charts(request):
