@@ -9,10 +9,6 @@ def layout_static(request):
     return render(request=request, template_name="layout-static.html", context=None)
 
 
-def layout_sidenav_light(request):
-    return render(request=request, template_name="layout-sidenav-light.html", context=None)
-
-
 def login(request):
     return render(request=request, template_name="login.html", context=None)
 
