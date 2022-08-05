@@ -14,9 +14,10 @@
                 "title": "Interface",
                 "menu_blocks": [
                     {
-                        "id": "collapseLayouts", "icon": "fas fa-columns", "text": "Layout",
+                        "id": "collapsePages", "icon": "fas fa-columns", "text": "Static Pages",
                         "menu_items": [
-                            {"href": url("layout_static"), "text": "Static Navigation"}
+                            {"href": url('page', args=['about']), "text": "About"},
+                            {"href": url('page', args=['doc']), "text": "Documentation"}
                         ]
                     },
                     {
