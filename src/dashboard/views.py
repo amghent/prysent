@@ -6,15 +6,15 @@ def index(request):
 
 
 def login(request):
-    return render(request=request, template_name="forms/login.html", context=None)
+    return render(request=request, template_name="dashboard/login.jinja2", context=None)
 
 
 def password(request):
-    return render(request=request, template_name="forms/password.html", context=None)
+    return render(request=request, template_name="dashboard/password.jinja2", context=None)
 
 
 def register(request):
-    return render(request=request, template_name="forms/register.html", context=None)
+    return render(request=request, template_name="dashboard/register.jinja2", context=None)
 
 
 def page_401(request):
