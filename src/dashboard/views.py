@@ -34,4 +34,4 @@ def charts(request):
 
 
 def tables(request):
-    return render(request=request, template_name="forms/tables.html", context=None)
+    return render(request=request, template_name="dashboard/demo/tables.jinja2", context=None)
