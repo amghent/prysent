@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% include "includes/head.jinja2" %}
+
+    <body class="bg-secondary sb-nav-fixed">
+        {% include "includes/anonymous_nav.jinja2" %}
+
+        <div id="anonymous_page_wrapper">
+            <div id="anonymous_page_content">
+                <main>
+                    <div class="container">
+                        <div class="row p-5">
+                            {% block content %}
+                            {% endblock %}
+                        </div>
+                    </div>
+                </main>
+            </div>
+            <div id="anonymous_footer">
+                {% include "includes/footer.jinja2" %}
+            </div>
+        </div>
+
+        {% include "includes/js.jinja2" %}
+    </body>
+</html>
