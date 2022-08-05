@@ -5,10 +5,6 @@ def index(request):
     return render(request=request, template_name="dashboard/index.jinja2", context=None)
 
 
-def layout_static(request):
-    return render(request=request, template_name="forms/layout-static.jinja2", context=None)
-
-
 def login(request):
     return render(request=request, template_name="forms/login.html", context=None)
 
