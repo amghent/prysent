@@ -1,66 +1,64 @@
 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
     <div class="sb-sidenav-menu">
         <div class="nav">
-            <div class="sb-sidenav-menu-heading">Core</div>
+            {% set __core_menu = {
+                "title": "Core",
+                "menu_items": [
+                    {"href": url("index"), "icon": "fas fa-tachometer-alt", "text": "Dashboard"}
+                ]
+            } %}
 
-            <a class="nav-link" href="{{ url('index') }}">
-                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                Dashboard
-            </a>
+            {{ sidebar_factory.get_menu(__core_menu) }}
 
-            <div class="sb-sidenav-menu-heading">Interface</div>
-            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
-                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                Layouts
-                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-            </a>
-            <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                <nav class="sb-sidenav-menu-nested nav">
-                    <a class="nav-link" href="{{ url('layout_static') }}">Static Navigation</a>
-                </nav>
-            </div>
-            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
-                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
-                Pages
-                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-            </a>
-            <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
-                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
-                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
-                        Authentication
-                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                    </a>
-                    <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
-                        <nav class="sb-sidenav-menu-nested nav">
-                            <a class="nav-link" href="{{ url('login') }}">Login</a>
-                            <a class="nav-link" href="{{ url('register') }}">Register</a>
-                            <a class="nav-link" href="{{ url('password') }}">Forgot Password</a>
-                        </nav>
-                    </div>
-                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseError" aria-expanded="false" aria-controls="pagesCollapseError">
-                        Error
-                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                    </a>
-                    <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
-                        <nav class="sb-sidenav-menu-nested nav">
-                            <a class="nav-link" href="{{ url('401') }}">401 Page</a>
-                            <a class="nav-link" href="{{ url('404') }}">404 Page</a>
-                            <a class="nav-link" href="{{ url('500') }}">500 Page</a>
-                        </nav>
-                    </div>
-                </nav>
-            </div>
+            {%  set __interface_menu = {
+                "title": "Interface",
+                "menu_blocks": [
+                    {
+                        "id": "collapseLayouts", "icon": "fas fa-columns", "text": "Layout",
+                        "menu_items": [
+                            {"href": url("layout_static"), "text": "Static Navigation"}
+                        ]
+                    },
+                    {
+                        "id": "collapsePages", "icon": "fas fa-book-open", "text": "Pages",
+                        "sectioned_menu": {
+                            "id": "sidenavAccordionPages",
+                            "menu_sections": [
+                                {
+                                    "id": "pagesCollapseAuth",
+                                    "text": "Authentication",
+                                    "menu_items": [
+                                        {"href": url("login"), "text": "Login"},
+                                        {"href": url("register"), "text": "Register"},
+                                        {"href": url("password"), "text": "Forgot Password"}
+                                    ]
+                                },
+                                {
+                                    "id": "pagesCollapseError",
+                                    "text": "Error",
+                                    "menu_items": [
+                                        {"href": url("401"), "text": "401 Page"},
+                                        {"href": url("404"), "text": "404 Page"},
+                                        {"href": url("500"), "text": "500 Page"}
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ]
+            } %}
 
-            <div class="sb-sidenav-menu-heading">Addons</div>
+            {{ sidebar_factory.get_menu(__interface_menu) }}
 
-            <a class="nav-link" href="{{ url('charts') }}">
-                <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                Charts
-            </a>
-            <a class="nav-link" href="{{ url('tables') }}">
-                <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
-                Tables
-            </a>
+            {% set __addons_menu = {
+                "title": "Addons",
+                "menu_items": [
+                    {"href": url("charts"), "icon": "fas fa-chart-area", "text": "Charts"},
+                    {"href": url("tables"), "icon": "fas fa-table", "text": "Tables"  },
+                ]
+            } %}
+
+            {{ sidebar_factory.get_menu(__addons_menu) }}
         </div>
     </div>
 

@@ -6,19 +6,19 @@ def index(request):
 
 
 def layout_static(request):
-    return render(request=request, template_name="layout-static.html", context=None)
+    return render(request=request, template_name="forms/layout-static.jinja2", context=None)
 
 
 def login(request):
-    return render(request=request, template_name="login.html", context=None)
+    return render(request=request, template_name="forms/login.html", context=None)
 
 
 def password(request):
-    return render(request=request, template_name="password.html", context=None)
+    return render(request=request, template_name="forms/password.html", context=None)
 
 
 def register(request):
-    return render(request=request, template_name="register.html", context=None)
+    return render(request=request, template_name="forms/register.html", context=None)
 
 
 def page_401(request):
@@ -34,8 +34,8 @@ def page_500(request):
 
 
 def charts(request):
-    return render(request=request, template_name="charts.html", context=None)
+    return render(request=request, template_name="dashboard/demo/charts.jinja2", context=None)
 
 
 def tables(request):
-    return render(request=request, template_name="tables.html", context=None)
+    return render(request=request, template_name="forms/tables.html", context=None)

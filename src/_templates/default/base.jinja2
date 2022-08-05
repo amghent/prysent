@@ -1,3 +1,7 @@
+{% import "factories/cards.jinja2" as cards_factory %}
+{% import "factories/content.jinja2" as content_factory %}
+{% import "factories/sidebar.jinja2" as sidebar_factory %}
+
 <!DOCTYPE html>
 <html lang="en">
     {% include "includes/head.jinja2" %}
@@ -12,8 +16,10 @@
 
             <div id="content_wrapper">
                 <main>
-                    {% block content %}
-                    {% endblock %}
+                    <div class="container-fluid px-4">
+                        {% block content %}
+                        {% endblock %}
+                    </div>
                 </main>
 
                 {% include "includes/footer.jinja2" %}
@@ -21,5 +27,8 @@
         </div>
 
         {% include "includes/js.jinja2" %}
+
+        {% block specific_scripts %}
+        {% endblock %}
     </body>
 </html>

@@ -1,0 +1,45 @@
+{% macro get_text_card(_content) %}
+    <div class="card mb-4">
+        <div class="card-body">
+            {{ _content }}
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro get_content_card(__content) %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="{{ __content.icon }}"></i>
+            {{ __content.title }}
+        </div>
+        <div class="card-body">{{ __content.body }}</div>
+        <div class="card-footer small text-muted">{{ __content.footer }}</div>
+    </div>
+{% endmacro %}
+
+{% macro get_medium_content_card(__content) %}
+    <div class="col-lg-6">
+        {{ get_content_card(__content) }}
+    </div>
+{% endmacro %}
+
+{% macro get_small_content_card(__content) %}
+    <div class="col-lg-4">
+        {{ get_content_card(__content) }}
+    </div>
+{% endmacro %}
+
+{% macro get_tiny_content_card(__content) %}
+    <div class="col-lg-3">
+        {{ get_content_card(__content) }}
+    </div>
+{% endmacro %}
+
+{% macro get_content_row(__content) %}
+    <div class="row">
+        {{ __content }}
+    </div>
+{% endmacro %}
+
+
+
