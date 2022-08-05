@@ -30,6 +30,8 @@ conda install -c conda-forge django
 conda install -c conda-forge jinja2
 conda install -c conda-forge pyyaml
 conda install -c conda-forge pandas
+conda install -c conda-forge jupyter
+conda install -c conda-forge requests
 ````
 
 *Note: the above is for documentation purposes.  Once the environment is created, I will create an export of it. (sidviny)*

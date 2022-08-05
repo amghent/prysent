@@ -30,3 +30,6 @@ run: migrate
 
 test:
 	python ./src/manage.py test
+
+voila:
+	voila --port=8876 --no-browser ./media &
