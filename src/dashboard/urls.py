@@ -13,4 +13,5 @@ urlpatterns = [
     path("500.html", views.page_500, name="500"),
     path("charts.html", views.charts, name="charts"),
     path("tables.html", views.tables, name="tables"),
+    path("notebook/<str:notebook_path>", views.notebook, name="notebook")
 ]

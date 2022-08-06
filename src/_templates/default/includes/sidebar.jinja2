@@ -8,7 +8,19 @@
                 ]
             } %}
 
-            {{ sidebar_factory.get_menu(__core_menu) }}
+            {# sidebar_factory.get_menu(__core_menu) #}
+
+            {% set __belgium_menu = {
+                "title": "Belgium",
+                "menu_items": [
+                    {
+                        "href": url("notebook", args=["large_belgian_cities"]),
+                        "icon": "fas fa-tachometer-alt",
+                        "text": "Large cities"
+                    }
+                ]
+            } %}
+            {{ sidebar_factory.get_menu(__belgium_menu) }}
 
             {%  set __interface_menu = {
                 "title": "Interface",
@@ -20,6 +32,13 @@
                             {"href": url('page', args=['doc']), "text": "Documentation"}
                         ]
                     },
+                    {
+                        "id": "collapseBelgium", "icon": "fas fa-columns", "text": "Belgium",
+                        "menu_items": [
+                            {"href": url('page', args=['about']), "text": "Large cities"},
+                        ]
+                    },
+
                     {
                         "id": "collapsePages", "icon": "fas fa-book-open", "text": "Pages",
                         "sectioned_menu": {
@@ -49,7 +68,7 @@
                 ]
             } %}
 
-            {{ sidebar_factory.get_menu(__interface_menu) }}
+            {# sidebar_factory.get_menu(__interface_menu) #}
 
             {% set __addons_menu = {
                 "title": "Addons",
@@ -59,7 +78,7 @@
                 ]
             } %}
 
-            {{ sidebar_factory.get_menu(__addons_menu) }}
+            {# sidebar_factory.get_menu(__addons_menu) #}
         </div>
     </div>
 
