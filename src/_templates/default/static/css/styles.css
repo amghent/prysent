@@ -472,6 +472,7 @@ output {
 
 iframe {
   border: 0;
+  min-height: inherit;
 }
 
 summary {
@@ -11340,6 +11341,17 @@ body {
   min-height: calc(100vh - 56px);
   margin-left: -225px;
 }
+
+#notebook_wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+  flex-grow: 1;
+  min-height: calc(100vh - 125px);
+}
+
 
 .sb-sidenav-toggled #page_wrapper #sidebar_wrapper {
   transform: translateX(0);

@@ -2,7 +2,19 @@ from django.shortcuts import render
 
 
 def index(request):
-    return render(request=request, template_name="dashboard/index.jinja2", context=None)
+    context = {
+        "notebook": "index"
+    }
+
+    return render(request=request, template_name="dashboard/notebook.jinja2", context=context)
+
+
+def notebook(request, notebook_path):
+    context = {
+        "notebook": notebook_path
+    }
+
+    return render(request=request, template_name="dashboard/notebook.jinja2", context=context)
 
 
 def login(request):
