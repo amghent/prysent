@@ -1,5 +1,9 @@
 {% extends "base.jinja2" %}
 
 {% block content %}
-    <iframe class="w-100 h-100" src="http://127.0.0.1:8876/voila/render/{{ notebook }}.ipynb?"></iframe>
+    {% if internal %}
+        <iframe class="w-100 h-100" src="http://127.0.0.1:8876/voila/render/__prysent/{{ notebook }}.ipynb?"></iframe>
+    {% else %}
+        <iframe class="w-100 h-100" src="http://127.0.0.1:8876/voila/render/{{ notebook }}.ipynb?"></iframe>
+    {% endif %}
 {% endblock %}

@@ -3,7 +3,8 @@ from django.shortcuts import render
 
 def index(request):
     context = {
-        "notebook": "index"
+        "notebook": "index",
+        "internal": True
     }
 
     return render(request=request, template_name="dashboard/notebook.jinja2", context=context)
@@ -11,7 +12,8 @@ def index(request):
 
 def notebook(request, notebook_path):
     context = {
-        "notebook": notebook_path
+        "notebook": notebook_path,
+        "internal": False
     }
 
     return render(request=request, template_name="dashboard/notebook.jinja2", context=context)
