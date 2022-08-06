@@ -1,15 +1,6 @@
 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
     <div class="sb-sidenav-menu">
         <div class="nav">
-            {% set __core_menu = {
-                "title": "Core",
-                "menu_items": [
-                    {"href": url("index"), "icon": "fas fa-tachometer-alt", "text": "Dashboard"}
-                ]
-            } %}
-
-            {# sidebar_factory.get_menu(__core_menu) #}
-
             {% set __belgium_menu = {
                 "title": "Belgium",
                 "menu_items": [
@@ -21,64 +12,6 @@
                 ]
             } %}
             {{ sidebar_factory.get_menu(__belgium_menu) }}
-
-            {%  set __interface_menu = {
-                "title": "Interface",
-                "menu_blocks": [
-                    {
-                        "id": "collapsePages", "icon": "fas fa-columns", "text": "Static Pages",
-                        "menu_items": [
-                            {"href": url('page', args=['about']), "text": "About"},
-                            {"href": url('page', args=['doc']), "text": "Documentation"}
-                        ]
-                    },
-                    {
-                        "id": "collapseBelgium", "icon": "fas fa-columns", "text": "Belgium",
-                        "menu_items": [
-                            {"href": url('page', args=['about']), "text": "Large cities"},
-                        ]
-                    },
-
-                    {
-                        "id": "collapsePages", "icon": "fas fa-book-open", "text": "Pages",
-                        "sectioned_menu": {
-                            "id": "sidenavAccordionPages",
-                            "menu_sections": [
-                                {
-                                    "id": "pagesCollapseAuth",
-                                    "text": "Authentication",
-                                    "menu_items": [
-                                        {"href": url("login"), "text": "Login"},
-                                        {"href": url("register"), "text": "Register"},
-                                        {"href": url("password"), "text": "Forgot Password"}
-                                    ]
-                                },
-                                {
-                                    "id": "pagesCollapseError",
-                                    "text": "Error",
-                                    "menu_items": [
-                                        {"href": url("401"), "text": "401 Page"},
-                                        {"href": url("404"), "text": "404 Page"},
-                                        {"href": url("500"), "text": "500 Page"}
-                                    ]
-                                }
-                            ]
-                        }
-                    }
-                ]
-            } %}
-
-            {# sidebar_factory.get_menu(__interface_menu) #}
-
-            {% set __addons_menu = {
-                "title": "Addons",
-                "menu_items": [
-                    {"href": url("charts"), "icon": "fas fa-chart-area", "text": "Charts"},
-                    {"href": url("tables"), "icon": "fas fa-table", "text": "Tables"  },
-                ]
-            } %}
-
-            {# sidebar_factory.get_menu(__addons_menu) #}
         </div>
     </div>
 
