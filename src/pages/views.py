@@ -1,8 +1,11 @@
-from django.http import HttpResponse
+from django.shortcuts import render
 
 
 def page(request, slug: str):
-    html = f"<html><body><p>The page '{slug}' is under construction</p></body></html>"
+    context = {
+        "notebook": slug,
+        "internal": True
+    }
 
-    return HttpResponse(html)
+    return render(request=request, template_name="dashboard/notebook.jinja2", context=context)
 
