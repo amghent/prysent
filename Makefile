@@ -32,4 +32,4 @@ test:
 	python ./src/manage.py test
 
 voila:
-	voila --port=8876 --no-browser ./media &
+	voila ./media --port=8876 --no-browser --Voila.tornado_settings="{'headers':{'Content-Security-Policy': 'frame-ancestors http://127.0.0.1:8000'}}" &
