@@ -1,0 +1,20 @@
+{% macro get_title(_title) %}
+    <h1 class="mt-4">{{ _title }}</h1>
+{% endmacro %}
+
+{% macro get_breadcrumb(_breadcrumb) %}
+    <ol class="breadcrumb mb-4">
+        {% for __crumb in _breadcrumb.crumbs %}
+            <li class="breadcrumb-item"><a href="{{ __crumb.href }}">{{ __crumb.text }}</a></li>
+        {% endfor %}
+
+        <li class="breadcrumb-item active">{{ _breadcrumb.current }}</li>
+    </ol>
+{% endmacro %}
+
+
+
+
+
+
+
