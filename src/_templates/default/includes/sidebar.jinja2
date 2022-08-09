@@ -1,18 +1,20 @@
 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
     <div class="sb-sidenav-menu">
-        <div class="nav">
-            {% set __belgium_menu = {
-                "title": "Belgium",
-                "menu_items": [
-                    {
-                        "href": url("notebook", args=["large_belgian_cities"]),
-                        "icon": "fas fa-tachometer-alt",
-                        "text": "Large cities"
-                    }
-                ]
-            } %}
-            {{ sidebar_factory.get_menu(__belgium_menu) }}
-        </div>
+        {% if user|string != "AnonymousUser" %}
+            <div class="nav">
+                {% set __belgium_menu = {
+                    "title": "Belgium",
+                    "menu_items": [
+                        {
+                            "href": url("notebook", args=["large_belgian_cities"]),
+                            "icon": "fas fa-tachometer-alt",
+                            "text": "Large cities"
+                        }
+                    ]
+                } %}
+                {{ sidebar_factory.get_menu(__belgium_menu) }}
+            </div>
+        {% endif %}
     </div>
 
     {% include "includes/user.jinja2" %}
