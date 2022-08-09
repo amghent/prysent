@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     '_bootstrap.apps.BootstrapConfig',
+    'access.apps.AccessConfig',
     'dashboard.apps.DashboardConfig',
     'pages.apps.PagesConfig'
 ]
@@ -65,6 +66,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.jinja2.Jinja2',
         'DIRS': [
             os.path.join(BASE_DIR.parent, '_templates', 'default'),
+            os.path.join(BASE_DIR.parent, 'access', 'templates'),
             os.path.join(BASE_DIR.parent, 'dashboard', 'templates'),
             os.path.join(BASE_DIR.parent, 'pages', 'templates'),
         ],
@@ -139,3 +141,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR.parent, '_templates', 'default', 'static'),
 ]
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'index'
+LOGOUT_REDIRECT_URL = 'login'
