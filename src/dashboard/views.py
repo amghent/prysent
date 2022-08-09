@@ -11,8 +11,10 @@ def page_index(request):
 
     context = Context(request=request).get()
 
-    context["notebook"] = "index"
-    context["internal"] = True
+    context["notebook"] = {
+        "slug": "index",
+        "internal": True
+    }
 
     return render(request=request, template_name="forms/notebook.jinja2", context=context)
 
@@ -60,8 +62,10 @@ def action_logout_user(request):
 
 @login_required
 def page_notebook(request, notebook_path):
-    context = {
-        "notebook": notebook_path,
+    context = Context(request=request).get()
+
+    context["notebook"] = {
+        "slug": notebook_path,
         "internal": False
     }
 
@@ -79,8 +83,10 @@ def page_notebook(request, notebook_path):
 def public_page(request, slug: str):
     context = Context(request=request).get()
 
-    context["notebook"] = slug,
-    context["internal"] = True
+    context["notebook"] = {
+        "slug": slug,
+        "internal": True
+    }
 
     return render(request=request, template_name="forms/notebook.jinja2", context=context)
 
@@ -89,19 +95,27 @@ def public_page(request, slug: str):
 def authorized_page(request, slug: str):
     context = Context(request=request).get()
 
-    context["notebook"] = slug,
-    context["internal"] = True
+    context["notebook"] = {
+        "slug": slug,
+        "internal": True
+    }
 
     return render(request=request, template_name="forms/notebook.jinja2", context=context)
 
 
 def page_401(request):
-    return render(request=request, template_name="forms/401.jinja2", context=None)
+    context = Context(request=request).get()
+
+    return render(request=request, template_name="forms/401.jinja2", context=context)
 
 
 def page_404(request):
-    return render(request=request, template_name="forms/404.jinja2", context=None)
+    context = Context(request=request).get()
+
+    return render(request=request, template_name="forms/404.jinja2", context=context)
 
 
 def page_500(request):
-    return render(request=request, template_name="forms/500.jinja2", context=None)
+    context = Context(request=request).get()
+
+    return render(request=request, template_name="forms/500.jinja2", context=context)
