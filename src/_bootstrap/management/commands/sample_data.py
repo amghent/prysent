@@ -5,8 +5,7 @@ from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 
 from _world_api.models import City
-from access.models import OrganizationalUnit
-from dashboard.models import Dashboard
+from dashboard.models import Dashboard, OrganizationalUnit
 
 
 class Command(BaseCommand):
