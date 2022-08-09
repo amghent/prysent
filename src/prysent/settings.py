@@ -41,9 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     '_bootstrap.apps.BootstrapConfig',
-    'access.apps.AccessConfig',
     'dashboard.apps.DashboardConfig',
-    'pages.apps.PagesConfig'
 ]
 
 if DEBUG:
@@ -66,9 +64,6 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.jinja2.Jinja2',
         'DIRS': [
             os.path.join(BASE_DIR.parent, '_templates', 'default'),
-            os.path.join(BASE_DIR.parent, 'access', 'templates'),
-            os.path.join(BASE_DIR.parent, 'dashboard', 'templates'),
-            os.path.join(BASE_DIR.parent, 'pages', 'templates'),
         ],
         'APP_DIRS': False,
         'OPTIONS': {

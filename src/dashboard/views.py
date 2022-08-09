@@ -14,7 +14,7 @@ def page_index(request):
     context["notebook"] = "index"
     context["internal"] = True
 
-    return render(request=request, template_name="dashboard/notebook.jinja2", context=context)
+    return render(request=request, template_name="forms/notebook.jinja2", context=context)
 
 
 def page_login(request, status: str = None):
@@ -32,7 +32,7 @@ def page_login(request, status: str = None):
             "text": "You are now logged out."
         }
 
-    return render(request=request, template_name="dashboard/login.jinja2", context=context)
+    return render(request=request, template_name="forms/login.jinja2", context=context)
 
 
 def action_login_user(request):
@@ -65,7 +65,7 @@ def page_notebook(request, notebook_path):
         "internal": False
     }
 
-    return render(request=request, template_name="dashboard/notebook.jinja2", context=context)
+    return render(request=request, template_name="forms/notebook.jinja2", context=context)
 
 
 # def password(request):
@@ -76,13 +76,32 @@ def page_notebook(request, notebook_path):
 #    return render(request=request, template_name="dashboard/register.jinja2", context=None)
 
 
+def public_page(request, slug: str):
+    context = Context(request=request).get()
+
+    context["notebook"] = slug,
+    context["internal"] = True
+
+    return render(request=request, template_name="forms/notebook.jinja2", context=context)
+
+
+@login_required
+def authorized_page(request, slug: str):
+    context = Context(request=request).get()
+
+    context["notebook"] = slug,
+    context["internal"] = True
+
+    return render(request=request, template_name="forms/notebook.jinja2", context=context)
+
+
 def page_401(request):
-    return render(request=request, template_name="dashboard/401.jinja2", context=None)
+    return render(request=request, template_name="forms/401.jinja2", context=None)
 
 
 def page_404(request):
-    return render(request=request, template_name="dashboard/404.jinja2", context=None)
+    return render(request=request, template_name="forms/404.jinja2", context=None)
 
 
 def page_500(request):
-    return render(request=request, template_name="dashboard/500.jinja2", context=None)
+    return render(request=request, template_name="forms/500.jinja2", context=None)
