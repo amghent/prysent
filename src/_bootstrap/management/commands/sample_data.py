@@ -17,7 +17,7 @@ class Command(BaseCommand):
         self.__upload_users()
         self.__upload_ou()
         self.__upload_dashboards()
-        #self.__upload_world_cities()
+        self.__upload_world_cities()
 
     @staticmethod
     def __read_csv(file_name, filler):
