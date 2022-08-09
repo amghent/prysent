@@ -11,6 +11,8 @@ init-once:
 	mkdir -p ./src/_bootstrap/management/commands
 
 migrate:
+	rm -f src/dashboard/migrations/0001_initial.py
+
 	python src/manage.py makemigrations
 	python src/manage.py migrate
 

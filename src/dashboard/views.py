@@ -1,7 +1,12 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 
 def index(request):
+    print(request.user)
+    if request.user is None:
+        return render(request=request, template_name="dashboard/login.jinja2", context=None)
+
     context = {
         "notebook": "index",
         "internal": True
@@ -10,6 +15,7 @@ def index(request):
     return render(request=request, template_name="dashboard/notebook.jinja2", context=context)
 
 
+@login_required
 def notebook(request, notebook_path):
     context = {
         "notebook": notebook_path,
