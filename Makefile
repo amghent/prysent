@@ -27,6 +27,9 @@ sample-data:
 
 reset-db: delete-db migrate superuser sample-data
 
+media:
+	python ./src/manage.py media_structure
+
 run: migrate
 	python ./src/manage.py runserver
 

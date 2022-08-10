@@ -78,4 +78,5 @@ class Command(BaseCommand):
             c.name, c.name_ascii, c.lat, c.lng, c.country, c.iso2, c.iso3, c.admin_name, \
                 c.capital, c.population, c.id = tuple(row)
 
-            c.save()
+            if c.iso2 == "BE":
+                c.save()

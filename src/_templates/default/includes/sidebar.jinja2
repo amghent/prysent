@@ -1,18 +1,15 @@
 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
     <div class="sb-sidenav-menu">
-        {% if user|string != "AnonymousUser" %}
+        {% if user != None %}
             <div class="nav">
-                {% set __belgium_menu = {
-                    "title": "Belgium",
-                    "menu_items": [
-                        {
-                            "href": url("notebook", args=["large_belgian_cities"]),
-                            "icon": "fas fa-tachometer-alt",
-                            "text": "Large cities"
-                        }
-                    ]
-                } %}
-                {{ sidebar_factory.get_menu(__belgium_menu) }}
+                {% for dashboard in dashboards %}
+                    {% set __menu = {
+                        "title": dashboard.menu,
+                        "menu_items": []
+                    } %}
+
+                    {{ sidebar_factory.get_menu(__menu) }}
+                {% endfor %}
             </div>
         {% endif %}
     </div>

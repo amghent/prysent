@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from django.contrib.auth import authenticate, logout, login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
@@ -5,16 +7,16 @@ from django.shortcuts import render, redirect
 from dashboard.context import Context
 
 
+@login_required
 def page_index(request):
-    if str(request.user) == "AnonymousUser":
-        return redirect(to="login")
-
     context = Context(request=request).get()
 
     context["notebook"] = {
         "slug": "index",
         "internal": True
     }
+
+    pprint(context)
 
     return render(request=request, template_name="forms/notebook.jinja2", context=context)
 

@@ -4,8 +4,8 @@ from django.db.models import Model
 
 
 class OrganizationalUnit(Model):
-    name = models.CharField(max_length=50, null=False, blank=False)
-    slug = models.CharField(max_length=15, null=False, blank=False)
+    name = models.CharField(max_length=50, null=False, blank=False)  # Not used for now
+    slug = models.CharField(max_length=25, null=False, blank=False)  # Used in directory structure
 
     members = models.ManyToManyField(User)
 
@@ -14,11 +14,18 @@ class OrganizationalUnit(Model):
 
 
 class Dashboard(Model):
-    name = models.CharField(max_length=100, null=False, blank=False)
-    slug = models.CharField(max_length=15, null=False, blank=False)
-    menu = models.CharField(max_length=25, null=False, blank=False)
+    name = models.CharField(max_length=100, null=False, blank=False)  # Not used for now
+    slug = models.CharField(max_length=25, null=False, blank=False)   # Used in directory structure
+    menu = models.CharField(max_length=30, null=False, blank=False)
 
     owner = models.ForeignKey(OrganizationalUnit, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.slug}"
+
+
+class Level1Link(Model):
+    slug = models.CharField(max_length=256, null=False, blank=False)  # Used as notebook file name
+    menu = models.CharField(max_length=30, null=False, blank=False)
+
+    dashboard = models.ForeignKey(Dashboard, on_delete=models.CASCADE)
