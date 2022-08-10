@@ -1,10 +1,9 @@
-from pprint import pprint
-
 from django.contrib.auth import authenticate, logout, login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from dashboard.context import Context
+from dashboard.models import Cardbox
 
 
 @login_required
@@ -15,8 +14,6 @@ def page_index(request):
         "slug": "index",
         "internal": True
     }
-
-    pprint(context)
 
     return render(request=request, template_name="forms/notebook.jinja2", context=context)
 
@@ -45,8 +42,6 @@ def action_login_user(request):
 
     user = authenticate(request=request, username=username, password=password)
 
-    print(f"Authenticated user: { user }")
-
     if user is not None:
         if user.is_active:
             login(request=request, user=user)
@@ -60,6 +55,36 @@ def action_logout_user(request):
     logout(request=request)
 
     return redirect(to="login", status="logout=ok")
+
+
+@login_required
+def page_data(request, dashboard, slug):
+    context = Context(request=request).get()
+
+    cardboxes = Cardbox.objects.filter(notebook_page__slug=slug)
+    cardboxes_json = []
+    max_row = -1
+    heights = []
+
+    for cardbox in cardboxes:
+        if cardbox.row > max_row:
+            max_row = cardbox.row
+
+        while len(heights) <= cardbox.row:
+            heights.append(0)
+
+        heights[cardbox.row] = cardbox.height
+
+        cardbox_json = {"id": cardbox.id, "row": cardbox.row, "type": cardbox.type, "title": cardbox.title,
+                        "icon": cardbox.icon, "notebook": cardbox.notebook, "dashboard": dashboard}
+
+        cardboxes_json.append(cardbox_json)
+
+    context["cardboxes"] = cardboxes_json
+    context["cardbox_rows"] = max_row + 1
+    context["cardbox_heights"] = heights
+
+    return render(request=request, template_name="forms/data.jinja2", context=context)
 
 
 @login_required

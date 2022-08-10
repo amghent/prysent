@@ -2,30 +2,30 @@
     <div class="sb-sidenav-menu-heading">{{ _title }}</div>
 {% endmacro %}
 
-{% macro get_menu_item(_menu_item) %}
-    <a class="nav-link" href="{{ _menu_item.href }}">
+{% macro get_menu_item(_dashboard, _menu_item) %}
+    <a class="nav-link" href="{{ url("data", args=[_dashboard, _menu_item.slug]) }}">
         {% if _menu_item.icon %}
             <div class="sb-nav-link-icon"><i class="{{ _menu_item.icon }}"></i></div>
         {% endif %}
-        {{ _menu_item.text }}
+        {{ _menu_item.menu }}
     </a>
 {% endmacro %}
 
-{% macro get_menu(_menu) %}
-    {{ get_title(_menu.title) }}
+{% macro get_menu(_dashboard) %}
+    {{ get_title(_dashboard.menu) }}
 
     {# Simple menu with title and menu items (one level) #}
-    {% if _menu.menu_items %}
-        {% for __menu in _menu.menu_items  %}
-            {{ get_menu_item(__menu) }}
+    {% if _dashboard.menu_items %}
+        {% for __menu in _dashboard.menu_items  %}
+            {{ get_menu_item(_dashboard.slug, __menu) }}
         {% endfor %}
 
-    {# Acvanced menu with title and menu blocks with sub menus (two or three levels) #}
-    {% elif _menu.menu_blocks %}
-        {% for __block in _menu.menu_blocks %}
+    {# Advanced menu with title and menu blocks with sub menus (two or three levels) #}
+    {% elif _dashboard.menu_blocks %}
+        {% for __block in _dashboard.menu_blocks %}
             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#{{ __block.id }}" aria-expanded="false" aria-controls="{{ __block.id }}">
                 <div class="sb-nav-link-icon"><i class="{{ __block.icon }}"></i></div>
-                {{ __block.text }}
+                {{ __block.menu }}
                 <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
             </a>
 

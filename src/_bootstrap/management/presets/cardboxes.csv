@@ -1,0 +1,3 @@
+row,order,type,height,title,icon,notebook,notebook_page
+0,0,small,200,Population list,,large_belgian_cities_list.ipynb,large_belgian_cities
+0,1,large,410,Population graph,,large_belgian_cities_graph.ipynb,large_belgian_cities

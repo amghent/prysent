@@ -2,13 +2,8 @@
     <div class="sb-sidenav-menu">
         {% if user != None %}
             <div class="nav">
-                {% for dashboard in dashboards %}
-                    {% set __menu = {
-                        "title": dashboard.menu,
-                        "menu_items": []
-                    } %}
-
-                    {{ sidebar_factory.get_menu(__menu) }}
+                {% for __dashboard in dashboards %}
+                    {{ sidebar_factory.get_menu(__dashboard) }}
                 {% endfor %}
             </div>
         {% endif %}
