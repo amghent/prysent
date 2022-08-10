@@ -64,3 +64,13 @@ class Level1Link(Model):
 
     def __str__(self):
         return f"{self.slug}"
+
+
+class Level1Menu(Model):
+    slug = models.CharField(max_length=256, null=False, blank=False)  # Not used for now
+    menu = models.CharField(max_length=30, null=False, blank=False)
+
+    dashboard = models.ForeignKey(Dashboard, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.slug}"

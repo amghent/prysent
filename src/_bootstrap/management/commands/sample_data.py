@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 
 from _world_api.models import City
-from dashboard.models import Dashboard, OrganizationalUnit, CardboxType, NotebookPage, Cardbox, Level1Link
+from dashboard.models import Dashboard, OrganizationalUnit, CardboxType, NotebookPage, Cardbox, Level1Link, Level1Menu
 
 
 class Command(BaseCommand):
@@ -18,6 +18,7 @@ class Command(BaseCommand):
         self.__upload_dashboards()  # depends on ou
         self.__upload_notebook_pages()
         self.__upload_links_1()  # depends on dashboards and notebook_pages
+        self.__upload_menus_1()  # depends on dashboards
         self.__upload_cardbox_types()
         self.__upload_cardboxes()  # depends on cardbox_types and notebook_pages
 
@@ -113,6 +114,17 @@ class Command(BaseCommand):
             i.notebook_page = NotebookPage.objects.get(slug=np)
 
             i.save()
+
+    def __upload_menus_1(self):
+        rows = self.__read_csv("menus_1.csv", "")
+
+        for row in rows:
+            m = Level1Menu()
+
+            m.slug, m.menu, db = tuple(row)
+            m.dashboard = Dashboard.objects.get(slug=db)
+
+            m.save()
 
     def __upload_cardboxes(self):
         rows = self.__read_csv("cardboxes.csv", "")

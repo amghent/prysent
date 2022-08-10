@@ -25,7 +25,7 @@
         {% for __block in _dashboard.menu_blocks %}
             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#{{ __block.id }}" aria-expanded="false" aria-controls="{{ __block.id }}">
                 <div class="sb-nav-link-icon"><i class="{{ __block.icon }}"></i></div>
-                {{ __block.text }}
+                {{ __block.menu }}
                 <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
             </a>
 

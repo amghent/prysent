@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 
-from dashboard.models import Dashboard, OrganizationalUnit, Level1Link
+from dashboard.models import Dashboard, OrganizationalUnit, Level1Link, Level1Menu
 
 
 class Context:
@@ -24,7 +24,8 @@ class Context:
         for dashboard in dashboards:
             dashboard_json = self.__dashboard_json(dashboard)
 
-            dashboard_json["menu_items"] = self.__level_1_menus_json(dashboard)
+            dashboard_json["menu_items"] = self.__level_1_links_json(dashboard)
+            dashboard_json["menu_blocks"] = self.__level_1_menus_json(dashboard)
 
             json.append(dashboard_json)
 
@@ -50,13 +51,25 @@ class Context:
         return dashboard_json
 
     @staticmethod
-    def __level_1_menus_json(dashboard: Dashboard):
+    def __level_1_links_json(dashboard: Dashboard):
         level_1_links = Level1Link.objects.filter(dashboard=dashboard)
 
         level_1_menu = []
 
         for link in level_1_links:
             level_1_json = {"id": link.id, "menu": link.menu, "slug": link.slug}
+            level_1_menu.append(level_1_json)
+
+        return level_1_menu
+
+    @staticmethod
+    def __level_1_menus_json(dashboard: Dashboard):
+        level_1_menus = Level1Menu.objects.filter(dashboard=dashboard)
+
+        level_1_menu = []
+
+        for menu in level_1_menus:
+            level_1_json = {"id": menu.id, "menu": menu.menu, "slug": menu.slug}
             level_1_menu.append(level_1_json)
 
         return level_1_menu

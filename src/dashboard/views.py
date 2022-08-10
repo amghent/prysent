@@ -1,5 +1,3 @@
-from pprint import pprint
-
 from django.contrib.auth import authenticate, logout, login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
@@ -16,8 +14,6 @@ def page_index(request):
         "slug": "index",
         "internal": True
     }
-
-    pprint(context)
 
     return render(request=request, template_name="forms/notebook.jinja2", context=context)
 
