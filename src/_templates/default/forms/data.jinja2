@@ -1,0 +1,33 @@
+{% extends "base.jinja2" %}
+
+{% macro build_iframe(_cardbox) %}
+    <iframe class="w-100 h-100" src="http://127.0.0.1:8876/voila/render/{{ _cardbox.dashboard }}/{{ _cardbox.notebook }}?"></iframe>
+{% endmacro %}
+
+{% macro build_row() %}
+    {% for __cardbox in cardboxes %}
+        {% set __card = {
+            "dashboard": __cardbox.dashboard,
+            "title": __cardbox.title,
+            "body": build_iframe(__cardbox),
+        } %}
+
+        {% if __cardbox.type.slug == "extra" %}
+            {{ cards_factory.get_extra_content_card(__card) }}
+        {% elif __cardbox.type.slug == "large" %}
+            {{ cards_factory.get_large_content_card(__card) }}
+        {% elif __cardbox.type.slug == "medium" %}
+            {{ cards_factory.get_medium_content_card(__card) }}
+        {% elif __cardbox.type.slug == "small" %}
+            {{ cards_factory.get_small_content_card(__card) }}
+        {% elif __cardbox.type.slug == "tiny" %}
+            {{ cards_factory.get_tiny_content_card(__card) }}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+
+{% block content %}
+    {% for row_counter in range(cardbox_rows) %}
+        {{ cards_factory.get_content_row(build_row(), cardbox_heights[row_counter]) }}
+    {% endfor %}
+{% endblock %}

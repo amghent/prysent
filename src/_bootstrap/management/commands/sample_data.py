@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 
 from _world_api.models import City
-from dashboard.models import Dashboard, OrganizationalUnit
+from dashboard.models import Dashboard, OrganizationalUnit, CardboxType, NotebookPage, Cardbox, Level1Link
 
 
 class Command(BaseCommand):
@@ -14,9 +14,31 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.__upload_users()
-        self.__upload_ou()
-        self.__upload_dashboards()
+        self.__upload_ou()  # depends on users
+        self.__upload_dashboards()  # depends on ou
+        self.__upload_notebook_pages()
+        self.__upload_links_1()  # depends on dashboards and notebook_pages
+        self.__upload_cardbox_types()
+        self.__upload_cardboxes()  # depends on cardbox_types and notebook_pages
+
         self.__upload_world_cities()
+
+    @staticmethod
+    def __upload_cardbox_types():
+        for t in [
+            {"s": "extra", "w": 12},
+            {"s": "large", "w": 8},
+            {"s": "medium", "w": 6},
+            {"s": "small", "w": 4},
+            {"s": "tiny", "w": 3}
+        ]:
+
+            cardbox_type = CardboxType()
+
+            cardbox_type.slug = t["s"]
+            cardbox_type.width = t["w"]
+
+            cardbox_type.save()
 
     @staticmethod
     def __read_csv(file_name, filler):
@@ -67,7 +89,42 @@ class Command(BaseCommand):
 
             d.name, d.slug, d.menu, ou = tuple(row)
             d.owner = OrganizationalUnit.objects.get(slug=ou)
+
             d.save()
+
+    def __upload_notebook_pages(self):
+        rows = self.__read_csv("notebook_pages.csv", "")
+
+        for row in rows:
+            p = NotebookPage()
+
+            p.slug, p.title = tuple(row)
+
+            p.save()
+
+    def __upload_links_1(self):
+        rows = self.__read_csv("links_1.csv", "")
+
+        for row in rows:
+            i = Level1Link()
+
+            i.slug, i.menu, db, np = tuple(row)
+            i.dashboard = Dashboard.objects.get(slug=db)
+            i.notebook_page = NotebookPage.objects.get(slug=np)
+
+            i.save()
+
+    def __upload_cardboxes(self):
+        rows = self.__read_csv("cardboxes.csv", "")
+
+        for row in rows:
+            c = Cardbox()
+
+            c.row, c.order, cb_type, c.height, c.title, c.icon, c.notebook, nb_page = tuple(row)
+            c.type = CardboxType.objects.get(slug=cb_type)
+            c.notebook_page = NotebookPage.objects.get(slug=nb_page)
+
+            c.save()
 
     def __upload_world_cities(self):
         rows = self.__read_csv("world_cities.csv", 0)
