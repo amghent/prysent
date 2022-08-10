@@ -33,6 +33,9 @@ conda install -c conda-forge pandas
 conda install -c conda-forge jupyter
 conda install -c conda-forge requests
 conda install -c conda-forge voila
+conda install -c conda-forge plotly
+````
+
 
 *Note: the above is for documentation purposes.  Once the environment is created, I will create an export of it. (sidviny)*
 

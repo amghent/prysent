@@ -6,6 +6,7 @@ from django.core.management.base import BaseCommand
 
 from _world_api.models import City
 from dashboard.models import Dashboard, OrganizationalUnit, CardboxType, NotebookPage, Cardbox, Level1Link, Level1Menu
+from dashboard.models import Level2Link, Level2Menu, Level3Link
 
 
 class Command(BaseCommand):
@@ -19,6 +20,9 @@ class Command(BaseCommand):
         self.__upload_notebook_pages()
         self.__upload_links_1()  # depends on dashboards and notebook_pages
         self.__upload_menus_1()  # depends on dashboards
+        self.__upload_links_2()  # depends on menus_1 and notebook_pages
+        self.__upload_menus_2()  # depends on menus_1
+        self.__upload_links_3()  # depends on menus_2 and notebook_pages
         self.__upload_cardbox_types()
         self.__upload_cardboxes()  # depends on cardbox_types and notebook_pages
 
@@ -125,6 +129,41 @@ class Command(BaseCommand):
             m.dashboard = Dashboard.objects.get(slug=db)
 
             m.save()
+
+    def __upload_links_2(self):
+        rows = self.__read_csv("links_2.csv", "")
+
+        for row in rows:
+            i = Level2Link()
+
+            i.slug, i.menu, m1, np = tuple(row)
+            i.level1menu = Level1Menu.objects.get(slug=m1)
+            i.notebook_page = NotebookPage.objects.get(slug=np)
+
+            i.save()
+
+    def __upload_menus_2(self):
+        rows = self.__read_csv("menus_2.csv", "")
+
+        for row in rows:
+            m = Level2Menu()
+
+            m.slug, m.menu, m1 = tuple(row)
+            m.level1menu = Level1Menu.objects.get(slug=m1)
+
+            m.save()
+
+    def __upload_links_3(self):
+        rows = self.__read_csv("links_3.csv", "")
+
+        for row in rows:
+            i = Level3Link()
+
+            i.slug, i.menu, m2, np = tuple(row)
+            i.level2menu = Level2Menu.objects.get(slug=m2)
+            i.notebook_page = NotebookPage.objects.get(slug=np)
+
+            i.save()
 
     def __upload_cardboxes(self):
         rows = self.__read_csv("cardboxes.csv", "")

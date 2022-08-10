@@ -74,3 +74,35 @@ class Level1Menu(Model):
 
     def __str__(self):
         return f"{self.slug}"
+
+
+class Level2Link(Model):
+    slug = models.CharField(max_length=256, null=False, blank=False)  # Used as notebook file name
+    menu = models.CharField(max_length=30, null=False, blank=False)
+
+    level1menu = models.ForeignKey(Level1Menu, on_delete=models.CASCADE)
+    notebook_page = models.ForeignKey(NotebookPage, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.slug}"
+
+
+class Level2Menu(Model):
+    slug = models.CharField(max_length=256, null=False, blank=False)  # Not used for now
+    menu = models.CharField(max_length=30, null=False, blank=False)
+
+    level1menu = models.ForeignKey(Level1Menu, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.slug}"
+
+
+class Level3Link(Model):
+    slug = models.CharField(max_length=256, null=False, blank=False)  # Used as notebook file name
+    menu = models.CharField(max_length=30, null=False, blank=False)
+
+    level2menu = models.ForeignKey(Level2Menu, on_delete=models.CASCADE)
+    notebook_page = models.ForeignKey(NotebookPage, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.slug}"

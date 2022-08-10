@@ -4,7 +4,7 @@ import shutil
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from dashboard.models import Dashboard
+from dashboard.models import Dashboard, Level1Menu, Level2Menu
 
 
 class Command(BaseCommand):
@@ -42,5 +42,22 @@ class Command(BaseCommand):
             if not os.path.exists(df):
                 print(f"Creating dashboard folder {df}")
                 os.mkdir(df)
+
+        for m in Level1Menu.objects.all():
+            d = Dashboard.objects.get(id=m.dashboard_id)
+            mf = os.path.join(media_folder, d.slug, m.slug)
+
+            if not os.path.exists(mf):
+                print(f"Creating level 1 folder {mf}")
+                os.mkdir(mf)
+
+        for m in Level2Menu.objects.all():
+            m1 = Level1Menu.objects.get(id=m.level1menu_id)
+            d = Dashboard.objects.get(id=m1.dashboard_id)
+            mf = os.path.join(media_folder, d.slug, m1.slug, m.slug)
+
+            if not os.path.exists(mf):
+                print(f"Creating level 2 folder {mf}")
+                os.mkdir(mf)
 
         print("structure created")
