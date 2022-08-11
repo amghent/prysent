@@ -4,8 +4,8 @@ from django.db.models import Model
 
 
 class OrganizationalUnit(Model):
+    slug = models.CharField(max_length=25, null=False, blank=False, unique=True, primary_key=True)
     name = models.CharField(max_length=50, null=False, blank=False)  # Not used for now
-    slug = models.CharField(max_length=25, null=False, blank=False)  # Used in directory structure
 
     members = models.ManyToManyField(User)
 
@@ -14,8 +14,8 @@ class OrganizationalUnit(Model):
 
 
 class Dashboard(Model):
-    name = models.CharField(max_length=100, null=False, blank=False)  # Not used for now
-    slug = models.CharField(max_length=25, null=False, blank=False)   # Used in directory structure
+    slug = models.CharField(max_length=25, null=False, blank=False, unique=True, primary_key=True)
+    name = models.CharField(max_length=100, null=False, blank=False)  # Used in directory structure
     menu = models.CharField(max_length=30, null=False, blank=False)
 
     owner = models.ForeignKey(OrganizationalUnit, on_delete=models.CASCADE)
@@ -24,8 +24,8 @@ class Dashboard(Model):
         return f"{self.slug}"
 
 
-class NotebookPage(Model):
-    slug = models.CharField(max_length=25, null=False, blank=False)  # Not used for now
+class DataPage(Model):
+    slug = models.CharField(max_length=256, null=False, blank=False, unique=True, primary_key=True)
     title = models.CharField(max_length=100, null=False, blank=False)
 
     def __str__(self):
@@ -33,7 +33,8 @@ class NotebookPage(Model):
 
 
 class CardboxType(Model):
-    slug = models.CharField(max_length=10, null=False, blank=False)  # Used in sample data (large, medium, small, tiny)
+    slug = models.CharField(max_length=10, null=False, blank=False, unique=True, primary_key=True)
+    # Used in sample data (large, medium, small, tiny)
     width = models.IntegerField(null=False)
 
     def __str__(self):
@@ -47,62 +48,59 @@ class Cardbox(Model):
     title = models.CharField(max_length=100, null=False, blank=False)
     icon = models.CharField(max_length=100, null=True, blank=True)
     height = models.IntegerField(null=False, default=400)
-    notebook = models.CharField(max_length=256, null=False, blank=False)
+    notebook = models.CharField(max_length=1024, null=False, blank=False)  # The file to load, including directories
 
-    notebook_page = models.ForeignKey(NotebookPage, on_delete=models.CASCADE)
+    data_page = models.ForeignKey(DataPage, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.notebook_page}"
+        return f"{self.data_page}"
 
 
-class Level1Link(Model):
-    slug = models.CharField(max_length=256, null=False, blank=False)  # Used as notebook file name
+class Link(Model):
+    slug = models.CharField(max_length=256, null=False, blank=False, unique=True, primary_key=True)
     menu = models.CharField(max_length=30, null=False, blank=False)
 
+    data_page = models.ForeignKey(DataPage, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.slug}"
+
+    class Meta:
+        abstract = True
+
+
+class Block(Model):
+    slug = models.CharField(max_length=256, null=False, blank=False, unique=True, primary_key=True)
+    menu = models.CharField(max_length=30, null=False, blank=False)
+
+    def __str__(self):
+        return f"{self.slug}"
+
+    class Meta:
+        abstract = True
+
+
+class Block1(Block):
     dashboard = models.ForeignKey(Dashboard, on_delete=models.CASCADE)
-    notebook_page = models.ForeignKey(NotebookPage, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.slug}"
 
 
-class Level1Menu(Model):
-    slug = models.CharField(max_length=256, null=False, blank=False)  # Not used for now
-    menu = models.CharField(max_length=30, null=False, blank=False)
+class Block2(Block):
+    block1 = models.ForeignKey(Block1, on_delete=models.CASCADE)
 
+
+class Link1(Link):
     dashboard = models.ForeignKey(Dashboard, on_delete=models.CASCADE)
 
-    def __str__(self):
-        return f"{self.slug}"
+
+class Link2(Link):
+    block1 = models.ForeignKey(Block1, on_delete=models.CASCADE)
 
 
-class Level2Link(Model):
-    slug = models.CharField(max_length=256, null=False, blank=False)  # Used as notebook file name
-    menu = models.CharField(max_length=30, null=False, blank=False)
-
-    level1menu = models.ForeignKey(Level1Menu, on_delete=models.CASCADE)
-    notebook_page = models.ForeignKey(NotebookPage, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.slug}"
+class Link3(Link):
+    block2 = models.ForeignKey(Block2, on_delete=models.CASCADE)
 
 
-class Level2Menu(Model):
-    slug = models.CharField(max_length=256, null=False, blank=False)  # Not used for now
-    menu = models.CharField(max_length=30, null=False, blank=False)
-
-    level1menu = models.ForeignKey(Level1Menu, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.slug}"
 
 
-class Level3Link(Model):
-    slug = models.CharField(max_length=256, null=False, blank=False)  # Used as notebook file name
-    menu = models.CharField(max_length=30, null=False, blank=False)
 
-    level2menu = models.ForeignKey(Level2Menu, on_delete=models.CASCADE)
-    notebook_page = models.ForeignKey(NotebookPage, on_delete=models.CASCADE)
 
-    def __str__(self):
-        return f"{self.slug}"

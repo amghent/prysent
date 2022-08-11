@@ -2,7 +2,7 @@ from pprint import pprint
 
 from django.contrib.auth.models import User
 
-from dashboard.models import Dashboard, OrganizationalUnit, Level1Link, Level1Menu, Level2Link, Level2Menu, Level3Link
+from dashboard.models import Dashboard, OrganizationalUnit, Link1, Link2, Link3, Block1, Block2
 
 
 class Context:
@@ -26,8 +26,8 @@ class Context:
         for dashboard in dashboards:
             dashboard_json = self.__dashboard_json(dashboard)
 
-            dashboard_json["menu_items"] = self.__level_1_links_json(dashboard)
-            dashboard_json["menu_blocks"] = self.__level_1_menus_json(dashboard)
+            dashboard_json["links"] = self.__level_1_links_json(dashboard)
+            dashboard_json["blocks"] = self.__level_1_blocks_json(dashboard)
 
             json.append(dashboard_json)
 
@@ -49,77 +49,76 @@ class Context:
 
     @staticmethod
     def __dashboard_json(dashboard: Dashboard):
-        dashboard_json = {"level": 0, "type": "dashboard", "id": dashboard.id, "menu": dashboard.menu,
-                          "name": dashboard.name, "slug": dashboard.slug}
+        dashboard_json = {"slug": dashboard.slug, "menu": dashboard.menu, "name": dashboard.name}
 
         return dashboard_json
 
     @staticmethod
     def __level_1_links_json(dashboard: Dashboard):
-        level_1_links = Level1Link.objects.filter(dashboard=dashboard)
-        level_1_menu = []
+        links = Link1.objects.filter(dashboard=dashboard)
+        menu = []
 
-        for link in level_1_links:
-            level_1_json = {"level": 1, "type": "link", "id": link.id, "menu": link.menu, "slug": link.slug}
-            level_1_menu.append(level_1_json)
+        for link in links:
+            js = {"slug": link.slug, "menu": link.menu, "data_page": link.data_page}
+            menu.append(js)
 
-        return level_1_menu
+        return menu
 
-    def __level_1_menus_json(self, dashboard: Dashboard):
-        level_1_menus = Level1Menu.objects.filter(dashboard=dashboard)
-        level_1_menu = []
+    def __level_1_blocks_json(self, dashboard: Dashboard):
+        blocks = Block1.objects.filter(dashboard=dashboard)
+        menu = []
 
-        for menu in level_1_menus:
-            level_1_json = {"level": 1, "type": "menu", "id": menu.id, "menu": menu.menu, "slug": menu.slug}
+        for block in blocks:
+            js = {"slug": block.slug, "menu": block.menu}
 
-            menu_items = self.__level_2_links_json(menu)
+            links = self.__level_2_links_json(block)
 
-            if len(menu_items) > 0:
-                level_1_json["menu_items"] = menu_items
+            if len(links) > 0:
+                js["links"] = links
 
-            menu_blocks = self.__level_2_menus_json(menu)
+            children = self.__level_2_blocks_json(block)
 
-            if len(menu_blocks) > 0:
-                level_1_json["menu_blocks"] = menu_blocks
+            if len(children) > 0:
+                js["blocks"] = children
 
-            level_1_menu.append(level_1_json)
+            menu.append(js)
 
-        return level_1_menu
-
-    @staticmethod
-    def __level_2_links_json(menu_1: Level1Menu):
-        level_2_links = Level2Link.objects.filter(level1menu=menu_1)
-        level_2_menu = []
-
-        for link in level_2_links:
-            level_2_json = {"level": 2, "type": "link", "id": link.id, "menu": link.menu, "slug": link.slug}
-            level_2_menu.append(level_2_json)
-
-        return level_2_menu
-
-    def __level_2_menus_json(self, menu_1: Level1Menu):
-        level_2_menus = Level2Menu.objects.filter(level1menu=menu_1)
-        level_2_menu = []
-
-        for menu in level_2_menus:
-            menu_items = self.__level_3_links_json(menu)
-
-            level_2_json = {"level": 2, "type": "menu", "id": menu.id, "menu": menu.menu, "slug": menu.slug}
-
-            if len(menu_items) > 0:
-                level_2_json["menu_items"] = menu_items
-
-            level_2_menu.append(level_2_json)
-
-        return level_2_menu
+        return menu
 
     @staticmethod
-    def __level_3_links_json(menu_2: Level2Menu):
-        level_3_links = Level3Link.objects.filter(level2menu=menu_2)
-        level_3_menu = []
+    def __level_2_links_json(link_1: Link1):
+        links = Link2.objects.filter(link1=link_1)
+        menu = []
 
-        for link in level_3_links:
-            level_3_json = {"level": 3, "type": "link", "id": link.id, "menu": link.menu, "slug": link.slug}
-            level_3_menu.append(level_3_json)
+        for link in links:
+            js = {"slug": link.slug, "menu": link.menu, "data_page": link.data_page}
+            menu.append(js)
 
-        return level_3_menu
+        return menu
+
+    def __level_2_blocks_json(self, block_1: Block1):
+        blocks = Block2.objects.filter(block1=block_1)
+        menu = []
+
+        for block in blocks:
+            links = self.__level_3_links_json(block)
+
+            js = {"slug": block.slug, "menu": block.menu}
+
+            if len(links) > 0:
+                js["links"] = links
+
+            menu.append(js)
+
+        return menu
+
+    @staticmethod
+    def __level_3_links_json(link_2: Link2):
+        links = Link3.objects.filter(link2=link_2)
+        menu = []
+
+        for link in links:
+            js = {"slug": link.slug, "menu": link.menu, "data_page": link.data_page}
+            menu.append(js)
+
+        return menu

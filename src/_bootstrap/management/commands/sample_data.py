@@ -5,8 +5,8 @@ from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 
 from _world_api.models import City
-from dashboard.models import Dashboard, OrganizationalUnit, CardboxType, NotebookPage, Cardbox, Level1Link, Level1Menu
-from dashboard.models import Level2Link, Level2Menu, Level3Link
+from dashboard.models import Dashboard, OrganizationalUnit, CardboxType, DataPage, Cardbox, Link1, Link2, Link3
+from dashboard.models import Block1, Block2
 
 
 class Command(BaseCommand):
@@ -17,20 +17,21 @@ class Command(BaseCommand):
         self.__upload_users()
         self.__upload_ou()  # depends on users
         self.__upload_dashboards()  # depends on ou
-        self.__upload_notebook_pages()
-        self.__upload_links_1()  # depends on dashboards and notebook_pages
-        self.__upload_menus_1()  # depends on dashboards
-        self.__upload_links_2()  # depends on menus_1 and notebook_pages
-        self.__upload_menus_2()  # depends on menus_1
-        self.__upload_links_3()  # depends on menus_2 and notebook_pages
+        self.__upload_data_pages()
+        self.__upload_links_1()  # depends on dashboards and data_pages
+        self.__upload_blocks_1()  # depends on dashboards
+        self.__upload_links_2()  # depends on blocks_1 and data_pages
+        self.__upload_blocks_2()  # depends on blocks1_1
+        self.__upload_links_3()  # depends on blocks_2 and data_pages
         self.__upload_cardbox_types()
-        self.__upload_cardboxes()  # depends on cardbox_types and notebook_pages
+        self.__upload_cardboxes()  # depends on cardbox_types and data_pages
 
         self.__upload_world_cities()
 
     @staticmethod
     def __upload_cardbox_types():
         for t in [
+            {"s": "none", "w": 12},
             {"s": "extra", "w": 12},
             {"s": "large", "w": 8},
             {"s": "medium", "w": 6},
@@ -97,11 +98,11 @@ class Command(BaseCommand):
 
             d.save()
 
-    def __upload_notebook_pages(self):
-        rows = self.__read_csv("notebook_pages.csv", "")
+    def __upload_data_pages(self):
+        rows = self.__read_csv("data_pages.csv", "")
 
         for row in rows:
-            p = NotebookPage()
+            p = DataPage()
 
             p.slug, p.title = tuple(row)
 
@@ -111,57 +112,57 @@ class Command(BaseCommand):
         rows = self.__read_csv("links_1.csv", "")
 
         for row in rows:
-            i = Level1Link()
+            i = Link1()
 
-            i.slug, i.menu, db, np = tuple(row)
-            i.dashboard = Dashboard.objects.get(slug=db)
-            i.notebook_page = NotebookPage.objects.get(slug=np)
+            i.slug, i.menu, dashboard, data = tuple(row)
+            i.dashboard = Dashboard.objects.get(slug=dashboard)
+            i.data_page = DataPage.objects.get(slug=data)
 
             i.save()
 
-    def __upload_menus_1(self):
-        rows = self.__read_csv("menus_1.csv", "")
+    def __upload_blocks_1(self):
+        rows = self.__read_csv("blocks_1.csv", "")
 
         for row in rows:
-            m = Level1Menu()
+            b = Block1()
 
-            m.slug, m.menu, db = tuple(row)
-            m.dashboard = Dashboard.objects.get(slug=db)
+            b.slug, b.menu, db = tuple(row)
+            b.dashboard = Dashboard.objects.get(slug=db)
 
-            m.save()
+            b.save()
 
     def __upload_links_2(self):
         rows = self.__read_csv("links_2.csv", "")
 
         for row in rows:
-            i = Level2Link()
+            i = Link2()
 
-            i.slug, i.menu, m1, np = tuple(row)
-            i.level1menu = Level1Menu.objects.get(slug=m1)
-            i.notebook_page = NotebookPage.objects.get(slug=np)
+            i.slug, i.menu, block, data = tuple(row)
+            i.block1 = Block1.objects.get(slug=block)
+            i.data_page = DataPage.objects.get(slug=data)
 
             i.save()
 
-    def __upload_menus_2(self):
-        rows = self.__read_csv("menus_2.csv", "")
+    def __upload_blocks_2(self):
+        rows = self.__read_csv("blocks_2.csv", "")
 
         for row in rows:
-            m = Level2Menu()
+            b = Block2()
 
-            m.slug, m.menu, m1 = tuple(row)
-            m.level1menu = Level1Menu.objects.get(slug=m1)
+            b.slug, b.menu, block = tuple(row)
+            b.block1 = Block1.objects.get(slug=block)
 
-            m.save()
+            b.save()
 
     def __upload_links_3(self):
         rows = self.__read_csv("links_3.csv", "")
 
         for row in rows:
-            i = Level3Link()
+            i = Link3()
 
-            i.slug, i.menu, m2, np = tuple(row)
-            i.level2menu = Level2Menu.objects.get(slug=m2)
-            i.notebook_page = NotebookPage.objects.get(slug=np)
+            i.slug, i.menu, block, data = tuple(row)
+            i.block2 = Block2.objects.get(slug=block)
+            i.data_page = DataPage.objects.get(slug=data)
 
             i.save()
 
@@ -171,9 +172,9 @@ class Command(BaseCommand):
         for row in rows:
             c = Cardbox()
 
-            c.row, c.order, cb_type, c.height, c.title, c.icon, c.notebook, nb_page = tuple(row)
+            c.row, c.order, cb_type, c.height, c.title, c.icon, c.notebook, data = tuple(row)
             c.type = CardboxType.objects.get(slug=cb_type)
-            c.notebook_page = NotebookPage.objects.get(slug=nb_page)
+            c.data_page = DataPage.objects.get(slug=data)
 
             c.save()
 
