@@ -2,45 +2,53 @@
     <div class="sb-sidenav-menu-heading">{{ _title }}</div>
 {% endmacro %}
 
-{% macro get_link(_link) %}
-    <a class="nav-link" href="{{ url('data', args=[_link.data_page]) }}">
-        {% if _link.icon %}
-            <div class="sb-nav-link-icon"><i class="{{ _link.icon }}"></i></div>
-        {% else %}
-            <div class="sb-nav-link-icon"><i class="fa-solid fa-table"></i></div>
-        {% endif %}
-        {{ _link.menu}}
-    </a>
+{% macro get_block_links(_block) %}
+    {% if _block.links %}
+        {{ get_links(_block.links) }}
+    {% endif %}
 {% endmacro %}
 
-{% macro get_one_level_menu(_links) %}
+{% macro get_links(_links) %}
     {% for __link in _links %}
         {{ get_link(__link) }}
     {% endfor %}
 {% endmacro %}
 
+{% macro get_link(_link) %}
+    <a class="nav-link" href="{{ url('data', args=[_link.data_page]) }}">
+        {{ get_link_text(_link, "fa-solid fa-table") }}
+    </a>
+{% endmacro %}
+
+{% macro get_link_text(_parent, _default) %}
+    {% if _parent.icon %}
+        <div class="sb-nav-link-icon"><i class="{{ _parent.icon }}"></i></div>
+    {% else %}
+        <div class="sb-nav-link-icon"><i class="{{ _default }}"></i></div>
+    {% endif %}
+
+    {{ _parent.menu}}
+{% endmacro %}
+
+{% macro get_block_menu(_block) %}
+    {{ get_link_text(_block, "fas fa-bars") }}
+    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+{% endmacro %}
+
+{% macro get_one_level_menu(_links) %}
+    {{ get_links(_links) }}
+{% endmacro %}
+
 {% macro get_two_level_menu(_block) %}
     {% set __id = "block_2_" + _block.slug %}
 
-    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#{{ __id }}"
-                                                aria-expanded="false" aria-controls="{{ __id }}">
-        {% if _block.icon %}
-            <div class="sb-nav-link-icon"><i class="{{ _block.icon }}"></i></div>
-        {% else %}
-            <div class="sb-nav-link-icon"><i class="fas fa-bars"></i></div>
-        {% endif %}
-
-        {{ _block.menu }}
-        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#{{ __id }}" aria-expanded="false" aria-controls="{{ __id }}">
+        {{ get_block_menu(_block) }}
     </a>
 
     <div class="collapse" id="{{ __id }}" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
         <nav class="sb-sidenav-menu-nested nav">
-            {% if _block.links %}
-                {% for __link in _block.links %}
-                    {{ get_link(__link) }}
-                {% endfor %}
-            {% endif %}
+            {{ get_block_links(_block) }}
         </nav>
     </div>
 {% endmacro %}
@@ -48,15 +56,8 @@
 {% macro get_three_level_menu(_block) %}
     {% set __id = "block_2_" + _block.slug %}
 
-    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#{{ __id }}"
-                                                aria-expanded="false" aria-controls="{{ __id}}">
-        {% if _block.icon %}
-            <div class="sb-nav-link-icon"><i class="{{ _block.icon }}"></i></div>
-        {% else %}
-            <div class="sb-nav-link-icon"><i class="fas fa-bars"></i></div>
-        {% endif %}
-
-        {{ _block.menu}}
+    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#{{ __id }}" aria-expanded="false" aria-controls="{{ __id}}">
+        {{ get_link_text(_block, "fas fa-bars") }}
         <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
     </a>
 
@@ -65,23 +66,13 @@
             {% for __sub_block in _block.blocks %}
                 {% set __sub_id = __id + "_" + __sub_block.slug %}
 
-                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#{{ __sub_id }}"
-                            aria-expanded="false" aria-controls="__sub_id">
-                    {% if __sub_block.icon %}
-                        <div class="sb-nav-link-icon"><i class="{{ __sub_block.icon }}"></i></div>
-                    {% else %}
-                        <div class="sb-nav-link-icon"><i class="fas fa-bars"></i></div>
-                    {% endif %}
-
-                    {{ __sub_block.menu}}
-                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#{{ __sub_id }}" aria-expanded="false" aria-controls="__sub_id">
+                    {{ get_block_menu(__sub_block) }}
                 </a>
 
                 <div class="collapse" id="{{ __sub_id }}" aria-labelledby="headingOne" data-bs-parent="#{{ __id}}_accordion">
                     <nav class="sb-sidenav-menu-nested nav">
-                        {% for __sub_link in __sub_block.links %}
-                            {{ get_link(__sub_link) }}
-                        {% endfor %}
+                        {{ get_links(__sub_block.links) }}
                     </nav>
                 </div>
             {% endfor %}
