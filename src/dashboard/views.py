@@ -58,7 +58,8 @@ def action_logout_user(request):
 
 
 @login_required
-def page_data(request, dashboard, slug):
+def page_data(request, slug):
+    # slug is the data_page slug
     context = Context(request=request).get()
 
     cardboxes = Cardbox.objects.filter(notebook_page__slug=slug)
@@ -76,7 +77,7 @@ def page_data(request, dashboard, slug):
         heights[cardbox.row] = cardbox.height
 
         cardbox_json = {"id": cardbox.id, "row": cardbox.row, "type": cardbox.type, "title": cardbox.title,
-                        "icon": cardbox.icon, "notebook": cardbox.notebook, "dashboard": dashboard}
+                        "icon": cardbox.icon, "notebook": cardbox.notebook}
 
         cardboxes_json.append(cardbox_json)
 
