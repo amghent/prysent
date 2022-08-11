@@ -1,7 +1,7 @@
 {% extends "base.jinja2" %}
 
 {% macro build_iframe(_cardbox) %}
-    <iframe class="w-100 h-100" src="http://127.0.0.1:8876/voila/render/{{ _cardbox.dashboard }}/{{ _cardbox.notebook }}?"></iframe>
+    <iframe class="w-100 h-100" src="http://127.0.0.1:8876/voila/render/{{ _cardbox.notebook }}?"></iframe>
 {% endmacro %}
 
 {% macro build_row() %}
