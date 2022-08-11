@@ -53,7 +53,7 @@ class Cardbox(Model):
     data_page = models.ForeignKey(DataPage, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.data_page}"
+        return f"{self.data_page} - {self.notebook}"
 
 
 class Link(Model):
