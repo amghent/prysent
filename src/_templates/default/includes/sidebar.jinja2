@@ -2,9 +2,7 @@
     <div class="sb-sidenav-menu">
         {% if user != None %}
             <div class="nav">
-                {% for __dashboard in dashboards %}
-                    {{ sidebar_factory.get_menu(__dashboard) }}
-                {% endfor %}
+                {{ sidebar_factory.get_sidebar(dashboards) }}
             </div>
         {% endif %}
     </div>

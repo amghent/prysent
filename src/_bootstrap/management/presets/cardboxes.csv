@@ -2,5 +2,5 @@ row,order,type,height,title,icon,notebook,notebook_page
 0,0,small,200,Population list,,belgium/large_belgian_cities_list.ipynb,large_belgian_cities
 0,1,large,410,Population graph,,belgium/large_belgian_cities_graph.ipynb,large_belgian_cities
 0,0,extra,400,Grote steden lijst,,vlaanderen/steden/grote_steden_lijst.ipynb,grote_steden_lijst
-0,0,extra,400,Oudenaarde informatie,,vlaanderen/oost_vlaanderen/vlaamse_ardennen/oudenaarde.ipynb,oudenaarde_info
-0,0,extra,400,Ronse informatie,,vlaanderen/oost_vlaanderen/vlaamse_ardennen/ronse.ipynb,ronse_info
+0,0,extra,400,Oudenaarde informatie,,vlaanderen/oost_vlaanderen/vlaamse_ardennen/oudenaarde_info.ipynb,oudenaarde_info
+0,0,extra,400,Ronse informatie,,vlaanderen/oost_vlaanderen/vlaamse_ardennen/ronse_info.ipynb,ronse_info

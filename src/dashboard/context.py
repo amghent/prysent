@@ -26,8 +26,15 @@ class Context:
         for dashboard in dashboards:
             dashboard_json = self.__dashboard_json(dashboard)
 
-            dashboard_json["links"] = self.__level_1_links_json(dashboard)
-            dashboard_json["blocks"] = self.__level_1_blocks_json(dashboard)
+            links = self.__level_1_links_json(dashboard)
+
+            if len(links) > 0:
+                dashboard_json["links"] = links
+
+            blocks = self.__level_1_blocks_json(dashboard)
+
+            if len(blocks) > 0:
+                dashboard_json["blocks"] = blocks
 
             json.append(dashboard_json)
 
@@ -59,7 +66,7 @@ class Context:
         menu = []
 
         for link in links:
-            js = {"slug": link.slug, "menu": link.menu, "data_page": link.data_page}
+            js = {"slug": link.slug, "menu": link.menu, "data_page": link.data_page.slug}
             menu.append(js)
 
         return menu
@@ -86,18 +93,18 @@ class Context:
         return menu
 
     @staticmethod
-    def __level_2_links_json(link_1: Link1):
-        links = Link2.objects.filter(link1=link_1)
+    def __level_2_links_json(block: Block1):
+        links = Link2.objects.filter(block1=block)
         menu = []
 
         for link in links:
-            js = {"slug": link.slug, "menu": link.menu, "data_page": link.data_page}
+            js = {"slug": link.slug, "menu": link.menu, "data_page": link.data_page.slug}
             menu.append(js)
 
         return menu
 
-    def __level_2_blocks_json(self, block_1: Block1):
-        blocks = Block2.objects.filter(block1=block_1)
+    def __level_2_blocks_json(self, block: Block1):
+        blocks = Block2.objects.filter(block1=block)
         menu = []
 
         for block in blocks:
@@ -113,8 +120,8 @@ class Context:
         return menu
 
     @staticmethod
-    def __level_3_links_json(link_2: Link2):
-        links = Link3.objects.filter(link2=link_2)
+    def __level_3_links_json(block: Block2):
+        links = Link3.objects.filter(block2=block)
         menu = []
 
         for link in links:

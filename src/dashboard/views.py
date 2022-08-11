@@ -62,7 +62,7 @@ def page_data(request, slug):
     # slug is the data_page slug
     context = Context(request=request).get()
 
-    cardboxes = Cardbox.objects.filter(notebook_page__slug=slug)
+    cardboxes = Cardbox.objects.filter(data_page__slug=slug)
     cardboxes_json = []
     max_row = -1
     heights = []
