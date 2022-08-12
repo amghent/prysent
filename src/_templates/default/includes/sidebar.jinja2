@@ -2,7 +2,7 @@
     <div class="sb-sidenav-menu">
         {% if user != None %}
             <div class="nav">
-                {{ sidebar_factory.get_sidebar(dashboards) }}
+                {{ sidebar_factory.get_sidebar(dashboards, breadcrumb) }}
             </div>
         {% endif %}
     </div>

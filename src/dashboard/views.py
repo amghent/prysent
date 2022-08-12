@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from dashboard.context import Context
-from dashboard.models import Cardbox
+from dashboard.models import Cardbox, Link3, Link2, Link1, Block1, Block2
 
 
 @login_required
@@ -84,6 +84,34 @@ def page_data(request, slug):
     context["cardboxes"] = cardboxes_json
     context["cardbox_rows"] = max_row + 1
     context["cardbox_heights"] = heights
+
+    try:
+        link3 = Link3.objects.get(data_page__slug=slug)
+        block2 = Block2.objects.get(slug=link3.block2)
+        block1 = Block1.objects.get(slug=block2.block1)
+
+        context["breadcrumb"] = {
+            "block1": block1.slug,
+            "block2": block2.slug,
+            "link3": link3.slug
+        }
+
+    except Link3.DoesNotExist:
+        try:
+            link2 = Link2.objects.get(data_page__slug=slug)
+            block1 = Block1.objects.get(slug=link2.block1)
+
+            context["breadcrumb"] = {
+                "block1": block1.slug,
+                "link2": link2.slug
+            }
+
+        except Link2.DoesNotExist:
+            link1 = Link1.objects.get(data_page__slug=slug)
+
+            context["breadcrumb"] = {
+                "link1": link1.slug
+            }
 
     return render(request=request, template_name="forms/data.jinja2", context=context)
 
