@@ -62,6 +62,11 @@
   --bs-body-line-height: 1.5;
   --bs-body-color: #212529;
   --bs-body-bg: #fff;
+
+  --navbar-height: 56px;
+  --footer-height: 69px;
+  --notebook-spacing: 16px;
+  --notebook-height: calc(100vh - var(--footer-height) - var(--navbar-height) - var(--notebook-spacing));
 }
 
 *,
@@ -11348,7 +11353,7 @@ body {
   flex-direction: column;
   justify-content: flex-start;
   min-width: 0;
-  min-height: calc(100vh - 125px);
+  min-height: var(--notebook-height);
 }
 
 

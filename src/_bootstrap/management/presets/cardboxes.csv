@@ -4,4 +4,4 @@ row,order,type,height,title,icon,notebook,data_page
 0,0,extra,350px,Grote steden lijst,,vlaanderen/steden/grote_steden_lijst.ipynb,grote_steden_lijst
 0,0,extra,200px,Oudenaarde informatie,,vlaanderen/oost_vlaanderen/vlaamse_ardennen/oudenaarde_info.ipynb,oudenaarde_info
 0,0,extra,200px,Ronse informatie,,vlaanderen/oost_vlaanderen/vlaamse_ardennen/ronse_info.ipynb,ronse_info
-0,0,none,calc(100vh - 156px),,,vlaanderen/oost_vlaanderen/vlaamse_ardennen/omtrent.ipynb,omtrent
+0,0,none,var(--notebook-height),,,vlaanderen/oost_vlaanderen/vlaamse_ardennen/omtrent.ipynb,omtrent
