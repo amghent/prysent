@@ -57,7 +57,7 @@ superuser: validate
 sample-data: validate
 	python src/manage.py sample_data --settings=$(SETTINGS)
 
-reset-sqlite3:
+reset-sqlite:
 	make reset-db SETTINGS=prysent.settings.sqlite3
 
 reset-mssql:

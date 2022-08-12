@@ -15,6 +15,7 @@ class OrganizationalUnit(Model):
 
 class Dashboard(Model):
     slug = models.CharField(max_length=25, null=False, blank=False, unique=True, primary_key=True)
+    order = models.PositiveIntegerField(null=False, default=0)
     name = models.CharField(max_length=100, null=False, blank=False)  # Used in directory structure
     menu = models.CharField(max_length=30, null=False, blank=False)
 
@@ -59,6 +60,7 @@ class Cardbox(Model):
 
 class Link(Model):
     slug = models.CharField(max_length=256, null=False, blank=False, unique=True, primary_key=True)
+    order = models.PositiveIntegerField(null=False, default=0)
     menu = models.CharField(max_length=30, null=False, blank=False)
 
     data_page = models.ForeignKey(DataPage, on_delete=models.CASCADE)
@@ -72,6 +74,7 @@ class Link(Model):
 
 class Block(Model):
     slug = models.CharField(max_length=256, null=False, blank=False, unique=True, primary_key=True)
+    order = models.PositiveIntegerField(null=False, default=0)
     menu = models.CharField(max_length=30, null=False, blank=False)
 
     def __str__(self):

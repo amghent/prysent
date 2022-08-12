@@ -93,7 +93,7 @@ class Command(BaseCommand):
         for row in rows:
             d = Dashboard()
 
-            d.name, d.slug, d.menu, ou = tuple(row)
+            d.name, d.slug, d.menu, ou, d.order = tuple(row)
             d.owner = OrganizationalUnit.objects.get(slug=ou)
 
             d.save()
@@ -114,7 +114,7 @@ class Command(BaseCommand):
         for row in rows:
             i = Link1()
 
-            i.slug, i.menu, dashboard, data = tuple(row)
+            i.slug, i.menu, dashboard, data, i.order = tuple(row)
             i.dashboard = Dashboard.objects.get(slug=dashboard)
             i.data_page = DataPage.objects.get(slug=data)
 
@@ -126,7 +126,7 @@ class Command(BaseCommand):
         for row in rows:
             b = Block1()
 
-            b.slug, b.menu, db = tuple(row)
+            b.slug, b.menu, db, b.order = tuple(row)
             b.dashboard = Dashboard.objects.get(slug=db)
 
             b.save()
@@ -137,7 +137,7 @@ class Command(BaseCommand):
         for row in rows:
             i = Link2()
 
-            i.slug, i.menu, block, data = tuple(row)
+            i.slug, i.menu, block, data, i.order = tuple(row)
             i.block1 = Block1.objects.get(slug=block)
             i.data_page = DataPage.objects.get(slug=data)
 
@@ -149,7 +149,7 @@ class Command(BaseCommand):
         for row in rows:
             b = Block2()
 
-            b.slug, b.menu, block = tuple(row)
+            b.slug, b.menu, block, b.order = tuple(row)
             b.block1 = Block1.objects.get(slug=block)
 
             b.save()
@@ -160,7 +160,7 @@ class Command(BaseCommand):
         for row in rows:
             i = Link3()
 
-            i.slug, i.menu, block, data = tuple(row)
+            i.slug, i.menu, block, data, i.order = tuple(row)
             i.block2 = Block2.objects.get(slug=block)
             i.data_page = DataPage.objects.get(slug=data)
 
