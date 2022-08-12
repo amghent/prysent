@@ -15,6 +15,7 @@
                 "dashboard": __cardbox.dashboard,
                 "title": __cardbox.title,
                 "body": build_iframe(__cardbox),
+                "height": __cardbox.height
             } %}
 
             {% if __cardbox.type.slug == "extra" %}
@@ -34,6 +35,6 @@
 
 {% block content %}
     {% for __row_counter in range(cardbox_rows) %}
-        {{ cards_factory.get_content_row(build_row(__row_counter), cardbox_heights[__row_counter]) }}
+        {{ cards_factory.get_content_row(build_row(__row_counter)) }}
     {% endfor %}
 {% endblock %}

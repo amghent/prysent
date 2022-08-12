@@ -6,50 +6,50 @@
     </div>
 {% endmacro %}
 
-{% macro get_content_card(_content) %}
-    <div class="card p-0 h-100">
+{% macro get_content_card(_card) %}
+    <div class="card p-0 m-0" style="height: {{ _card.height }}">
         <div class="card-header">
-            <i class="{{ _content.icon }}"></i>
-            {{ _content.title }}
+            <i class="{{ _card.icon }}"></i>
+            {{ _card.title }}
         </div>
-        <div class="card-body p-1 m-0">{{ _content.body }}</div>
+        <div class="card-body p-0 m-0">{{ _card.body }}</div>
 
-        {% if _content.footer %}
-            <div class="card-footer small text-muted">{{ _content.footer }}</div>
+        {% if _card.footer %}
+            <div class="card-footer small text-muted">{{ _card.footer }}</div>
         {% endif %}
     </div>
 {% endmacro %}
 
-{% macro get_extra_content_card(_content) %}
-    {{ get_content_card(_content) }}
+{% macro get_extra_content_card(_card) %}
+    {{ get_content_card(_card) }}
 {% endmacro %}
 
-{% macro get_large_content_card(_content) %}
+{% macro get_large_content_card(_card) %}
     <div class="col-lg-8">
-        {{ get_content_card(_content) }}
+        {{ get_content_card(_card) }}
     </div>
 {% endmacro %}
 
-{% macro get_medium_content_card(_content) %}
+{% macro get_medium_content_card(_card) %}
     <div class="col-lg-6">
-        {{ get_content_card(_content) }}
+        {{ get_content_card(_card) }}
     </div>
 {% endmacro %}
 
-{% macro get_small_content_card(_content) %}
+{% macro get_small_content_card(_card) %}
     <div class="col-lg-4">
-        {{ get_content_card(_content) }}
+        {{ get_content_card(_card) }}
     </div>
 {% endmacro %}
 
-{% macro get_tiny_content_card(_content) %}
+{% macro get_tiny_content_card(_card) %}
     <div class="col-lg-3">
-        {{ get_content_card(_content) }}
+        {{ get_content_card(_card) }}
     </div>
 {% endmacro %}
 
-{% macro get_content_row(_content, _height) %}
-    <div class="row mt-3 mb-0 mx-2 p-0 gx-2 gy-0" style="height: {{ _height }}px;">
+{% macro get_content_row(_content) %}
+    <div class="row mt-3 mb-0 mx-2 p-0 gx-2 gy-0 h-auto">
         {{ _content }}
     </div>
 {% endmacro %}
