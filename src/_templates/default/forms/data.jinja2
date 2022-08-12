@@ -28,6 +28,8 @@
                 {{ cards_factory.get_small_content_card(__card) }}
             {% elif __cardbox.type.slug == "tiny" %}
                 {{ cards_factory.get_tiny_content_card(__card) }}
+            {% elif __cardbox.type.slug == "none" %}
+                {{ cards_factory.get_unboxed_content_card(__card) }}
             {% endif %}
         {% endif %}
     {% endfor %}

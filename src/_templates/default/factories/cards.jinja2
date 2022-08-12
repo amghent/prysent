@@ -20,6 +20,12 @@
     </div>
 {% endmacro %}
 
+{% macro get_unboxed_content_card(_card) %}
+    <div class="p-0 m-0" style="height: {{ _card.height }}">
+        {{ _card.body }}
+    </div>
+{% endmacro %}
+
 {% macro get_extra_content_card(_card) %}
     {{ get_content_card(_card) }}
 {% endmacro %}
