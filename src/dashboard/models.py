@@ -47,7 +47,7 @@ class Cardbox(Model):
     type = models.ForeignKey(CardboxType, on_delete=models.CASCADE)
     title = models.CharField(max_length=100, null=False, blank=False)
     icon = models.CharField(max_length=100, null=True, blank=True)
-    height = models.PositiveIntegerField(null=False, default=400)
+    height = models.CharField(max_length=50, null=False, blank=False, default="400px")
     notebook = models.CharField(max_length=1024, null=False, blank=False)  # The file to load, including directories
     scroll = models.BooleanField(null=False, default=False)
 

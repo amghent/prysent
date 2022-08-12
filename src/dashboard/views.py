@@ -65,17 +65,10 @@ def page_data(request, slug):
     cardboxes = Cardbox.objects.filter(data_page__slug=slug).order_by("row", "order")
     cardboxes_json = []
     max_row = -1
-    heights = []
 
     for cardbox in cardboxes:
         if cardbox.row > max_row:
             max_row = cardbox.row
-
-        while len(heights) <= cardbox.row:
-            heights.append(0)
-
-        if cardbox.height > heights[cardbox.row]:
-            heights[cardbox.row] = cardbox.height
 
         scroll_text = "no"
 
@@ -83,15 +76,13 @@ def page_data(request, slug):
             scroll_text = "yes"
 
         cardbox_json = {"id": cardbox.id, "row": cardbox.row, "type": cardbox.type, "title": cardbox.title,
-                        "icon": cardbox.icon, "notebook": cardbox.notebook, "scroll": scroll_text}
+                        "icon": cardbox.icon, "notebook": cardbox.notebook, "scroll": scroll_text,
+                        "height": cardbox.height}
 
         cardboxes_json.append(cardbox_json)
 
-    print(heights)
-
     context["cardboxes"] = cardboxes_json
     context["cardbox_rows"] = max_row + 1
-    context["cardbox_heights"] = heights
 
     try:
         link3 = Link3.objects.get(data_page__slug=slug)
