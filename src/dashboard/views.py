@@ -75,7 +75,6 @@ def page_data(request, slug):
             heights.append(0)
 
         if cardbox.height > heights[cardbox.row]:
-            print(f"new height: {cardbox.height}")
             heights[cardbox.row] = cardbox.height
 
         scroll_text = "no"
