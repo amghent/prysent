@@ -17,6 +17,9 @@
             <div id="content_wrapper">
                 <main>
                     <div id="notebook_wrapper" class="container-fluid p-0">
+                        {% block page_title %}
+                        {% endblock %}
+
                         {% block content %}
                         {% endblock %}
                     </div>

@@ -35,6 +35,14 @@
     {% endfor %}
 {% endmacro %}
 
+{% block page_title %}
+    {% if title %}
+        {% if title|trim != "" %}
+            {{ content_factory.get_title(title) }}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
 {% block content %}
     {% for __row_counter in range(cardbox_rows) %}
         {{ cards_factory.get_content_row(build_row(__row_counter)) }}
