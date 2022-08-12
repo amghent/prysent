@@ -38,7 +38,6 @@ class Context:
 
             json.append(dashboard_json)
 
-        pprint(json)
         self.context["dashboards"] = json
 
     def get(self) -> dict:
