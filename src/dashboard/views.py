@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from dashboard.context import Context
-from dashboard.models import Cardbox, Link3, Link2, Link1, Block1, Block2
+from dashboard.models import Cardbox, Link3, Link2, Link1, Block1, Block2, DataPage
 
 
 @login_required
@@ -61,6 +61,11 @@ def action_logout_user(request):
 def page_data(request, slug):
     # slug is the data_page slug
     context = Context(request=request).get()
+
+    data_page = DataPage.objects.get(slug=slug)
+
+    context["title"] = data_page.title
+    context["slug"] = data_page.slug
 
     cardboxes = Cardbox.objects.filter(data_page__slug=slug).order_by("row", "order")
     cardboxes_json = []
