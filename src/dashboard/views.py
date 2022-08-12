@@ -78,8 +78,13 @@ def page_data(request, slug):
             print(f"new height: {cardbox.height}")
             heights[cardbox.row] = cardbox.height
 
+        scroll_text = "no"
+
+        if cardbox.scroll:
+            scroll_text = "yes"
+
         cardbox_json = {"id": cardbox.id, "row": cardbox.row, "type": cardbox.type, "title": cardbox.title,
-                        "icon": cardbox.icon, "notebook": cardbox.notebook}
+                        "icon": cardbox.icon, "notebook": cardbox.notebook, "scroll": scroll_text}
 
         cardboxes_json.append(cardbox_json)
 

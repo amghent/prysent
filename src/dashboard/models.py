@@ -35,20 +35,21 @@ class DataPage(Model):
 class CardboxType(Model):
     slug = models.CharField(max_length=10, null=False, blank=False, unique=True, primary_key=True)
     # Used in sample data (large, medium, small, tiny)
-    width = models.IntegerField(null=False)
+    width = models.PositiveIntegerField(null=False)
 
     def __str__(self):
         return f"{self.slug}"
 
 
 class Cardbox(Model):
-    row = models.IntegerField(null=False, default=0)
-    order = models.IntegerField(null=False, default=0)
+    row = models.PositiveIntegerField(null=False, default=0)
+    order = models.PositiveIntegerField(null=False, default=0)
     type = models.ForeignKey(CardboxType, on_delete=models.CASCADE)
     title = models.CharField(max_length=100, null=False, blank=False)
     icon = models.CharField(max_length=100, null=True, blank=True)
-    height = models.IntegerField(null=False, default=400)
+    height = models.PositiveIntegerField(null=False, default=400)
     notebook = models.CharField(max_length=1024, null=False, blank=False)  # The file to load, including directories
+    scroll = models.BooleanField(null=False, default=False)
 
     data_page = models.ForeignKey(DataPage, on_delete=models.CASCADE)
 
