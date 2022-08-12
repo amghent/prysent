@@ -2,7 +2,19 @@
     <div class="sb-sidenav-menu">
         {% if user != None %}
             <div class="nav">
-                {{ sidebar_factory.get_sidebar(dashboards, breadcrumb) }}
+                {% if breadcrumb %}
+                    {{ sidebar_factory.get_sidebar(dashboards, breadcrumb) }}
+                {% else %}
+                    {% set breadcrumb = {
+                        "block1": "",
+                        "block2": "",
+                        "link1": "",
+                        "link2": "",
+                        "link3": ""
+                    } %}
+
+                    {{ sidebar_factory.get_sidebar(dashboards, breadcrumb) }}
+                {% endif %}
             </div>
         {% endif %}
     </div>
