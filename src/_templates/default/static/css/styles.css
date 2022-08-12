@@ -118,7 +118,7 @@ h1, .h1 {
 }
 @media (min-width: 1200px) {
   h1, .h1 {
-    font-size: 2.5rem;
+    font-size: 2rem;
   }
 }
 
@@ -127,7 +127,7 @@ h2, .h2 {
 }
 @media (min-width: 1200px) {
   h2, .h2 {
-    font-size: 2rem;
+    font-size: 1.75rem;
   }
 }
 
@@ -136,7 +136,7 @@ h3, .h3 {
 }
 @media (min-width: 1200px) {
   h3, .h3 {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
   }
 }
 
@@ -145,16 +145,16 @@ h4, .h4 {
 }
 @media (min-width: 1200px) {
   h4, .h4 {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
 }
 
 h5, .h5 {
-  font-size: 1.25rem;
+  font-size: 1rem;
 }
 
 h6, .h6 {
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
 p {
@@ -11464,20 +11464,21 @@ body {
   flex-wrap: nowrap;
 }
 .sb-sidenav .sb-sidenav-menu .nav .sb-sidenav-menu-heading {
-  padding: 1.75rem 1rem 0.75rem;
-  font-size: 0.75rem;
+  padding: 1rem 1rem 0.5rem;
+  font-size: 0.9rem;
   font-weight: bold;
   text-transform: uppercase;
 }
 .sb-sidenav .sb-sidenav-menu .nav .nav-link {
   display: flex;
   align-items: center;
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.15rem;
   position: relative;
+  font-size: 0.9rem;
 }
 .sb-sidenav .sb-sidenav-menu .nav .nav-link .sb-nav-link-icon {
-  font-size: 0.9rem;
+  font-size: 0.75rem;
 }
 .sb-sidenav .sb-sidenav-menu .nav .nav-link .sb-sidenav-collapse-arrow {
   display: inline-block;

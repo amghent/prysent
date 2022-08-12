@@ -1,4 +1,3 @@
-# TODO: sidebar menus must be smaller
 # TODO: check if we can position the content of the iframe, would be nice to correct margins
 
 # TODO: FEATURE: upload files
