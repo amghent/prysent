@@ -1,7 +1,11 @@
 {% extends "base.jinja2" %}
 
 {% macro build_iframe(_cardbox) %}
-    <iframe class="w-100 h-100" src="http://127.0.0.1:8876/voila/render/{{ _cardbox.notebook }}?"></iframe>
+    {% if _cardbox.scroll == "no"  %}
+        <iframe class="w-100 h-100 overflow-hidden" scrolling="no" src="http://127.0.0.1:8876/voila/render/{{ _cardbox.notebook }}?"></iframe>
+    {% else %}
+        <iframe class="w-100 h-100" src="http://127.0.0.1:8876/voila/render/{{ _cardbox.notebook }}?"></iframe>
+    {% endif %}
 {% endmacro %}
 
 {% macro build_row(_row_counter) %}
