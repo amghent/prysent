@@ -1,0 +1,23 @@
+<nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+    <div class="sb-sidenav-menu">
+        {% if user != None %}
+            <div class="nav">
+                {% if breadcrumb %}
+                    {{ sidebar_factory.get_sidebar(dashboards, breadcrumb) }}
+                {% else %}
+                    {% set breadcrumb = {
+                        "block1": "",
+                        "block2": "",
+                        "link1": "",
+                        "link2": "",
+                        "link3": ""
+                    } %}
+
+                    {{ sidebar_factory.get_sidebar(dashboards, breadcrumb) }}
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    {% include "includes/user.jinja2" %}
+</nav>

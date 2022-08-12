@@ -1,0 +1,50 @@
+{% extends "base.jinja2" %}
+
+{% macro build_iframe(_cardbox) %}
+    {% if _cardbox.scroll == "no"  %}
+        <iframe class="w-100 h-100 overflow-hidden" scrolling="no" src="http://127.0.0.1:8876/voila/render/{{ _cardbox.notebook }}?"></iframe>
+    {% else %}
+        <iframe class="w-100 h-100" src="http://127.0.0.1:8876/voila/render/{{ _cardbox.notebook }}?"></iframe>
+    {% endif %}
+{% endmacro %}
+
+{% macro build_row(_row_counter) %}
+    {% for __cardbox in cardboxes %}
+        {% if __cardbox.row == _row_counter %}
+            {% set __card = {
+                "dashboard": __cardbox.dashboard,
+                "title": __cardbox.title,
+                "body": build_iframe(__cardbox),
+                "height": __cardbox.height
+            } %}
+
+            {% if __cardbox.type.slug == "extra" %}
+                {{ cards_factory.get_extra_content_card(__card) }}
+            {% elif __cardbox.type.slug == "large" %}
+                {{ cards_factory.get_large_content_card(__card) }}
+            {% elif __cardbox.type.slug == "medium" %}
+                {{ cards_factory.get_medium_content_card(__card) }}
+            {% elif __cardbox.type.slug == "small" %}
+                {{ cards_factory.get_small_content_card(__card) }}
+            {% elif __cardbox.type.slug == "tiny" %}
+                {{ cards_factory.get_tiny_content_card(__card) }}
+            {% elif __cardbox.type.slug == "none" %}
+                {{ cards_factory.get_unboxed_content_card(__card) }}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+
+{% block page_title %}
+    {% if title %}
+        {% if title|trim != "" %}
+            {{ content_factory.get_title(title) }}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    {% for __row_counter in range(cardbox_rows) %}
+        {{ cards_factory.get_content_row(build_row(__row_counter)) }}
+    {% endfor %}
+{% endblock %}
