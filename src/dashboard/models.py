@@ -12,6 +12,9 @@ class OrganizationalUnit(Model):
     def __str__(self):
         return f"{self.slug}"
 
+    class Meta:
+        verbose_name_plural = "Organizational Units"
+
 
 class Dashboard(Model):
     slug = models.CharField(max_length=25, null=False, blank=False, unique=True, primary_key=True)
@@ -24,13 +27,19 @@ class Dashboard(Model):
     def __str__(self):
         return f"{self.slug}"
 
+    class Meta:
+        verbose_name_plural = "Dashboards"
+
 
 class DataPage(Model):
     slug = models.CharField(max_length=256, null=False, blank=False, unique=True, primary_key=True)
-    title = models.CharField(max_length=100, null=False, blank=False)
+    title = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
         return f"{self.slug}"
+
+    class Meta:
+        verbose_name_plural = "Data Pages"
 
 
 class CardboxType(Model):
@@ -41,12 +50,15 @@ class CardboxType(Model):
     def __str__(self):
         return f"{self.slug}"
 
+    class Meta:
+        verbose_name_plural = "Cardbox Types"
+
 
 class Cardbox(Model):
     row = models.PositiveIntegerField(null=False, default=0)
     order = models.PositiveIntegerField(null=False, default=0)
     type = models.ForeignKey(CardboxType, on_delete=models.CASCADE)
-    title = models.CharField(max_length=100, null=False, blank=False)
+    title = models.CharField(max_length=100, null=True, blank=True)
     icon = models.CharField(max_length=100, null=True, blank=True)
     height = models.CharField(max_length=50, null=False, blank=False, default="400px")
     notebook = models.CharField(max_length=1024, null=False, blank=False)  # The file to load, including directories
@@ -56,6 +68,9 @@ class Cardbox(Model):
 
     def __str__(self):
         return f"{self.data_page} - {self.notebook}"
+
+    class Meta:
+        verbose_name_plural = "Cardboxes"
 
 
 class Link(Model):
@@ -87,24 +102,33 @@ class Block(Model):
 class Block1(Block):
     dashboard = models.ForeignKey(Dashboard, on_delete=models.CASCADE)
 
+    class Meta:
+        verbose_name_plural = "Menu Blocks Level 1"
+
 
 class Block2(Block):
     block1 = models.ForeignKey(Block1, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name_plural = "Menu Blocks Level 2"
 
 
 class Link1(Link):
     dashboard = models.ForeignKey(Dashboard, on_delete=models.CASCADE)
 
+    class Meta:
+        verbose_name_plural = "Menu Links Level 1"
+
 
 class Link2(Link):
     block1 = models.ForeignKey(Block1, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name_plural = "Menu Links Level 2"
 
 
 class Link3(Link):
     block2 = models.ForeignKey(Block2, on_delete=models.CASCADE)
 
-
-
-
-
-
+    class Meta:
+        verbose_name_plural = "Menu Links Level 3"
