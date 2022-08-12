@@ -1,2 +1,2 @@
-slug,menu,block,data_page
-grote_steden,Grote Steden,steden,grote_steden_lijst
+slug,menu,block,data_page,order
+grote_steden,Grote Steden,steden,grote_steden_lijst,1

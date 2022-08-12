@@ -19,7 +19,7 @@ class Context:
         }
 
         org_units = OrganizationalUnit.objects.filter(members__username=request.user)
-        dashboards = Dashboard.objects.filter(owner__in=org_units)
+        dashboards = Dashboard.objects.filter(owner__in=org_units).order_by("order")
 
         json = []
 
@@ -61,7 +61,7 @@ class Context:
 
     @staticmethod
     def __links_1(dashboard: Dashboard):
-        links = Link1.objects.filter(dashboard=dashboard)
+        links = Link1.objects.filter(dashboard=dashboard).order_by("order")
         menu = []
 
         for link in links:
@@ -71,7 +71,7 @@ class Context:
         return menu
 
     def __blocks_1(self, dashboard: Dashboard):
-        blocks = Block1.objects.filter(dashboard=dashboard)
+        blocks = Block1.objects.filter(dashboard=dashboard).order_by("order")
         menu = []
 
         for block in blocks:
@@ -93,7 +93,7 @@ class Context:
 
     @staticmethod
     def __links_2(block: Block1):
-        links = Link2.objects.filter(block1=block)
+        links = Link2.objects.filter(block1=block).order_by("order")
         menu = []
 
         for link in links:
@@ -103,7 +103,7 @@ class Context:
         return menu
 
     def __blocks_2(self, block: Block1):
-        blocks = Block2.objects.filter(block1=block)
+        blocks = Block2.objects.filter(block1=block).order_by("order")
         menu = []
 
         for block in blocks:
@@ -120,7 +120,7 @@ class Context:
 
     @staticmethod
     def __links_3(block: Block2):
-        links = Link3.objects.filter(block2=block)
+        links = Link3.objects.filter(block2=block).order_by("order")
         menu = []
 
         for link in links:
