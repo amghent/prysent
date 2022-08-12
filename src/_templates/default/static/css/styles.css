@@ -11346,9 +11346,8 @@ body {
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   min-width: 0;
-  flex-grow: 1;
   min-height: calc(100vh - 125px);
 }
 
