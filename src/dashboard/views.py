@@ -74,12 +74,16 @@ def page_data(request, slug):
         while len(heights) <= cardbox.row:
             heights.append(0)
 
-        heights[cardbox.row] = cardbox.height
+        if cardbox.height > heights[cardbox.row]:
+            print(f"new height: {cardbox.height}")
+            heights[cardbox.row] = cardbox.height
 
         cardbox_json = {"id": cardbox.id, "row": cardbox.row, "type": cardbox.type, "title": cardbox.title,
                         "icon": cardbox.icon, "notebook": cardbox.notebook}
 
         cardboxes_json.append(cardbox_json)
+
+    print(heights)
 
     context["cardboxes"] = cardboxes_json
     context["cardbox_rows"] = max_row + 1
