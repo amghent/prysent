@@ -34,6 +34,9 @@ conda install -c conda-forge jupyter
 conda install -c conda-forge requests
 conda install -c conda-forge voila
 conda install -c conda-forge plotly
+conda install -c conda-forge psycopg2-binary
+
+pip install mssql-django
 ````
 
 
@@ -44,6 +47,13 @@ conda install -c conda-forge plotly
 A Django project is created under ./src with the following basic commands on the command line:
 
 ````
+mkdir -p ./src
+django-admin startproject prysent ./src/
+
+mkdir -p ./src/dashboard
+django-admin startapp dashboard ./src/dashboard
+mkdir -p ./src/_world_api
+django-admin startapp _world_api ./src/_world_api
 ````
 
 ### Makefile

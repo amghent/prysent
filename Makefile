@@ -1,3 +1,6 @@
+SHELL := /bin/bash
+MS_SQLCMD := /opt/mssql-tools/bin/sqlcmd
+
 init-once:
 	mkdir ./database
 
@@ -6,35 +9,82 @@ init-once:
 
 	mkdir -p ./src/dashboard
 	django-admin startapp dashboard ./src/dashboard
+	mkdir -p ./src/_world_api
+	django-admin startapp _world_api ./src/_world_api
 
 	mkdir -p ./src/_templates/default
 	mkdir -p ./src/_bootstrap/management/commands
 
-migrate:
+validate:
+ifndef SETTINGS
+	@echo "Specify SETTINGS to set the environment"
+	@exit 1
+endif
+
+login: validate
+ifeq ("$(SETTINGS)", "prysent.settings.mssql")
+	source ./src/_bootstrap/management/config/mssql/sa.secret && \
+	$(MS_SQLCMD) -S localhost -C -U sa -P "$(MSSQL_SA_PASSWORD)" -i ./src/_bootstrap/management/sql/mssql/drop_login.sql  && \
+	$(MS_SQLCMD) -S localhost -C -U sa -P "$(MSSQL_SA_PASSWORD)" -i ./src/_bootstrap/management/sql/mssql/create_login.sql
+endif
+
+create-db: validate
+ifeq ("$(SETTINGS)", "prysent.settings.sqlite3")
+	rm -rf ./database/db.sqlite3
+endif
+
+ifeq ("$(SETTINGS)", "prysent.settings.postgres")
+	sudo -u postgres psql -d postgres -f src/_bootstrap/management/sql/postgres/create_db.sql ;
+endif
+
+ifeq ("$(SETTINGS)", "prysent.settings.mssql")
+	source ./src/_bootstrap/management/config/mssql/sa.secret && \
+	$(MS_SQLCMD) -S localhost -C -U sa -P "$(MSSQL_SA_PASSWORD)" -i ./src/_bootstrap/management/sql/mssql/drop_db.sql && \
+	$(MS_SQLCMD) -S localhost -C -U sa -P "$(MSSQL_SA_PASSWORD)" -i ./src/_bootstrap/management/sql/mssql/create_db.sql
+endif
+
+reset-migrations:
 	rm -f src/dashboard/migrations/0001_initial.py
+	rm -f src/_world_api/migrations/0001_initial.py
 
-	python src/manage.py makemigrations
-	python src/manage.py migrate
+migrate: validate reset-migrations
+	python src/manage.py makemigrations --settings=$(SETTINGS)
+	python src/manage.py migrate --settings=$(SETTINGS)
 
-delete-db:
-	rm -f ./database/db.sqlite3
+superuser: validate
+	python src/manage.py auto_create_superuser --settings=$(SETTINGS)
 
-superuser:
-	python src/manage.py auto_create_superuser
+sample-data: validate
+	python src/manage.py sample_data --settings=$(SETTINGS)
 
-sample-data:
-	python src/manage.py sample_data
+reset-sqlite3:
+	make reset-db SETTINGS=prysent.settings.sqlite3
 
-reset-db: delete-db migrate superuser sample-data
+reset-mssql:
+	make reset-db SETTINGS=prysent.settings.mssql
 
-media:
-	python ./src/manage.py media_structure
+reset-postgres:
+	make reset-db SETTINGS=prysent.settings.postgres
 
-run: migrate
-	python ./src/manage.py runserver
+reset-db: validate create-db migrate superuser sample-data
 
-test:
-	python ./src/manage.py test
+media: validate
+	python ./src/manage.py media_structure --settings=$(SETTINGS)
+
+run-sqlite:
+	make run SETTINGS=prysent.settings.sqlite3
+
+run-mssql:
+	make run SETTINGS=prysent.settings.mssql
+
+run-postgres:
+	make run SETTINGS=prysent.settings.postgres
+
+run: validate migrate
+	python ./src/manage.py runserver --settings=$(SETTINGS)
+
+test: validate
+	cd src && python manage.py test --settings=$(SETTINGS) && cd ..
 
 voila:
 	voila ./media --port=8876 --no-browser --Voila.tornado_settings="{'headers':{'Content-Security-Policy': 'frame-ancestors http://127.0.0.1:8000'}}" &

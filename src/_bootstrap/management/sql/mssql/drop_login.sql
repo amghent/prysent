@@ -1,0 +1,2 @@
+DROP LOGIN prysent
+GO
