@@ -13,7 +13,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        media_folder = os.path.abspath(os.path.join(settings.BASE_DIR, "..", "..", "media"))
+        media_folder = os.path.abspath(os.path.join(settings.BASE_DIR.parent, "media"))
         print(f"Media folder: { media_folder }")
 
         if not os.path.exists(media_folder):
@@ -26,7 +26,7 @@ class Command(BaseCommand):
         if not os.path.exists(internal_folder):
             os.mkdir(internal_folder)
 
-        notebooks_folder = os.path.abspath(os.path.join(settings.BASE_DIR, "..", "_templates", "default", "notebooks"))
+        notebooks_folder = os.path.abspath(os.path.join(settings.BASE_DIR.parent, "_templates", "default", "notebooks"))
 
         for nb in os.listdir(notebooks_folder):
             dest_file = os.path.join(internal_folder, nb)

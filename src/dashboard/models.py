@@ -132,3 +132,13 @@ class Link3(Link):
 
     class Meta:
         verbose_name_plural = "Menu Links Level 3"
+
+
+class UploadFile(Model):
+    ou = models.CharField(max_length=256, null=False, blank=False)
+    block_1 = models.CharField(max_length=256, null=False, blank=False)
+    block_2 = models.CharField(max_length=256, null=False, blank=False)
+    notebook = models.FileField(upload_to="upload/")
+
+    class Meta:
+        verbose_name_plural = "Upload Files"

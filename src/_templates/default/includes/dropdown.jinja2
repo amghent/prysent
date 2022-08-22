@@ -5,7 +5,8 @@
             {% if user == None %}
                 <li><a class="dropdown-item" href="{{ url('login') }}">Login</a></li>
             {% else %}
-            <!-- li><hr class="dropdown-divider" /></li -->
+                <li><a class="dropdown-item" href="{{ url('new_datapage') }}">New page</a></li>
+                <li><hr class="dropdown-divider"/></li>
                 <li><a class="dropdown-item" href="{{ url('logout_user') }}">Logout</a></li>
             {% endif %}
         </ul>

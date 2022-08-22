@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from dashboard.context import Context
-from dashboard.models import Cardbox, Link3, Link2, Link1, Block1, Block2, DataPage
+from dashboard.models import Cardbox, Link3, Link2, Link1, Block1, Block2, DataPage, UploadFile
 
 
 @login_required
@@ -131,6 +131,32 @@ def page_notebook(request, notebook_path):
 
     return render(request=request, template_name="forms/notebook.jinja2", context=context)
 
+
+@login_required
+def new_datapage(request):
+    context = Context(request=request).get()
+
+    return render(request=request, template_name="forms/new_datapage.jinja2", context=context)
+
+
+@login_required
+def add_datapage(request):
+    if request.method == "POST":
+        ou = request.POST["ou"]
+        block_1 = request.POST["block_1"]
+        block_2 = request.POST["block_2"]
+        notebook = request.FILES["notebook"]
+
+        upload_file = UploadFile()
+
+        upload_file.ou = ou
+        upload_file.block_1 = block_1
+        upload_file.block_2 = block_2
+        upload_file.notebook = notebook
+
+        upload_file.save()
+
+    return redirect("index")
 
 # def password(request):
 #    return render(request=request, template_name="dashboard/password.jinja2", context=None)

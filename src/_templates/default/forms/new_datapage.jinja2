@@ -1,0 +1,36 @@
+{% extends "base.jinja2" %}
+
+{% block content %}
+    <div class="row justify-content-center m-0">
+        <div class="col-12">
+            <div class="card mt-3">
+                <div class="card-header p-0">
+                    <h4 class="text-center font-weight-light my-2">Add a notebook page</h4>
+                </div>
+
+                <div class="card-body">
+                    <form method="POST" action="{{ url('add_datapage') }}" enctype="multipart/form-data">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>
+
+                        <label for="ou">Organisational Unit</label>
+                        <input class="form-control mt-1 mb-3" id="ou" name="ou" type="text"/>
+
+                        <label for="block_1">Menu Level 1 (optional)</label>
+                        <input class="form-control mt-1 mb-3" id="block_1" name="block_1" type="text"/>
+
+                        <label for="block_2">Menu Level 2 (optional)</label>
+                        <input class="form-control mt-1 mb-3" id="block_2" name="block_2" type="text"/>
+
+                        <label for="menu">Menu Text</label>
+                        <input class="form-control mt-1 mb-3" id="menu" name="menu" type="text"/>
+
+                        <label for="notebook">Notebook File</label>
+                        <input class="form-control mt-1 mb-3" id="notebook" name="notebook" type="file"/>
+
+                        <input class="btn btn-primary" type="submit" value="Save"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

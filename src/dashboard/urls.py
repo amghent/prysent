@@ -23,4 +23,7 @@ urlpatterns = [
 
     path("pages/public/<str:slug>", views.public_page, name="public_page"),
     path("pages/auth/<str:slug>", views.authorized_page, name="authorized_page"),
+
+    path("new/data", views.new_datapage, name="new_datapage"),
+    path("add/data", views.add_datapage, name="add_datapage"),
 ]
