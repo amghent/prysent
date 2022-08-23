@@ -212,6 +212,14 @@ def add_datapage(request):
 
                 menu.save()
             else:
+                ###
+                #
+                #   For now, we will abandon this page and go for a simpler solution: only based on directories
+                #   Periodically, the structure of the directory will be put in the database
+                #   Database will only be local sqlite, in order to change the least code
+                #
+                ###
+
                 # Under the first submenu
                 pass
         else:
