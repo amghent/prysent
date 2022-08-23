@@ -169,10 +169,10 @@
                 {{ get_two_level_menu(__block, _breadcrumb) }}
             {% endif %}
         {% endfor %}
-    {% else %}
-        {% if _dashboard.links %}
-            {{ get_one_level_menu(_dashboard.links, _breadcrumb) }}
-        {% endif %}
+    {% endif %}
+
+    {% if _dashboard.links %}
+        {{ get_one_level_menu(_dashboard.links, _breadcrumb) }}
     {% endif %}
 {% endmacro %}
 

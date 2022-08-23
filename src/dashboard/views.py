@@ -1,9 +1,13 @@
+import os
+import shutil
+
+from django.conf import settings
 from django.contrib.auth import authenticate, logout, login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from dashboard.context import Context
-from dashboard.models import Cardbox, Link3, Link2, Link1, Block1, Block2, DataPage, UploadFile
+from dashboard.models import Cardbox, Link3, Link2, Link1, Block1, Block2, DataPage, UploadFile, Dashboard, CardboxType
 
 
 @login_required
@@ -117,6 +121,8 @@ def page_data(request, slug):
                 "link1": link1.slug
             }
 
+    print(context)
+
     return render(request=request, template_name="forms/data.jinja2", context=context)
 
 
@@ -142,19 +148,75 @@ def new_datapage(request):
 @login_required
 def add_datapage(request):
     if request.method == "POST":
-        ou = request.POST["ou"]
+        db_slug = request.POST["dashboard"]
         block_1 = request.POST["block_1"]
         block_2 = request.POST["block_2"]
+        menu = request.POST["menu"]
         notebook = request.FILES["notebook"]
 
         upload_file = UploadFile()
 
-        upload_file.ou = ou
+        upload_file.dashboard = db_slug
         upload_file.block_1 = block_1
         upload_file.block_2 = block_2
+        upload_file.menu = menu
         upload_file.notebook = notebook
 
         upload_file.save()
+
+        id = upload_file.id
+        menu_slug = menu.strip().lower().replace(' ', '_')
+
+        if block_2.strip() == "":
+            if block_1.strip() == "":
+                dashboard = Dashboard.objects.get(slug=db_slug)
+
+                # create folder for dashboard
+                dashboard_folder = os.path.join(settings.MEDIA_ROOT, dashboard.slug)
+
+                if not os.path.exists(dashboard_folder):
+                    os.makedirs(dashboard_folder)
+
+                # copy upload file to the dashboard folder
+                source_file = os.path.join(settings.MEDIA_ROOT, "upload", "doc.ipynb")
+                target_file = os.path.join(dashboard_folder, "doc.ipynb")
+
+                shutil.move(source_file, target_file)
+
+                data_page = DataPage()
+
+                data_page.slug = f"{ dashboard.slug }_{ menu_slug }"
+                data_page.title = ""
+
+                data_page.save()
+
+                cardbox = Cardbox()
+
+                cardbox.data_page = data_page
+                cardbox.row = 0
+                cardbox.order = 0
+                cardbox.type = CardboxType.objects.get(slug="none")  # Will take the full page without any box
+                cardbox.title = ""
+                cardbox.height = "var(--notebook-height)"
+                cardbox.notebook = f"{ dashboard.slug }/{ notebook }"
+                cardbox.scroll = False
+
+                cardbox.save()
+
+                menu = Link1()
+                menu.dashboard = dashboard
+                menu.slug = menu_slug
+                menu.order = 0
+                menu.menu = upload_file.menu
+                menu.data_page = data_page
+
+                menu.save()
+            else:
+                # Under the first submenu
+                pass
+        else:
+            # Under 2 submenus
+            pass
 
     return redirect("index")
 

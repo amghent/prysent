@@ -135,9 +135,10 @@ class Link3(Link):
 
 
 class UploadFile(Model):
-    ou = models.CharField(max_length=256, null=False, blank=False)
+    dashboard = models.CharField(max_length=256, null=False, blank=False)
     block_1 = models.CharField(max_length=256, null=False, blank=False)
     block_2 = models.CharField(max_length=256, null=False, blank=False)
+    menu = models.CharField(max_length=256, null=False, blank=False)
     notebook = models.FileField(upload_to="upload/")
 
     class Meta:
