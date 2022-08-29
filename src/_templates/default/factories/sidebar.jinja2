@@ -2,35 +2,35 @@
     <div class="sb-sidenav-menu-heading">{{ _title }}</div>
 {% endmacro %}
 
-{% macro get_block_links(_block, _level, _breadcrumb) %}
+{% macro get_block_links(_block, _level, _breadcrumb, _check_active) %}
     {% if _block.links %}
-        {{ get_links(_block.links, _level, _breadcrumb) }}
+        {{ get_links(_block.links, _level, _breadcrumb, _check_active) }}
     {% endif %}
 {% endmacro %}
 
-{% macro get_links(_links, _level, _breadcrumb) %}
+{% macro get_links(_links, _level, _breadcrumb, _check_active) %}
     {% for __link in _links %}
-        {{ get_link(__link, _level, _breadcrumb) }}
+        {{ get_link(__link, _level, _breadcrumb, _check_active) }}
     {% endfor %}
 {% endmacro %}
 
-{% macro get_link(_link, _level, _breadcrumb) %}
+{% macro get_link(_link, _level, _breadcrumb, _check_active) %}
     {% set __state = "" %}
 
     {% if _level == 1 %}
-        {% if _breadcrumb.link1 == _link.slug %}
+        {% if _check_active and _breadcrumb.link1 and _breadcrumb.link1.slug == _link.slug %}
             {{ get_active_link(_link) }}
         {% else %}
             {{ get_inactive_link(_link) }}
         {% endif %}
     {% elif _level == 2 %}
-        {% if _breadcrumb.link2 == _link.slug %}
+        {% if _check_active and _breadcrumb.link2 and _breadcrumb.link2.slug == _link.slug %}
             {{ get_active_link(_link) }}
         {% else %}
             {{ get_inactive_link(_link) }}
         {% endif %}
     {% elif _level == 3 %}
-        {% if _breadcrumb.link3 == _link.slug %}
+        {% if _check_active and _breadcrumb.link3 and _breadcrumb.link3.slug == _link.slug %}
             {{ get_active_link(_link) }}
         {% else %}
             {{ get_inactive_link(_link) }}
@@ -66,20 +66,20 @@
 {% endmacro %}
 
 {% macro get_one_level_menu(_links, _breadcrumb) %}
-    {{ get_links(_links, 1, _breadcrumb) }}
+    {{ get_links(_links, 1, _breadcrumb, true) }}
 {% endmacro %}
 
 {% macro get_two_level_menu(_block, _breadcrumb) %}
     {% set __id = "block_" + _block.slug %}
 
-    {% if _breadcrumb.block1 == _block.slug %}
+    {% if _breadcrumb.block1 and _breadcrumb.block1.name == _block.name %}
         <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#{{ __id }}" aria-expanded="true" aria-controls="{{ __id }}">
             {{ get_block_menu(_block) }}
         </a>
 
         <div class="collapse show" id="{{ __id }}" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
             <nav class="sb-sidenav-menu-nested nav">
-                {{ get_block_links(_block, 2, _breadcrumb) }}
+                {{ get_block_links(_block, 2, _breadcrumb, true) }}
             </nav>
         </div>
     {% else %}
@@ -89,7 +89,7 @@
 
         <div class="collapse" id="{{ __id }}" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
             <nav class="sb-sidenav-menu-nested nav">
-                {{ get_block_links(_block, 2, _breadcrumb) }}
+                {{ get_block_links(_block, 2, _breadcrumb, false) }}
             </nav>
         </div>
     {% endif %}
@@ -98,7 +98,7 @@
 {% macro get_three_level_menu(_block, _breadcrumb) %}
     {% set __id = "block_" + _block.slug %}
 
-    {% if _breadcrumb.block1 == _block.slug %}
+    {% if _breadcrumb.block1 and _breadcrumb.block1.name == _block.name %}
         <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#{{ __id }}" aria-expanded="true" aria-controls="{{ __id}}">
             {{ get_block_menu(_block) }}
         </a>
@@ -108,14 +108,14 @@
                 {% for __sub_block in _block.blocks %}
                     {% set __sub_id = __id + "_" + __sub_block.slug %}
 
-                    {% if _breadcrumb.block2 == __sub_block.slug %}
+                    {% if _breadcrumb.block2 and _breadcrumb.block2.name == __sub_block.name %}
                         <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#{{ __sub_id }}" aria-expanded="true" aria-controls="__sub_id">
                             {{ get_block_menu(__sub_block) }}
                         </a>
 
                         <div class="collapse show" id="{{ __sub_id }}" aria-labelledby="headingOne" data-bs-parent="#{{ __id}}_accordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                {{ get_links(__sub_block.links, 3, _breadcrumb) }}
+                                {{ get_links(__sub_block.links, 3, _breadcrumb, true) }}
                             </nav>
                         </div>
                     {% else %}
@@ -125,7 +125,7 @@
 
                         <div class="collapse" id="{{ __sub_id }}" aria-labelledby="headingOne" data-bs-parent="#{{ __id}}_accordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                {{ get_links(__sub_block.links, 3, _breadcrumb) }}
+                                {{ get_links(__sub_block.links, 3, _breadcrumb, false) }}
                             </nav>
                         </div>
                     {% endif %}
@@ -149,7 +149,7 @@
 
                     <div class="collapse" id="{{ __sub_id }}" aria-labelledby="headingOne" data-bs-parent="#{{ __id}}_accordion">
                         <nav class="sb-sidenav-menu-nested nav">
-                            {{ get_links(__sub_block.links, 3, _breadcrumb) }}
+                            {{ get_links(__sub_block.links, 3, _breadcrumb, false) }}
                         </nav>
                     </div>
                 {% endfor %}
