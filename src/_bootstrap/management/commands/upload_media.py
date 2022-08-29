@@ -80,7 +80,7 @@ class Command(BaseCommand):
         print("media uploaded")
 
     @staticmethod
-    def __handle_dashboard(dashboard_entry: str, ou) -> Dashboard | None:
+    def __handle_dashboard(dashboard_entry, ou):
         slug = dashboard_entry.strip().lower().replace(" ", "_")
         menu = dashboard_entry
 
