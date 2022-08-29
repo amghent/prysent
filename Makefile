@@ -84,7 +84,7 @@ run-postgres:
 	make run SETTINGS=prysent.settings.postgres
 
 run: validate migrate
-	python ./src/manage.py runserver --settings=$(SETTINGS)
+	python ./src/manage.py runserver 8000 --settings=$(SETTINGS)
 
 test: validate
 	cd src && python manage.py test --settings=$(SETTINGS) && cd ..
