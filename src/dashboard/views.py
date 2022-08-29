@@ -1,12 +1,11 @@
 from django.contrib.auth import authenticate, logout, login
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from dashboard.context import Context
 from dashboard.models import Cardbox, Link3, Link2, Link1, Block1, Block2, DataPage
 
 
-@login_required
+# @login_required
 def page_index(request):
     context = Context(request=request).get()
 
@@ -57,7 +56,7 @@ def action_logout_user(request):
     return redirect(to="login", status="logout=ok")
 
 
-@login_required
+#  @login_required
 def page_data(request, slug):
     # slug is the data_page slug
     context = Context(request=request).get()
@@ -91,36 +90,36 @@ def page_data(request, slug):
 
     try:
         link3 = Link3.objects.get(data_page__slug=slug)
-        block2 = Block2.objects.get(slug=link3.block2)
-        block1 = Block1.objects.get(slug=block2.block1)
+        block2 = Block2.objects.get(id=link3.block2.id)
+        block1 = Block1.objects.get(id=block2.block1.id)
 
         context["breadcrumb"] = {
-            "block1": block1.slug,
-            "block2": block2.slug,
-            "link3": link3.slug
+            "block1": {"slug": block1.slug, "name": block1.name},
+            "block2": {"slug": block2.slug, "name": block2.name},
+            "link3": {"slug": link3.slug}
         }
 
     except Link3.DoesNotExist:
         try:
             link2 = Link2.objects.get(data_page__slug=slug)
-            block1 = Block1.objects.get(slug=link2.block1)
+            block1 = Block1.objects.get(id=link2.block1.id)
 
             context["breadcrumb"] = {
-                "block1": block1.slug,
-                "link2": link2.slug
+                "block1": {"slug": block1.slug, "name": block1.name},
+                "link2": {"slug": link2.slug}
             }
 
         except Link2.DoesNotExist:
             link1 = Link1.objects.get(data_page__slug=slug)
 
             context["breadcrumb"] = {
-                "link1": link1.slug
+                "link1": {"slug": link1.slug}
             }
 
     return render(request=request, template_name="forms/data.jinja2", context=context)
 
 
-@login_required
+# @login_required
 def page_notebook(request, notebook_path):
     context = Context(request=request).get()
 
@@ -151,7 +150,7 @@ def public_page(request, slug: str):
     return render(request=request, template_name="forms/notebook.jinja2", context=context)
 
 
-@login_required
+# @login_required
 def authorized_page(request, slug: str):
     context = Context(request=request).get()
 

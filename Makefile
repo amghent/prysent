@@ -68,8 +68,11 @@ reset-postgres:
 
 reset-db: validate create-db migrate superuser sample-data
 
-media: validate
-	python ./src/manage.py media_structure --settings=$(SETTINGS)
+media: validate create-db migrate superuser
+	python ./src/manage.py upload_media --settings=$(SETTINGS)
+
+media-sqlite:
+	make media SETTINGS=prysent.settings.sqlite3
 
 run-sqlite:
 	make run SETTINGS=prysent.settings.sqlite3
@@ -81,7 +84,7 @@ run-postgres:
 	make run SETTINGS=prysent.settings.postgres
 
 run: validate migrate
-	python ./src/manage.py runserver --settings=$(SETTINGS)
+	python ./src/manage.py runserver 8000 --settings=$(SETTINGS)
 
 test: validate
 	cd src && python manage.py test --settings=$(SETTINGS) && cd ..

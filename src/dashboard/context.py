@@ -1,5 +1,3 @@
-from pprint import pprint
-
 from django.contrib.auth.models import User
 
 from dashboard.models import Dashboard, OrganizationalUnit, Link1, Link2, Link3, Block1, Block2
@@ -9,17 +7,17 @@ class Context:
     def __init__(self, request) -> None:
         if str(request.user) == "AnonymousUser":
             self.context = {
-                "user": None
+                "user": "Public"
             }
 
-            return
+        #    return
 
-        self.context = {
-            "user": self.__user(str(request.user)),
-        }
+        # self.context = {
+        #    "user": self.__user(str(request.user)),
+        # }
 
-        org_units = OrganizationalUnit.objects.filter(members__username=request.user)
-        dashboards = Dashboard.objects.filter(owner__in=org_units).order_by("order")
+        # org_units = OrganizationalUnit.filter(members__username=request.user)
+        dashboards = Dashboard.objects.all()  # filter(owner__in=org_units).order_by("order")
 
         json = []
 
@@ -75,7 +73,7 @@ class Context:
         menu = []
 
         for block in blocks:
-            js = {"slug": block.slug, "menu": block.menu}
+            js = {"slug": block.slug, "menu": block.menu, "name": block.name}
 
             links = self.__links_2(block)
 
@@ -103,13 +101,13 @@ class Context:
         return menu
 
     def __blocks_2(self, block: Block1):
-        blocks = Block2.objects.filter(block1=block).order_by("order")
+        blocks = Block2.objects.filter(block1=block.id).order_by("order")
         menu = []
 
         for block in blocks:
             links = self.__links_3(block)
 
-            js = {"slug": block.slug, "menu": block.menu}
+            js = {"slug": block.slug, "menu": block.menu, "name": block.name}
 
             if len(links) > 0:
                 js["links"] = links
@@ -120,11 +118,11 @@ class Context:
 
     @staticmethod
     def __links_3(block: Block2):
-        links = Link3.objects.filter(block2=block).order_by("order")
+        links = Link3.objects.filter(block2=block.id).order_by("order")
         menu = []
 
         for link in links:
-            js = {"slug": link.slug, "menu": link.menu, "data_page": link.data_page}
+            js = {"slug": link.slug, "menu": link.menu, "data_page": link.data_page.slug}
             menu.append(js)
 
         return menu
