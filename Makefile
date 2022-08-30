@@ -47,7 +47,7 @@ reset-migrations:
 	rm -f src/dashboard/migrations/0001_initial.py
 	rm -f src/_world_api/migrations/0001_initial.py
 
-migrate: validate reset-migrations
+migrate: validate
 	python src/manage.py makemigrations --settings=$(SETTINGS)
 	python src/manage.py migrate --settings=$(SETTINGS)
 
@@ -66,9 +66,9 @@ reset-mssql:
 reset-postgres:
 	make reset-db SETTINGS=prysent.settings.postgres
 
-reset-db: validate create-db migrate superuser sample-data
+reset-db: validate create-db reset-migrations migrate superuser sample-data
 
-media: validate create-db migrate superuser
+media: validate
 	python ./src/manage.py upload_media --settings=$(SETTINGS)
 
 media-sqlite:
@@ -83,7 +83,7 @@ run-mssql:
 run-postgres:
 	make run SETTINGS=prysent.settings.postgres
 
-run: validate migrate
+run: validate
 	python ./src/manage.py runserver 8875 --settings=$(SETTINGS)
 
 test: validate
