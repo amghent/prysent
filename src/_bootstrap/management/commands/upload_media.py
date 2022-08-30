@@ -50,7 +50,7 @@ class Command(BaseCommand):
 
             print("Created: cities")
 
-        media_folder = os.path.abspath(os.path.join(settings.BASE_DIR.parent.parent, "media"))
+        media_folder = settings.MEDIA_DIR
         print(f"Media folder: { media_folder }")
 
         for dashboard_entry in os.listdir(media_folder):
@@ -182,8 +182,6 @@ class Command(BaseCommand):
                 max_order = 1
             else:
                 max_order += 1
-
-            print(f"max order: {max_order}")
 
             link = Link1()
             link.dashboard, link.order, link.slug, link.menu, link.data_page = \
