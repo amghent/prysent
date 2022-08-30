@@ -1,8 +1,6 @@
 from prysent.settings.common import *
 from prysent.settings.secret import *
 
-ALLOWED_HOSTS = []
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -14,10 +12,9 @@ DATABASES = {
     }
 }
 
-DEBUG = True
-
+# Get rid of the warning about the un-used import
 if DEBUG:
-    INSTALLED_APPS.append('_world_api.apps.WorldApiConfig')
+    assert True
 
-if SECRET_KEY == "":  # Mainly to get rid of the warning about the un-used import
-    print("No secret key found")
+if SECRET_KEY == "":
+    assert True

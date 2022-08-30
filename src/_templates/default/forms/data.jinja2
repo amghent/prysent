@@ -2,9 +2,9 @@
 
 {% macro build_iframe(_cardbox) %}
     {% if _cardbox.scroll == "no" %}
-        <iframe class="w-100 h-100 overflow-hidden m-0 p-0" scrolling="no" src="http://127.0.0.1:8876/voila/render/{{ _cardbox.notebook }}?"></iframe>
+        <iframe class="w-100 h-100 overflow-hidden m-0 p-0" scrolling="no" src="{{ system.voila_url }}/voila/render/{{ _cardbox.notebook }}?"></iframe>
     {% else %}
-        <iframe class="w-100 h-100 m-0 p-0" src="http://127.0.0.1:8876/voila/render/{{ _cardbox.notebook }}?"></iframe>
+        <iframe class="w-100 h-100 m-0 p-0" src="{{ system.voila_url }}/voila/render/{{ _cardbox.notebook }}?"></iframe>
     {% endif %}
 {% endmacro %}
 

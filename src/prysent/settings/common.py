@@ -2,6 +2,8 @@ import os
 
 from pathlib import Path
 
+DEBUG = True
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 INSTALLED_APPS = [
@@ -25,8 +27,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
-ROOT_URLCONF = 'prysent.urls'
 
 TEMPLATES = [
     {
@@ -71,11 +71,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+ALLOWED_HOSTS = ["*"]
+
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
+
+ROOT_URLCONF = 'prysent.urls'
 
 STATIC_URL = '/static/'
 
@@ -87,4 +91,9 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'login'
 
+VOILA_URL = "http://localhost:8876"
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+if DEBUG:
+    INSTALLED_APPS.append('_world_api.apps.WorldApiConfig')

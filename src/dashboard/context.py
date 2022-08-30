@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.conf import settings
 
 from dashboard.models import Dashboard, OrganizationalUnit, Link1, Link2, Link3, Block1, Block2
 
@@ -37,6 +38,12 @@ class Context:
             json.append(dashboard_json)
 
         self.context["dashboards"] = json
+
+        django_settings = {
+            "voila_url": getattr(settings, "VOILA_URL", "http://localhost:8876")
+        }
+
+        self.context["system"] = django_settings
 
     def get(self) -> dict:
         return self.context
