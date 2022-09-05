@@ -1,0 +1,10 @@
+<div class="sb-sidenav-footer">
+
+    {% if user == None %}
+        <div class="small">Logged in as:</div>
+        Anonymous
+    {% else %}
+        <div class="small">Logged in as:</div>
+        {{ user.username }}
+    {% endif %}
+</div>

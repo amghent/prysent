@@ -32,7 +32,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.jinja2.Jinja2',
         'DIRS': [
-            os.path.join(BASE_DIR.parent, '_templates', 'default'),
+            os.path.join(BASE_DIR.parent, '_templates', 'arcelor_mittal'),
         ],
         'APP_DIRS': False,
         'OPTIONS': {
@@ -84,7 +84,7 @@ ROOT_URLCONF = 'prysent.urls'
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR.parent, '_templates', 'default', 'static'),
+    os.path.join(BASE_DIR.parent, '_templates', 'arcelor_mittal', 'static'),
 ]
 
 LOGIN_URL = 'login'
