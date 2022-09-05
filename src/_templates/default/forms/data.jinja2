@@ -2,9 +2,9 @@
 
 {% macro build_iframe(_cardbox) %}
     {% if _cardbox.scroll == "no" %}
-        <iframe class="w-100 h-100 overflow-hidden m-0 p-0" scrolling="no" src="{{ system.voila_url }}/voila/render/{{ _cardbox.notebook }}?"></iframe>
+        <iframe class="w-100 m-0 p-0 overflow-hidden" style="height: var(--notebook-height)" scrolling="no" src="{{ system.voila_url }}/voila/render/{{ _cardbox.notebook }}?"></iframe>
     {% else %}
-        <iframe class="w-100 h-100 m-0 p-0" src="{{ system.voila_url }}/voila/render/{{ _cardbox.notebook }}?"></iframe>
+        <iframe class="w-100 m-0 p-0" style="height: var(--notebook-height)" src="{{ system.voila_url }}/voila/render/{{ _cardbox.notebook }}?"></iframe>
     {% endif %}
 {% endmacro %}
 
@@ -44,7 +44,26 @@
 {% endblock %}
 
 {% block content %}
-    {% for __row_counter in range(cardbox_rows) %}
-        {{ cards_factory.get_content_row(build_row(__row_counter)) }}
-    {% endfor %}
+    {% if cardboxes|length == 1 and cardboxes[0].type.slug == "none" %}
+        {#  sidviny - 2022-09-05
+            This is when you have only one notebook per page without any cardboxes.
+            At this moment, the tool will be used with the directory approach to test the response of the users.
+            Carboxes are not used, but just the notebook is shown.
+        #}
+
+        {% set __cardbox = cardboxes[0] %}
+
+        {% set __card = {
+            "dashboard": cardboxes[0].dashboard,
+            "title": cardboxes[0].title,
+            "body": build_iframe(cardboxes[0]),
+            "height": cardboxes[0].height
+        } %}
+
+        {{ cards_factory.get_unboxed_content_card(__card) }}
+    {% else %}
+        {% for __row_counter in range(cardbox_rows) %}
+            {{ cards_factory.get_content_row(build_row(__row_counter)) }}
+        {% endfor %}
+    {% endif %}
 {% endblock %}

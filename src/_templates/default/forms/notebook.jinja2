@@ -2,8 +2,8 @@
 
 {% block content %}
     {% if notebook.internal %}
-        <iframe class="w-100 h-100" src="{{ system.voila_url }}/voila/render/__prysent/{{ notebook.slug }}.ipynb?"></iframe>
+        <iframe class="w-100 m-0 p-0" style="height: var(--notebook-height)" src="{{ system.voila_url }}/voila/render/__prysent/{{ notebook.slug }}.ipynb?"></iframe>
     {% else %}
-        <iframe class="w-100 h-100" src="{{ system.voila_url }}/voila/render/{{ notebook.slug }}.ipynb?"></iframe>
+        <iframe class="w-100" style="height: var(--notebook-height)" src="{{ system.voila_url }}/voila/render/{{ notebook.slug }}.ipynb?"></iframe>
     {% endif %}
 {% endblock %}
