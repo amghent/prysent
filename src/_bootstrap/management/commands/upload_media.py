@@ -172,7 +172,8 @@ class Command(BaseCommand):
         cardbox.type = CardboxType.objects.get(slug="none")
         cardbox.title = ""
         cardbox.height = "var(--notebook-height)"
-        cardbox.notebook = notebook_path
+        cardbox.notebook = notebook_path.replace("\\", "/")
+        # The path is a URL for the browser, also on Windows where the path.join gives backslashes in the path
         cardbox.scroll = True
 
         cardbox.save()
