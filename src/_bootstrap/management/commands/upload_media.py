@@ -15,6 +15,8 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
+        self.__flag_start_sync()
+
         try:
             ou_public = OrganizationalUnit.objects.get(slug="public")
         except OrganizationalUnit.DoesNotExist:
@@ -42,8 +44,8 @@ class Command(BaseCommand):
             for row in rows:
                 c = City()
 
-                c.name, c.name_ascii, c.lat, c.lng, c.country, c.iso2, c.iso3, c.admin_name, \
-                c.capital, c.population, c.id = tuple(row)
+                c.name, c.name_ascii, c.lat, c.lng, c.country, c.iso2, c.iso3, c.admin_name, c.capital, \
+                    c.population, c.id = tuple(row)
 
                 if c.iso2 == "BE":
                     c.save()
@@ -77,7 +79,31 @@ class Command(BaseCommand):
                                                                              level_1_entry, level_2_entry)):
                                     self.__handle_level_3_link(level_3_entry, menu_2, menu_1, dashboard)
 
-        print("media uploaded")
+        print("Media uploaded")
+
+        print("Database cleanup")
+        self.__delete_unflagged()
+        print("Database cleaned")
+
+    @staticmethod
+    def __flag_start_sync():
+        Dashboard.objects.all().update(sync_flag=False)
+        Block1.objects.all().update(sync_flag=False)
+        Block2.objects.all().update(sync_flag=False)
+        Link1.objects.all().update(sync_flag=False)
+        Link2.objects.all().update(sync_flag=False)
+        Link3.objects.all().update(sync_flag=False)
+
+    @staticmethod
+    def __delete_unflagged():
+        Link3.objects.filter(sync_flag=False).delete()
+        Link2.objects.filter(sync_flag=False).delete()
+        Link1.objects.filter(sync_flag=False).delete()
+        Block2.objects.filter(sync_flag=False).delete()
+        Block1.objects.filter(sync_flag=False).delete()
+        Dashboard.objects.filter(sync_flag=False).delete()
+        # DataPages are deleted from the deletion of the links
+        # Cardboxes are deleted through cascading from DataPages
 
     @staticmethod
     def __handle_dashboard(dashboard_entry, ou):
@@ -89,6 +115,9 @@ class Command(BaseCommand):
 
         try:
             dashboard = Dashboard.objects.get(slug=slug)
+
+            dashboard.sync_flag = True
+            dashboard.save()
 
             print(f"Dashboard exists: {slug}")
 
@@ -109,6 +138,7 @@ class Command(BaseCommand):
             dashboard.menu = menu
             dashboard.owner = ou
             dashboard.order = max_order
+            dashboard.sync_flag = True
             dashboard.save()
 
             print(f"Created dashboard: {dashboard.slug}")
@@ -170,6 +200,9 @@ class Command(BaseCommand):
         try:
             link = Link1.objects.get(dashboard_id=dashboard.id, slug=slug)
 
+            link.sync_flag = True
+            link.save()
+
             print(f"Link exists: {path_slug}")
 
         except Link1.DoesNotExist:
@@ -184,8 +217,8 @@ class Command(BaseCommand):
                 max_order += 1
 
             link = Link1()
-            link.dashboard, link.order, link.slug, link.menu, link.data_page = \
-                dashboard, max_order, slug, menu, data_page
+            link.dashboard, link.order, link.slug, link.menu, link.data_page, link.sync_flag = \
+                dashboard, max_order, slug, menu, data_page, True
             link.save()
 
             print(f"Created link: {path_slug}")
@@ -201,6 +234,9 @@ class Command(BaseCommand):
         try:
             link = Link2.objects.get(block1=menu1, slug=slug)
 
+            link.sync_flag = True
+            link.save()
+
             print(f"Link exists: {path_slug}")
 
         except Link2.DoesNotExist:
@@ -215,7 +251,7 @@ class Command(BaseCommand):
             print(f"Creating link: {path_slug}")
 
             link = Link2()
-            link.data_page, link.slug, link.menu, link.order = data_page, slug, menu, max_order
+            link.data_page, link.slug, link.menu, link.order, link.sync_flag = data_page, slug, menu, max_order, True
             link.block1 = Block1.objects.get(dashboard=dashboard, slug=menu1.slug)
             link.save()
 
@@ -232,6 +268,9 @@ class Command(BaseCommand):
         try:
             link = Link3.objects.get(block2=menu2, slug=slug)
 
+            link.sync_flag = True
+            link.save()
+
             print(f"Link exists: {path_slug}")
 
         except Link3.DoesNotExist:
@@ -246,7 +285,7 @@ class Command(BaseCommand):
             print(f"Creating link: {path_slug}")
 
             link = Link3()
-            link.slug, link.menu, link.data_page, link.order = slug, menu, data_page, max_order
+            link.slug, link.menu, link.data_page, link.order, link.sync_flag = slug, menu, data_page, max_order, True
             link.block2 = Block2.objects.get(block1=menu1, slug=menu2.slug)
             link.save()
 
@@ -260,6 +299,9 @@ class Command(BaseCommand):
 
         try:
             block = Block1.objects.get(dashboard=dashboard, slug=slug)
+
+            block.sync_flag = True
+            block.save()
 
             print(f"Block exists: {dashboard.slug}/{slug} ")
 
@@ -280,6 +322,7 @@ class Command(BaseCommand):
             block.name = block_entry
             block.order = max_order
             block.dashboard = dashboard
+            block.sync_flag = True
 
             block.save()
 
@@ -293,6 +336,9 @@ class Command(BaseCommand):
 
         try:
             block = Block2.objects.get(block1=menu, slug=slug)
+
+            block.sync_flag = True
+            block.save()
 
             print(f"Block exists: {menu.dashboard.slug}/{menu.slug}/{block.slug}")
 
@@ -313,6 +359,7 @@ class Command(BaseCommand):
             block.name = block_entry
             block.order = max_order
             block.block1 = menu
+            block.sync_flag = True
 
             block.save()
 

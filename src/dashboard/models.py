@@ -1,12 +1,12 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Model
+from django.dispatch import receiver
 
 
 class OrganizationalUnit(Model):
     slug = models.CharField(max_length=25, null=False, blank=False, unique=True)
     name = models.CharField(max_length=50, null=False, blank=False)  # Not used for now
-
     members = models.ManyToManyField(User)
 
     def __str__(self):
@@ -21,8 +21,8 @@ class Dashboard(Model):
     order = models.PositiveIntegerField(null=False, default=0, unique=True)
     name = models.CharField(max_length=100, null=False, blank=False, unique=True)  # Used in directory structure
     menu = models.CharField(max_length=30, null=False, blank=False, unique=True)
-
     owner = models.ForeignKey(OrganizationalUnit, on_delete=models.CASCADE)
+    sync_flag = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.slug} <{self.id}>"
@@ -77,11 +77,8 @@ class Link(Model):
     slug = models.CharField(max_length=256, null=False, blank=False)
     order = models.PositiveIntegerField(null=False, default=0)
     menu = models.CharField(max_length=30, null=False, blank=False)
-
     data_page = models.ForeignKey(DataPage, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.slug} <{self.id}>"
+    sync_flag = models.BooleanField(default=True)
 
     class Meta:
         abstract = True
@@ -92,9 +89,7 @@ class Block(Model):
     name = models.CharField(max_length=256, null=False, blank=False)
     order = models.PositiveIntegerField(null=False, default=0)
     menu = models.CharField(max_length=30, null=False, blank=False)
-
-    def __str__(self):
-        return f"{self.slug} <{self.id}>"
+    sync_flag = models.BooleanField(default=True)
 
     class Meta:
         abstract = True
@@ -102,6 +97,9 @@ class Block(Model):
 
 class Block1(Block):
     dashboard = models.ForeignKey(Dashboard, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.dashboard.slug}_{self.slug} <{self.id}>"
 
     class Meta:
         verbose_name_plural = "Menu Blocks Level 1"
@@ -116,6 +114,9 @@ class Block1(Block):
 class Block2(Block):
     block1 = models.ForeignKey(Block1, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"{self.block1.dashboard.slug}_{self.block1.slug}_{self.slug} <{self.id}>"
+
     class Meta:
         verbose_name_plural = "Menu Blocks Level 2"
 
@@ -129,6 +130,9 @@ class Block2(Block):
 class Link1(Link):
     dashboard = models.ForeignKey(Dashboard, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"{self.dashboard.slug}_{self.slug} <{self.id}>"
+
     class Meta:
         verbose_name_plural = "Menu Links Level 1"
 
@@ -139,6 +143,9 @@ class Link1(Link):
 
 class Link2(Link):
     block1 = models.ForeignKey(Block1, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.block1.dashboard.slug}_{self.block1.slug}_{self.slug} <{self.id}>"
 
     class Meta:
         verbose_name_plural = "Menu Links Level 2"
@@ -151,9 +158,48 @@ class Link2(Link):
 class Link3(Link):
     block2 = models.ForeignKey(Block2, on_delete=models.CASCADE)
 
+    def __repr__(self):
+        return f"{self.block2.block1.dashboard.slug}_{self.block2.block1.slug}_{self.block2.slug}_{self.slug}" \
+               f" <{self.id}>"
+
     class Meta:
         verbose_name_plural = "Menu Links Level 3"
 
         constraints = [
             models.UniqueConstraint(fields=['block2', 'order'], name='ux_link3_block2_order'),
         ]
+
+
+@receiver(models.signals.pre_delete, sender=Dashboard)
+@receiver(models.signals.pre_delete, sender=DataPage)
+@receiver(models.signals.pre_delete, sender=Cardbox)
+@receiver(models.signals.pre_delete, sender=Block1)
+@receiver(models.signals.pre_delete, sender=Block2)
+@receiver(models.signals.pre_delete, sender=Link1)
+@receiver(models.signals.pre_delete, sender=Link2)
+@receiver(models.signals.pre_delete, sender=Link3)
+def handle_deleted_dashboard(sender, instance, **kwargs):
+    assert sender  # To avoid JetBrains nagging
+    assert kwargs
+    print(f"Deleting {instance.__class__.__name__}: {instance}")
+
+
+@receiver(models.signals.post_delete, sender=Link1)
+def handle_deleted_link1(sender, instance, **kwargs):
+    assert sender  # To avoid JetBrains nagging
+    assert kwargs
+    instance.data_page.delete()
+
+
+@receiver(models.signals.post_delete, sender=Link2)
+def handle_deleted_link2(sender, instance, **kwargs):
+    assert sender  # To avoid JetBrains nagging
+    assert kwargs
+    instance.data_page.delete()
+
+
+@receiver(models.signals.post_delete, sender=Link3)
+def handle_deleted_link2(sender, instance, **kwargs):
+    assert sender  # To avoid JetBrains nagging
+    assert kwargs
+    instance.data_page.delete()
