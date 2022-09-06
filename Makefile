@@ -90,4 +90,4 @@ test: validate
 	cd src && python manage.py test --settings=$(SETTINGS) && cd ..
 
 voila:
-	voila ./media --port=8876 --no-browser --Voila.tornado_settings="{'headers':{'Content-Security-Policy': 'frame-ancestors http://127.0.0.1:8875'}}" &
+	voila ./media --port=8876 --no-browser --Voila.tornado_settings="{'headers':{'Content-Security-Policy': 'frame-ancestors http://127.0.0.1:8875 http://localhost:8875'}}" &
