@@ -92,9 +92,6 @@ LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'login'
 
 MEDIA_URL = '/media/'
-MEDIA_DIR = os.path.join(BASE_DIR.parent.parent, 'media')
-
-VOILA_URL = "http://localhost:8876"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

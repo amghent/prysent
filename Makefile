@@ -33,6 +33,10 @@ ifeq ("$(SETTINGS)", "prysent.settings.sqlite3")
 	rm -rf ./database/db.sqlite3
 endif
 
+ifeq ("$(SETTINGS)", "prysent.settings.prod")
+	rm -rf ./database/db.sqlite3
+endif
+
 ifeq ("$(SETTINGS)", "prysent.settings.postgres")
 	sudo -u postgres psql -d postgres -f src/_bootstrap/management/sql/postgres/create_db.sql ;
 endif
@@ -66,6 +70,9 @@ reset-mssql:
 reset-postgres:
 	make reset-db SETTINGS=prysent.settings.postgres
 
+reset-prod:
+	make reset-db SETTINGS=prysent.settings.prod
+
 reset-db: validate create-db reset-migrations migrate superuser sample-data
 
 media: validate
@@ -74,8 +81,14 @@ media: validate
 media-sqlite:
 	make media SETTINGS=prysent.settings.sqlite3
 
+media-prod:
+	make media SETTINGS=prysent.settings.prod
+
 run-sqlite:
 	make run SETTINGS=prysent.settings.sqlite3
+
+run-prod:
+	make run SETTINGS=prysent.settings.prod
 
 run-mssql:
 	make run SETTINGS=prysent.settings.mssql
@@ -90,4 +103,4 @@ test: validate
 	cd src && python manage.py test --settings=$(SETTINGS) && cd ..
 
 voila:
-	voila ./media --port=8876 --no-browser --Voila.tornado_settings="{'headers':{'Content-Security-Policy': 'frame-ancestors http://127.0.0.1:8875 http://localhost:8875'}}" &
+	voila ./media --port=8876 --no-browser --Voila.tornado_settings="{'headers':{'Content-Security-Policy': 'frame-ancestors http://127.0.0.1:8875 http://localhost:8875 http://notebooks.sidmar.be:8875 http://svsim1hl.sidmar.be:8875 http://127.0.0.1 http://localhost http://notebooks.sidmar.be http://svsim1hl.sidmar.be'}}" &
