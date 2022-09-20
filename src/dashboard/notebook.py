@@ -4,6 +4,7 @@ import uuid
 import nbformat
 from django.conf import settings
 from nbconvert import HTMLExporter
+from nbconvert.preprocessors import ExecutePreprocessor
 
 
 class Notebook:
@@ -17,6 +18,10 @@ class Notebook:
             notebook_json = notebook_file.read()
 
         notebook = nbformat.reads(notebook_json, as_version=4)
+
+        executor = ExecutePreprocessor(timeout=600, kernel_name="python3")
+
+        executor.preprocess(notebook, {"metadata": {"path": f"{os.path.dirname(self.path)}"}})
 
         html_exporter = HTMLExporter()
 
