@@ -18,7 +18,7 @@ urlpatterns = [
     path("404.html", views.page_404, name="404"),
     path("500.html", views.page_500, name="500"),
 
-    path("notebook/<str:notebook_path>", views.page_notebook, name="notebook"),
+    # path("notebook/<str:notebook_path>", views.page_notebook, name="notebook"),
     path("data/<str:slug>", views.page_data, name="data"),
 
     path("pages/public/<str:slug>", views.public_page, name="public_page"),

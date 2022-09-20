@@ -14,7 +14,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    '_bootstrap.apps.BootstrapConfig',
+    'utils.apps.UtilsConfig',
     'dashboard.apps.DashboardConfig',
 ]
 
@@ -85,6 +85,7 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR.parent, '_templates', 'arcelor_mittal', 'static'),
+    os.path.join(BASE_DIR.parent, '_html_cache'),
 ]
 
 LOGIN_URL = 'login'
@@ -92,6 +93,7 @@ LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'login'
 
 MEDIA_URL = '/media/'
+HTML_DIR = os.path.join(BASE_DIR.parent, '_html_cache')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

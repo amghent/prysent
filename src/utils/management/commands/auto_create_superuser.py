@@ -15,7 +15,7 @@ class Command(BaseCommand):
             print("superuser already exists")
             return
 
-        config_folder = os.path.join(settings.BASE_DIR, "..", "_bootstrap", "management", "config", "django")
+        config_folder = os.path.join(settings.BASE_DIR, "..", "utils", "management", "config", "django")
         admin_yaml_file_name = os.path.join(config_folder, "admin.yaml")
         admin_pwd_yaml_file_name = os.path.join(config_folder, "admin_pwd.secret")
 

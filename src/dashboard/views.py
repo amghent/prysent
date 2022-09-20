@@ -1,17 +1,64 @@
+import os
+from datetime import timedelta
+
+from django.conf import settings
 from django.contrib.auth import authenticate, logout, login
+from django.db import IntegrityError
 from django.shortcuts import render, redirect
+from django.utils.timezone import now
 
 from dashboard.context import Context
-from dashboard.models import Cardbox, Link3, Link2, Link1, Block1, Block2, DataPage
+from dashboard.models import Cardbox, Link3, Link2, Link1, Block1, Block2, DataPage, Cache
+from dashboard.notebook import Notebook
+
+
+def __render_notebook(path):
+    notebook = Notebook(os.path.join(settings.MEDIA_DIR, path))
+    html_page = notebook.convert()
+    html_page = html_page[len(settings.HTML_DIR)+1:]
+
+    return html_page
+
+
+def __get_cached(path, cache_minutes=5):
+    try:
+        cached = Cache.objects.get(html_file=path)
+
+        if os.path.exists(os.path.join(settings.HTML_DIR, cached.cached_html)):
+            cached.cached_until = now() + timedelta(minutes=cache_minutes)
+            cached.save()
+
+            return cached.cached_html
+
+    except Cache.DoesNotExist:
+        pass
+
+    html_page = __render_notebook(path)
+
+    try:
+        cache = Cache()
+        cache.html_file = path
+        cache.cached_until = now() + timedelta(minutes=cache_minutes)
+        cache.cached_html = html_page
+        cache.save()
+
+    except IntegrityError:
+        # In case something goes wrong on writing the cache, we simply ignore
+        pass
+
+    return html_page
 
 
 # @login_required
 def page_index(request):
     context = Context(request=request).get()
 
+    html_path = os.path.join("__prysent", "index.ipynb")
+    html_page = __get_cached(html_path)
+
     context["notebook"] = {
         "slug": "index",
-        "internal": True
+        "html": html_page
     }
 
     return render(request=request, template_name="forms/notebook.jinja2", context=context)
@@ -71,6 +118,8 @@ def page_data(request, slug):
     max_row = -1
 
     for cardbox in cardboxes:
+        print(f"Need notebook: {cardbox.notebook}")
+
         if cardbox.row > max_row:
             max_row = cardbox.row
 
@@ -79,8 +128,10 @@ def page_data(request, slug):
         if cardbox.scroll:
             scroll_text = "yes"
 
+        cardbox_html = __render_notebook(cardbox.notebook)
+
         cardbox_json = {"id": cardbox.id, "row": cardbox.row, "type": cardbox.type, "title": cardbox.title,
-                        "icon": cardbox.icon, "notebook": cardbox.notebook, "scroll": scroll_text,
+                        "icon": cardbox.icon, "notebook": cardbox_html, "scroll": scroll_text,
                         "height": cardbox.height}
 
         cardboxes_json.append(cardbox_json)
@@ -120,15 +171,18 @@ def page_data(request, slug):
 
 
 # @login_required
-def page_notebook(request, notebook_path):
-    context = Context(request=request).get()
-
-    context["notebook"] = {
-        "slug": notebook_path,
-        "internal": False
-    }
-
-    return render(request=request, template_name="forms/notebook.jinja2", context=context)
+# def page_notebook(request, notebook_path):
+#    context = Context(request=request).get()
+#
+#    html_path = os.path.join(settings.MEDIA_DIR, notebook_path)
+#    html_page = __get_cached(html_path)
+#
+#    context["notebook"] = {
+#        "slug": notebook_path,
+#        "html": html_page
+#    }
+#
+#    return render(request=request, template_name="forms/notebook.jinja2", context=context)
 
 
 # def password(request):
@@ -142,9 +196,12 @@ def page_notebook(request, notebook_path):
 def public_page(request, slug: str):
     context = Context(request=request).get()
 
+    html_path = os.path.join("__prysent", f"{slug}.ipynb")
+    html_page = __get_cached(html_path)
+
     context["notebook"] = {
         "slug": slug,
-        "internal": True
+        "html": html_page
     }
 
     return render(request=request, template_name="forms/notebook.jinja2", context=context)
@@ -152,14 +209,7 @@ def public_page(request, slug: str):
 
 # @login_required
 def authorized_page(request, slug: str):
-    context = Context(request=request).get()
-
-    context["notebook"] = {
-        "slug": slug,
-        "internal": True
-    }
-
-    return render(request=request, template_name="forms/notebook.jinja2", context=context)
+    return public_page(request, slug)
 
 
 def page_401(request):
