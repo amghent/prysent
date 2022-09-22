@@ -1,7 +1,8 @@
 from prysent.settings.common import *
 from prysent.settings.secret import *
 
-ALLOWED_HOSTS = []
+MEDIA_DIR = os.path.join(BASE_DIR.parent.parent, 'media')
+VOILA_URL = "http://localhost:8876"
 
 DATABASES = {
     'default': {
@@ -14,10 +15,9 @@ DATABASES = {
     }
 }
 
-DEBUG = True
-
+# Get rid of the warning about the un-used import
 if DEBUG:
-    INSTALLED_APPS.append('_world_api.apps.WorldApiConfig')
+    assert True
 
-if SECRET_KEY == "":  # Mainly to get rid of the warning about the un-used import
-    print("No secret key found")
+if SECRET_KEY == "":
+    assert True

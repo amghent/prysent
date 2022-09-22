@@ -2,6 +2,8 @@ import os
 
 from pathlib import Path
 
+DEBUG = True
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 INSTALLED_APPS = [
@@ -26,13 +28,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'prysent.urls'
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.jinja2.Jinja2',
         'DIRS': [
-            os.path.join(BASE_DIR.parent, '_templates', 'default'),
+            os.path.join(BASE_DIR.parent, '_templates', 'arcelor_mittal'),
         ],
         'APP_DIRS': False,
         'OPTIONS': {
@@ -71,20 +71,29 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+ALLOWED_HOSTS = ["*"]
+
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
+ROOT_URLCONF = 'prysent.urls'
+
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR.parent, '_templates', 'default', 'static'),
+    os.path.join(BASE_DIR.parent, '_templates', 'arcelor_mittal', 'static'),
 ]
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'login'
 
+MEDIA_URL = '/media/'
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+if DEBUG:
+    INSTALLED_APPS.append('_world_api.apps.WorldApiConfig')

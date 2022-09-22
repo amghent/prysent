@@ -38,7 +38,6 @@ class Command(BaseCommand):
             {"s": "small", "w": 4},
             {"s": "tiny", "w": 3}
         ]:
-
             cardbox_type = CardboxType()
 
             cardbox_type.slug = t["s"]
