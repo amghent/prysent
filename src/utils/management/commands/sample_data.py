@@ -49,7 +49,7 @@ class Command(BaseCommand):
     def __read_csv(file_name, filler):
         print(f"Reading {file_name}")
 
-        file = os.path.join(os.getcwd(), "src", "_bootstrap", "management", "presets", file_name)
+        file = os.path.join(os.getcwd(), "src", "utils", "management", "presets", file_name)
         data = pandas.read_csv(file)
         data = data.fillna(filler)
 

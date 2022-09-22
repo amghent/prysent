@@ -1,0 +1,9 @@
+---
+
+# min hour day month day_of_week (sunday = 0)
+# cron: "30 7 * * *"    -> Every dat at 7:30 AM
+# cron: "0 * * * *"     -> Every hour at the hour
+# cron: "*/15 * * * *"  -> Every quarter of an hour
+# cron: "0 8 * * 1-5"   -> Every working day at 8:00 AM
+
+cron: "0 7 * * *"

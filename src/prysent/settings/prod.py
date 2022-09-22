@@ -1,8 +1,9 @@
 from prysent.settings.common import *
 from prysent.settings.secret import *
 
-MEDIA_DIR = os.path.join(Path.home(), 'ArcelorMittal', 'AM Python - Documenten', 'Jobs', 'Automatic_notebooks')
-VOILA_URL = "http://notebooks.sidmar.be:8876"
+MEDIA_DIR = os.path.join(Path.home(), 'ArcelorMittal', 'AM Python - Documenten', 'Jobs',
+                         'Belgium', 'Automatic_notebooks')
+STATICFILES_DIRS.append(os.path.join(MEDIA_DIR, '__prysent'))
 
 DATABASES = {
     'default': {

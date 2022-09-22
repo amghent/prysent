@@ -1,11 +1,7 @@
 {% extends "base.jinja2" %}
 
 {% macro build_iframe(_cardbox) %}
-    {% if _cardbox.scroll == "no" %}
-        <iframe class="w-100 m-0 p-0 overflow-hidden" style="height: var(--notebook-height)" scrolling="no" src="{{ system.voila_url }}/voila/render/{{ _cardbox.notebook }}?"></iframe>
-    {% else %}
-        <iframe class="w-100 m-0 p-0" style="height: var(--notebook-height)" src="{{ system.voila_url }}/voila/render/{{ _cardbox.notebook }}?"></iframe>
-    {% endif %}
+    <iframe class="w-100 m-0 p-0" style="height: var(--notebook-height)" src="/static/{{ _cardbox.notebook }}"></iframe>
 {% endmacro %}
 
 {% macro build_row(_row_counter) %}
