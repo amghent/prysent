@@ -55,6 +55,8 @@ class Command(BaseCommand):
         media_folder = settings.MEDIA_DIR
         print(f"Media folder: { media_folder }")
 
+        accepted_extensions = [".ipynb"]
+
         for dashboard_entry in os.listdir(media_folder):
             if os.path.isdir(os.path.join(media_folder, dashboard_entry)):
                 dashboard = self.__handle_dashboard(dashboard_entry, ou_public)
@@ -64,20 +66,21 @@ class Command(BaseCommand):
 
                 for level_1_entry in os.listdir(os.path.join(media_folder, dashboard_entry)):
                     if not os.path.isdir(os.path.join(media_folder, dashboard_entry, level_1_entry)):
-                        self.__handle_level_1_link(level_1_entry, dashboard)
+                        self.__handle_level_1_link(level_1_entry, dashboard, accepted_extensions)
                     else:
                         menu_1 = self.__handle_level_1_block(level_1_entry, dashboard)
 
                         for level_2_entry in os.listdir(os.path.join(media_folder, dashboard_entry, level_1_entry)):
                             if not os.path.isdir(os.path.join(media_folder, dashboard_entry, level_1_entry,
                                                               level_2_entry)):
-                                self.__handle_level_2_link(level_2_entry, menu_1, dashboard)
+                                self.__handle_level_2_link(level_2_entry, menu_1, dashboard, accepted_extensions)
                             else:
                                 menu_2 = self.__handle_level_2_block(level_2_entry, menu_1)
 
                                 for level_3_entry in os.listdir(os.path.join(media_folder, dashboard_entry,
                                                                              level_1_entry, level_2_entry)):
-                                    self.__handle_level_3_link(level_3_entry, menu_2, menu_1, dashboard)
+                                    self.__handle_level_3_link(level_3_entry, menu_2, menu_1, dashboard,
+                                                               accepted_extensions)
 
         print("Media uploaded")
 
@@ -192,8 +195,13 @@ class Command(BaseCommand):
 
         return data_page
 
-    def __handle_level_1_link(self, notebook, dashboard):
-        slug = notebook[:len(notebook)-6].replace(" ", "_").replace("-", "_").lower()
+    def __handle_level_1_link(self, notebook, dashboard, allowed_extensions):
+        slug, extension = os.path.splitext(notebook)
+
+        if extension not in allowed_extensions:
+            return None
+
+        slug = slug.replace(" ", "_").replace("-", "_").lower()
         long_slug = f"{dashboard.slug}_{slug}"
         path_slug = os.path.join(dashboard.name, notebook)
         menu = self.__create_menu_text(slug)
@@ -226,8 +234,13 @@ class Command(BaseCommand):
 
         return link
 
-    def __handle_level_2_link(self, notebook, menu1, dashboard):
-        slug = notebook[:len(notebook) - 6].replace(" ", "_").replace("-", "_").lower()
+    def __handle_level_2_link(self, notebook, menu1, dashboard, allowed_extensions):
+        slug, extension = os.path.splitext(notebook)
+
+        if extension not in allowed_extensions:
+            return None
+
+        slug = slug.replace(" ", "_").replace("-", "_").lower()
         long_slug = f"{dashboard.slug}_{menu1.slug}_{slug}"
         path_slug = os.path.join(dashboard.name, menu1.name, notebook)
         menu = self.__create_menu_text(slug)
@@ -260,8 +273,13 @@ class Command(BaseCommand):
 
         return link
 
-    def __handle_level_3_link(self, notebook, menu2, menu1, dashboard):
-        slug = notebook[:len(notebook) - 6].replace(" ", "_").replace("-", "_").lower()
+    def __handle_level_3_link(self, notebook, menu2, menu1, dashboard, allowed_extensions):
+        slug, extension = os.path.splitext(notebook)
+
+        if extension not in allowed_extensions:
+            return None
+
+        slug = slug.replace(" ", "_").replace("-", "_").lower()
         long_slug = f"{dashboard.slug}_{menu1.slug}_{menu2.slug}_{slug}"
         path_slug = os.path.join(dashboard.name, menu1.name, menu2.name, notebook)
         menu = self.__create_menu_text(slug)
@@ -304,10 +322,10 @@ class Command(BaseCommand):
             block.sync_flag = True
             block.save()
 
-            print(f"Block exists: {dashboard.slug}/{slug} ")
+            print(f"Block exists: {os.path.join(dashboard.name, block_entry)} ")
 
         except Block1.DoesNotExist:
-            print(f"Creating block: {dashboard.slug}/{slug}")
+            print(f"Creating block: {os.path.join(dashboard.name, block_entry)}")
 
             max_order = Block1.objects.filter(dashboard=dashboard).aggregate(Max("order")).get("order__max")
 
@@ -327,7 +345,7 @@ class Command(BaseCommand):
 
             block.save()
 
-            print(f"Created block: {dashboard.slug}/{block.slug}")
+            print(f"Created block: {os.path.join(dashboard.name, block_entry)}")
 
         return block
 
@@ -341,10 +359,10 @@ class Command(BaseCommand):
             block.sync_flag = True
             block.save()
 
-            print(f"Block exists: {menu.dashboard.slug}/{menu.slug}/{block.slug}")
+            print(f"Block exists: {os.path.join(menu.dashboard.name, menu.name, block_entry)}")
 
         except Block2.DoesNotExist:
-            print(f"Creating block: {menu.dashboard.slug}/{menu.slug}/{slug}")
+            print(f"Creating block: {os.path.join(menu.dashboard.name, menu.name, block_entry)}")
 
             max_order = Block2.objects.filter(block1=menu).aggregate(Max("order")).get("order__max")
 
@@ -364,7 +382,7 @@ class Command(BaseCommand):
 
             block.save()
 
-            print(f"Created block {menu.dashboard.slug}/{menu.slug}/{slug}")
+            print(f"Created block {os.path.join(menu.dashboard.name, menu.name, block_entry)}")
 
         return block
 
@@ -372,7 +390,7 @@ class Command(BaseCommand):
     def __read_csv(file_name, filler):
         print(f"Reading {file_name}")
 
-        file = os.path.join(os.getcwd(), "src", "_bootstrap", "management", "presets", file_name)
+        file = os.path.join(os.getcwd(), "src", "utils", "management", "presets", file_name)
         data = pandas.read_csv(file)
         data = data.fillna(filler)
 

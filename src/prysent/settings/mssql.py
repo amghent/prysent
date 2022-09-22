@@ -2,7 +2,7 @@ from prysent.settings.common import *
 from prysent.settings.secret import *
 
 MEDIA_DIR = os.path.join(BASE_DIR.parent.parent, 'media')
-VOILA_URL = "http://localhost:8876"
+STATICFILES_DIRS.append(os.path.join(MEDIA_DIR, '__prysent'))
 
 DATABASES = {
     "default": {
