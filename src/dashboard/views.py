@@ -7,9 +7,11 @@ from django.db import IntegrityError
 from django.shortcuts import render, redirect
 from django.utils.timezone import now
 
+from cacher.models import Cache
 from dashboard.context import Context
-from dashboard.models import Cardbox, Link3, Link2, Link1, Block1, Block2, DataPage, Cache
+from dashboard.models import Cardbox, Link3, Link2, Link1, Block1, Block2, DataPage
 from dashboard.notebook import Notebook
+from scheduler.models import Schedule
 
 
 def __render_notebook(path):
@@ -21,12 +23,27 @@ def __render_notebook(path):
 
 
 def __get_cached(path, cache_minutes=5):
+    print(f"cached path: {path}")
+
+    try:
+        scheduled = Schedule.objects.get(notebook=path)
+
+        if os.path.exists(os.path.join(settings.HTML_DIR, scheduled.html_file)):
+            print(f"returning scheduled file: {scheduled.html_file}")
+
+            return scheduled.html_file
+
+    except Schedule.DoesNotExist:
+        pass
+
     try:
         cached = Cache.objects.get(html_file=path)
 
         if os.path.exists(os.path.join(settings.HTML_DIR, cached.cached_html)):
             cached.cached_until = now() + timedelta(minutes=cache_minutes)
             cached.save()
+
+            print(f"returning scheduled file: {cached.cached_html}")
 
             return cached.cached_html
 
@@ -118,8 +135,6 @@ def page_data(request, slug):
     max_row = -1
 
     for cardbox in cardboxes:
-        print(f"Need notebook: {cardbox.notebook}")
-
         if cardbox.row > max_row:
             max_row = cardbox.row
 
@@ -128,7 +143,7 @@ def page_data(request, slug):
         if cardbox.scroll:
             scroll_text = "yes"
 
-        cardbox_html = __render_notebook(cardbox.notebook)
+        cardbox_html = __get_cached(cardbox.notebook)
 
         cardbox_json = {"id": cardbox.id, "row": cardbox.row, "type": cardbox.type, "title": cardbox.title,
                         "icon": cardbox.icon, "notebook": cardbox_html, "scroll": scroll_text,

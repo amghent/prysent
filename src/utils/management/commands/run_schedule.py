@@ -1,5 +1,4 @@
 import os.path
-from time import sleep
 
 from croniter import croniter
 from django.conf import settings
@@ -8,8 +7,10 @@ from django.db.models import Min
 from django.utils.datetime_safe import datetime
 from django.utils.timezone import now
 
-from dashboard.models import Schedule, Cache
+from cacher.models import Cache
+from configurator.utils import Utils
 from dashboard.notebook import Notebook
+from scheduler.models import Schedule
 
 
 class Command(BaseCommand):
@@ -17,14 +18,18 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
-        if not os.path.exists(settings.HTML_DIR):
-            os.mkdir(settings.HTML_DIR)
+        Utils.create_basic_dirs()
 
         timestamp = now()
 
         next_run = Schedule.objects.aggregate(Min('next_run'))["next_run__min"]
 
         if next_run is not None and next_run <= now():
+            self.__run_jobs(timestamp)
+
+        no_run = Schedule.objects.filter(html_file=None)
+
+        if no_run.count() > 0:
             self.__run_jobs(timestamp)
 
         self.__clean_cache(timestamp=timestamp)
@@ -48,7 +53,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def __run_jobs(timestamp):
-        jobs = Schedule.objects.filter(next_run__lte=timestamp)
+        jobs = Schedule.objects.filter(next_run__lte=timestamp) | Schedule.objects.filter(html_file=None)
 
         for job in jobs:
             print(f"Running job: {job.notebook}")

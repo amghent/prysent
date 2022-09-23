@@ -173,7 +173,7 @@ run-schedule-prod:
 	make run-schedule SETTINGS=prysent.settings.prod
 
 run-schedule: validate
-	python ./src/manage.py run_schedure --settings=$(SETTINGS)
+	python ./src/manage.py run_schedule --settings=$(SETTINGS)
 
 
 test: validate

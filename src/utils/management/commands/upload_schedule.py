@@ -8,7 +8,7 @@ from django.core.management.base import BaseCommand
 from django.utils.datetime_safe import datetime
 from django.utils.timezone import now
 
-from dashboard.models import Schedule
+from scheduler.models import Schedule
 
 
 class Command(BaseCommand):

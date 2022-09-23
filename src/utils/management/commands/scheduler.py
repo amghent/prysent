@@ -8,8 +8,9 @@ from django.db.models import Min
 from django.utils.datetime_safe import datetime
 from django.utils.timezone import now
 
-from dashboard.models import Schedule, Cache
+from cacher.models import Cache
 from dashboard.notebook import Notebook
+from scheduler.models import Schedule
 
 
 class Command(BaseCommand):

@@ -1,7 +1,6 @@
 from django.contrib.auth.models import User
-from django.conf import settings
 
-from dashboard.models import Dashboard, OrganizationalUnit, Link1, Link2, Link3, Block1, Block2
+from dashboard.models import Dashboard, Link1, Link2, Link3, Block1, Block2
 
 
 class Context:
@@ -39,12 +38,6 @@ class Context:
 
         self.context["dashboards"] = json
 
-        django_settings = {
-            "voila_url": getattr(settings, "VOILA_URL", "http://localhost:8876")
-        }
-
-        self.context["system"] = django_settings
-
     def get(self) -> dict:
         return self.context
 
@@ -65,8 +58,7 @@ class Context:
         return dashboard_json
 
     @staticmethod
-    def __links_1(dashboard: Dashboard):
-        links = Link1.objects.filter(dashboard=dashboard).order_by("order")
+    def __links_to_menu(links):
         menu = []
 
         for link in links:
@@ -74,6 +66,21 @@ class Context:
             menu.append(js)
 
         return menu
+
+    def __links_1(self, dashboard: Dashboard):
+        links = Link1.objects.filter(dashboard=dashboard).order_by("order")
+
+        return self.__links_to_menu(links)
+
+    def __links_2(self, block: Block1):
+        links = Link2.objects.filter(block1=block).order_by("order")
+
+        return self.__links_to_menu(links)
+
+    def __links_3(self, block: Block2):
+        links = Link3.objects.filter(block2=block.id).order_by("order")
+
+        return self.__links_to_menu(links)
 
     def __blocks_1(self, dashboard: Dashboard):
         blocks = Block1.objects.filter(dashboard=dashboard).order_by("order")
@@ -96,17 +103,6 @@ class Context:
 
         return menu
 
-    @staticmethod
-    def __links_2(block: Block1):
-        links = Link2.objects.filter(block1=block).order_by("order")
-        menu = []
-
-        for link in links:
-            js = {"slug": link.slug, "menu": link.menu, "data_page": link.data_page.slug}
-            menu.append(js)
-
-        return menu
-
     def __blocks_2(self, block: Block1):
         blocks = Block2.objects.filter(block1=block.id).order_by("order")
         menu = []
@@ -119,17 +115,6 @@ class Context:
             if len(links) > 0:
                 js["links"] = links
 
-            menu.append(js)
-
-        return menu
-
-    @staticmethod
-    def __links_3(block: Block2):
-        links = Link3.objects.filter(block2=block.id).order_by("order")
-        menu = []
-
-        for link in links:
-            js = {"slug": link.slug, "menu": link.menu, "data_page": link.data_page.slug}
             menu.append(js)
 
         return menu

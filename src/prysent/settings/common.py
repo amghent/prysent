@@ -14,8 +14,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'utils.apps.UtilsConfig',
+    'cacher.apps.CacherConfig',
     'dashboard.apps.DashboardConfig',
+    'scheduler.apps.SchedulerConfig',
+    'utils.apps.UtilsConfig',
 ]
 
 MIDDLEWARE = [

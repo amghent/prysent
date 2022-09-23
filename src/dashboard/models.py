@@ -170,33 +170,6 @@ class Link3(Link):
         ]
 
 
-class Schedule(Model):
-    notebook = models.CharField(max_length=1024, null=False, blank=False)
-    cron = models.CharField(max_length=50, null=False, blank=False)
-    next_run = models.DateTimeField(null=True, default=None)
-    html_file = models.CharField(max_length=1024, null=True, default=None)
-
-    class Meta:
-        verbose_name_plural = "Schedulers"
-
-        constraints = [
-            models.UniqueConstraint(fields=['notebook'], name='ux_schedule_notebook'),
-        ]
-
-
-class Cache(Model):
-    html_file = models.CharField(max_length=1024, null=True, default=None)
-    cached_html = models.CharField(max_length=1024, null=True, default=None)
-    cached_until = models.DateTimeField(null=True, default=None)
-
-    class Meta:
-        verbose_name_plural = "Cached"
-
-        constraints = [
-            models.UniqueConstraint(fields=['html_file'], name='ux_cache_html_file'),
-        ]
-
-
 @receiver(models.signals.pre_delete, sender=Dashboard)
 @receiver(models.signals.pre_delete, sender=DataPage)
 @receiver(models.signals.pre_delete, sender=Cardbox)
