@@ -66,13 +66,13 @@ sample-data: validate
 
 reset: validate create-db reset-migrations migrate superuser
 
-media: validate
-	python ./src/manage.py upload_media --settings=$(SETTINGS)
-
 clean-cache: validate
 	@python ./src/manage.py clean_cache --settings=$(SETTINGS)
 
-schedule: validate
+upload-media: validate
+	python ./src/manage.py upload_media --settings=$(SETTINGS)
+
+upload-schedule: validate
 	python ./src/manage.py upload_schedule --settings=$(SETTINGS)
 
 run: validate

@@ -1,4 +1,6 @@
 import os
+import logging.config
+import yaml
 
 from pathlib import Path
 
@@ -14,10 +16,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    '_commands.apps.CommandsConfig',
     'cacher.apps.CacherConfig',
+    'configurator.apps.ConfiguratorConfig',
     'dashboard.apps.DashboardConfig',
+    'media.apps.MediaConfig',
     'scheduler.apps.SchedulerConfig',
-    'utils.apps.UtilsConfig',
 ]
 
 MIDDLEWARE = [
@@ -81,23 +85,31 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 ROOT_URLCONF = 'prysent.urls'
 
 STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'index'
+LOGOUT_REDIRECT_URL = 'login'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR.parent, '_templates', 'arcelor_mittal', 'static'),
     os.path.join(BASE_DIR.parent, '_html_cache'),
 ]
 
-LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'index'
-LOGOUT_REDIRECT_URL = 'login'
-
-MEDIA_URL = '/media/'
 HTML_DIR = os.path.join(BASE_DIR.parent, '_html_cache')
+COMMANDS_DIR = os.path.join(BASE_DIR.parent, "_commands")
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+LOGGING_CONFIG = None
+
+with open(os.path.join(os.path.dirname(__file__), 'logging.yaml'), 'r') as config_file:
+    logging_config = yaml.load(config_file, Loader=yaml.FullLoader)
+
+logging.config.dictConfig(logging_config)
 
 if DEBUG:
     INSTALLED_APPS.append('_world_api.apps.WorldApiConfig')

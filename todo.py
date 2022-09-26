@@ -1,3 +1,6 @@
+# TODO: logging for reset-db
+# TODO: upload world cities only on DEBUG = True
+
 # FIXME: help file not from schedule
 # FIXME: files in schedule are absolute
 
