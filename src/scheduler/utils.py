@@ -36,6 +36,8 @@ class Utils:
 
         if run_jobs:
             cls.__run_jobs(timestamp=timestamp)
+        else:
+            cls.logger.info("All notebooks are up-to-date")
 
     @classmethod
     def remove_cached_notebooks(cls):
@@ -75,6 +77,8 @@ class Utils:
             notebook = Notebook(notebook_file)
 
             job.html_file = notebook.convert()
+            job.html_file = job.html_file[len(settings.HTML_DIR) + 1:]
+
             job.next_run = croniter(job.cron, timestamp).get_next(ret_type=datetime)
 
             # Deleting old file (removing stale cache, sort of)

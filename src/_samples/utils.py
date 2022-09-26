@@ -26,8 +26,6 @@ class Utils:
         cls.__upload_cardbox_types()
         cls.__upload_cardboxes()  # depends on cardbox_types and data_pages
 
-        cls.upload_world_cities()
-
     @classmethod
     def __upload_users(cls):
         rows = ConfiguratorUtils.read_csv("users.csv", "")

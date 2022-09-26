@@ -9,3 +9,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         SamplesUtils.upload()
+        SamplesUtils.upload_world_cities()

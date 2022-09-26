@@ -19,9 +19,6 @@ class Utils:
         ou_public = cls.__get_public_ou()
         _ = cls.__get_none_cardbox_type()
 
-        if settings.DEBUG and City.objects.all().count() == 0:
-            SamplesUtils.upload_world_cities()
-
         media_folder = settings.MEDIA_DIR
         cls.logger.info(f"Media folder: { media_folder }")
 
@@ -94,10 +91,10 @@ class Utils:
             dashboard.sync_flag = True
             dashboard.save()
 
-            cls.logger.info(f"Dashboard exists: {slug}")
+            cls.logger.info(f"Dashboard exists: {slug.upper()}")
 
         except Dashboard.DoesNotExist:
-            cls.logger.info(f"Creating dashboard: {slug}")
+            cls.logger.info(f"Creating dashboard: {slug.upper()}")
 
             max_order = Dashboard.objects.all().aggregate(Max("order")).get("order__max")
 
@@ -116,7 +113,7 @@ class Utils:
             dashboard.sync_flag = True
             dashboard.save()
 
-            cls.logger.info(f"Created dashboard: {dashboard.slug}")
+            cls.logger.info(f"Created dashboard: {dashboard.slug.upper()}")
 
         return dashboard
 
@@ -193,10 +190,11 @@ class Utils:
 
             data_page = cls.__handle_common_link(long_slug, path_slug)
 
-            if Link1.objects.all().count() == 0:
+            max_order = Link1.objects.filter(dashboard_id=dashboard.id).aggregate(Max("order")).get("order__max")
+
+            if max_order is None:
                 max_order = 1
             else:
-                max_order = Link1.objects.filter(dashboard_id=dashboard.id).aggregate(Max("order")).get("order__max")
                 max_order += 1
 
             link = Link1()
@@ -233,10 +231,12 @@ class Utils:
         except Link2.DoesNotExist:
             data_page = cls.__handle_common_link(long_slug, path_slug)
 
-            if Link2.objects.all().count() == 0:
+            max_order = Link2.objects.filter(block1=menu1).aggregate(Max("order")).get("order__max")
+
+            if max_order is None:
                 max_order = 1
             else:
-                max_order = Link2.objects.filter(block1=menu1).aggregate(Max("order")).get("order__max") + 1
+                max_order += 1
 
             cls.logger.info(f"Creating link: {path_slug}")
 
@@ -274,10 +274,12 @@ class Utils:
         except Link3.DoesNotExist:
             data_page = cls.__handle_common_link(long_slug, path_slug)
 
-            if Link3.objects.all().count() == 0:
+            max_order = Link3.objects.filter(block2=menu2).aggregate(Max("order")).get("order__max")
+
+            if max_order is None:
                 max_order = 1
             else:
-                max_order = Link3.objects.filter(block2=menu2).aggregate(Max("order")).get("order__max") + 1
+                max_order += 1
 
             cls.logger.info(f"Creating link: {path_slug}")
 
@@ -307,10 +309,12 @@ class Utils:
         except Block1.DoesNotExist:
             cls.logger.info(f"Creating block: {os.path.join(dashboard.name, block_entry)}")
 
-            if Block1.objects.all().count() == 0:
+            max_order = Block1.objects.filter(dashboard=dashboard).aggregate(Max("order")).get("order__max")
+
+            if max_order is None:
                 max_order = 1
             else:
-                max_order = Block1.objects.filter(dashboard=dashboard).aggregate(Max("order")).get("order__max") + 1
+                max_order += 1
 
             block = Block1()
 
@@ -342,10 +346,12 @@ class Utils:
         except Block2.DoesNotExist:
             cls.logger.info(f"Creating block: {os.path.join(menu.dashboard.name, menu.name, block_entry)}")
 
-            if Block2.objects.all().count() == 0:
+            max_order = Block2.objects.filter(block1=menu).aggregate(Max("order")).get("order__max")
+
+            if max_order is None:
                 max_order = 1
             else:
-                max_order = Block2.objects.filter(block1=menu).aggregate(Max("order")).get("order__max") + 1
+                max_order += 1
 
             block = Block2()
 

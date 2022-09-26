@@ -42,10 +42,11 @@ class Utils:
 
     @classmethod
     def upload_config(cls, config_path, notebook_path):
-        cls.logger.info(f"Uploading config: {config_path}")
         media_path = settings.MEDIA_DIR
         stripped_path = notebook_path[len(media_path)+1:]
         stripped_path = stripped_path.replace("\\", "/")
+
+        cls.logger.info(f"Uploading config: {config_path}")
 
         with open(config_path, 'r') as config_file:
             config_yaml = yaml.safe_load(config_file)
