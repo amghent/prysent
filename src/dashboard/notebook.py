@@ -1,3 +1,4 @@
+import logging
 import os.path
 import uuid
 
@@ -8,17 +9,20 @@ from nbconvert.preprocessors import ExecutePreprocessor
 
 
 class Notebook:
+    logger = logging.getLogger(__name__)
+
     def __init__(self, path):
         assert os.path.exists(path) and os.path.isfile(path)
 
         self.path = path
 
     def convert(self):
+        self.logger.info(f"Converting notebook: {self.path}")
+
         with open(self.path, "r", encoding="utf-8") as notebook_file:
             notebook_json = notebook_file.read()
 
         notebook = nbformat.reads(notebook_json, as_version=4)
-
         executor = ExecutePreprocessor(timeout=600, kernel_name="python3")
 
         executor.preprocess(notebook, {"metadata": {"path": f"{os.path.dirname(self.path)}"}})
@@ -38,5 +42,7 @@ class Notebook:
 
         with open(export, "w", encoding="utf-8") as html_file:
             html_file.write(html)
+
+        self.logger.info(f"Finished converting notebook: {self.path}")
 
         return export

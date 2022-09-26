@@ -17,6 +17,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     '_commands.apps.CommandsConfig',
+    '_samples.apps.SamplesConfig',
+
     'cacher.apps.CacherConfig',
     'configurator.apps.ConfiguratorConfig',
     'dashboard.apps.DashboardConfig',

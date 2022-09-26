@@ -3,7 +3,7 @@ import logging
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from scheduler.utils import Utils
+from configurator.utils import Utils as ConfiguratorUtils
 
 
 class Command(BaseCommand):
@@ -12,7 +12,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         logger = logging.getLogger(__name__)
-        media_folder = settings.MEDIA_DIR
-        logger.info(f"Media folder: {media_folder}")
+        logger.info(f"Media folder: {settings.MEDIA_DIR}")
 
-        Utils.check_directory(media_folder)
+        ConfiguratorUtils.check_directory(settings.MEDIA_DIR)

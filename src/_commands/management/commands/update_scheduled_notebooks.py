@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from media.utils import Utils as MediaUtils
+from scheduler.utils import Utils as SchedulerUtils
 
 
 class Command(BaseCommand):
@@ -8,4 +8,4 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
-        MediaUtils.upload()
+        SchedulerUtils.update_scheduled_notebooks()

@@ -1,3 +1,4 @@
+import logging
 import os
 from datetime import timedelta
 
@@ -14,6 +15,9 @@ from dashboard.notebook import Notebook
 from scheduler.models import Schedule
 
 
+logger = logging.getLogger(__name__)
+
+
 def __render_notebook(path):
     notebook = Notebook(os.path.join(settings.MEDIA_DIR, path))
     html_page = notebook.convert()
@@ -23,13 +27,13 @@ def __render_notebook(path):
 
 
 def __get_cached(path, cache_minutes=5):
-    print(f"cached path: {path}")
+    logger.debug(f"Cached path: {path}")
 
     try:
         scheduled = Schedule.objects.get(notebook=path)
 
         if os.path.exists(os.path.join(settings.HTML_DIR, scheduled.html_file)):
-            print(f"returning scheduled file: {scheduled.html_file}")
+            logger.debug(f"returning scheduled file: {scheduled.html_file}")
 
             return scheduled.html_file
 
@@ -43,7 +47,7 @@ def __get_cached(path, cache_minutes=5):
             cached.cached_until = now() + timedelta(minutes=cache_minutes)
             cached.save()
 
-            print(f"returning scheduled file: {cached.cached_html}")
+            logger.debug(f"returning scheduled file: {cached.cached_html}")
 
             return cached.cached_html
 

@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from prysent.utils import Utils
+from prysent.utils import Utils as ApplicationUtils
 
 
 class Command(BaseCommand):
@@ -8,4 +8,4 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
-        Utils.create_superuser()
+        ApplicationUtils.create_superuser()

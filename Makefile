@@ -7,13 +7,26 @@ init-once:
 	mkdir -p ./src
 	django-admin startproject prysent ./src/
 
+	mkdir -p ./src/cacher
+	django-admin startapp cacher ./src/cacher
+	mkdir -p ./src/configurator
+	django-admin startapp configurator ./src/configurator
 	mkdir -p ./src/dashboard
 	django-admin startapp dashboard ./src/dashboard
+	mkdir -p ./src/media
+	django-admin startapp media ./src/media
+	mkdir -p ./src/scheduler
+	django-admin startapp scheduler ./src/scheduler
+
+	mkdir -p ./src/_commands
+	django-admin startapp _commands ./src/_commands
+	mkdir -p ./src/_samples
+	django-admin startapp _samples ./src/_samples
 	mkdir -p ./src/_world_api
 	django-admin startapp _world_api ./src/_world_api
 
 	mkdir -p ./src/_templates/default
-	mkdir -p ./src/_bootstrap/management/commands
+	mkdir -p ./src/_templates/arcelor_mittal
 
 clean:
 	rm -rf ./html_cache
@@ -51,18 +64,20 @@ ifeq ("$(SETTINGS)", "prysent.settings.mssql")
 endif
 
 reset-migrations:
+	rm -f src/cacher/migrations/0001_initial.py
 	rm -f src/dashboard/migrations/0001_initial.py
+	rm -f src/scheduler/migrations/0001_initial.py
 	rm -f src/_world_api/migrations/0001_initial.py
 
 migrate: validate
-	python src/manage.py makemigrations --settings=$(SETTINGS)
-	python src/manage.py migrate --settings=$(SETTINGS)
+	@python src/manage.py makemigrations --settings=$(SETTINGS)
+	@python src/manage.py migrate --settings=$(SETTINGS)
 
 superuser: validate
-	python src/manage.py auto_create_superuser --settings=$(SETTINGS)
+	@python src/manage.py auto_create_superuser --settings=$(SETTINGS)
 
 sample-data: validate
-	python src/manage.py sample_data --settings=$(SETTINGS)
+	@python src/manage.py sample_data --settings=$(SETTINGS)
 
 reset: validate create-db reset-migrations migrate superuser
 
@@ -70,20 +85,21 @@ clean-cache: validate
 	@python ./src/manage.py clean_cache --settings=$(SETTINGS)
 
 upload-media: validate
-	python ./src/manage.py upload_media --settings=$(SETTINGS)
+	@python ./src/manage.py upload_media --settings=$(SETTINGS)
 
 upload-schedule: validate
-	python ./src/manage.py upload_schedule --settings=$(SETTINGS)
+	@python ./src/manage.py upload_schedule --settings=$(SETTINGS)
 
 run: validate
-	python ./src/manage.py runserver 8875 --settings=$(SETTINGS)
+	@python ./src/manage.py runserver 8875 --settings=$(SETTINGS)
 
 run-scheduler: validate
-	python ./src/manage.py scheduler --settings=$(SETTINGS)
+	@python ./src/manage.py run_scheduler --settings=$(SETTINGS)
 
-run-schedule: validate
-	python ./src/manage.py run_schedule --settings=$(SETTINGS)
+update: validate
+	@python ./src/manage.py update_scheduled_notebooks --settings=$(SETTINGS)
+	@python ./src/manage.py remove_cached_notebooks --settings=$(SETTINGS)
 
 test: validate
-	cd src && python manage.py test --settings=$(SETTINGS) && cd ..
+	@cd src && python manage.py test --settings=$(SETTINGS) && cd ..
 
