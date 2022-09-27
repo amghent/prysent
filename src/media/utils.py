@@ -4,11 +4,8 @@ import os
 from django.conf import settings
 from django.db.models import Max
 
-from _world_api.models import City
 from dashboard.models import OrganizationalUnit, CardboxType, Dashboard, Block1, Block2, Link1, Link2, Link3
 from dashboard.models import Cardbox, DataPage
-
-from _samples.utils import Utils as SamplesUtils
 
 
 class Utils:

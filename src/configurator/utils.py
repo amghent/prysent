@@ -46,7 +46,7 @@ class Utils:
         stripped_path = notebook_path[len(media_path)+1:]
         stripped_path = stripped_path.replace("\\", "/")
 
-        cls.logger.info(f"Uploading config: {config_path}")
+        cls.logger.info(f"Uploading config: {config_path[len(media_path)+1:]}")
 
         with open(config_path, 'r') as config_file:
             config_yaml = yaml.safe_load(config_file)
@@ -55,32 +55,34 @@ class Utils:
         exists = (Schedule.objects.filter(notebook=stripped_path).count() > 0)
 
         if exists:
-            cls.logger.debug(f"Config exists, updating: {config_path}")
+            cls.logger.debug(f"Config exists, updating: {config_path[len(media_path)+1:]}")
 
             schedule = Schedule.objects.get(notebook=stripped_path)
 
             if schedule.cron != cron or schedule.next_run is None:
                 schedule.next_run = croniter(cron, now()).get_next(ret_type=datetime)
                 schedule.cron = cron
+                schedule.generated = False
 
                 schedule.save()
 
-            cls.logger.debug(f"Updated: {config_path}")
+            cls.logger.debug(f"Updated: {config_path[len(media_path)+1:]}")
 
         else:
-            cls.logger.debug(f"New config, inserting: {config_path}")
+            cls.logger.debug(f"New config, inserting: {config_path[len(media_path)+1:]}")
 
             schedule = Schedule()
 
             schedule.notebook = stripped_path
             schedule.next_run = croniter(cron, now()).get_next(ret_type=datetime)
             schedule.cron = cron
+            schedule.generated = False
 
             schedule.save()
 
-            cls.logger.debug(f"Inserted: {config_path}")
+            cls.logger.debug(f"Inserted: {config_path[len(media_path)+1:]}")
 
-        cls.logger.debug(f"Uploaded config: {config_path}")
+        cls.logger.debug(f"Uploaded config: {config_path[len(media_path)+1:]}")
 
     @classmethod
     def create_basic_dirs(cls):

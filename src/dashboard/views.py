@@ -1,88 +1,33 @@
 import logging
 import os
-from datetime import timedelta
 
-from django.conf import settings
 from django.contrib.auth import authenticate, logout, login
-from django.db import IntegrityError
 from django.shortcuts import render, redirect
-from django.utils.timezone import now
 
-from cacher.models import Cache
 from dashboard.context import Context
 from dashboard.models import Cardbox, Link3, Link2, Link1, Block1, Block2, DataPage
-from dashboard.notebook import Notebook
-from scheduler.models import Schedule
 
+from cacher.utils import Utils as CacherUtils
 
 logger = logging.getLogger(__name__)
 
 
-def __render_notebook(path):
-    notebook = Notebook(os.path.join(settings.MEDIA_DIR, path))
-    html_page = notebook.convert()
-    html_page = html_page[len(settings.HTML_DIR)+1:]
-
-    return html_page
-
-
-def __get_cached(path, cache_minutes=5):
-    logger.debug(f"Cached path: {path}")
-
-    try:
-        scheduled = Schedule.objects.get(notebook=path)
-
-        if os.path.exists(os.path.join(settings.HTML_DIR, scheduled.html_file)):
-            logger.debug(f"returning scheduled file: {scheduled.html_file}")
-
-            return scheduled.html_file
-
-    except Schedule.DoesNotExist:
-        pass
-
-    try:
-        cached = Cache.objects.get(html_file=path)
-
-        if os.path.exists(os.path.join(settings.HTML_DIR, cached.cached_html)):
-            cached.cached_until = now() + timedelta(minutes=cache_minutes)
-            cached.save()
-
-            logger.debug(f"returning scheduled file: {cached.cached_html}")
-
-            return cached.cached_html
-
-    except Cache.DoesNotExist:
-        pass
-
-    html_page = __render_notebook(path)
-
-    try:
-        cache = Cache()
-        cache.html_file = path
-        cache.cached_until = now() + timedelta(minutes=cache_minutes)
-        cache.cached_html = html_page
-        cache.save()
-
-    except IntegrityError:
-        # In case something goes wrong on writing the cache, we simply ignore
-        pass
-
-    return html_page
-
-
 # @login_required
 def page_index(request):
-    context = Context(request=request).get()
-
     html_path = os.path.join("__prysent", "index.ipynb")
-    html_page = __get_cached(html_path)
+    html_page, cached = CacherUtils.get_cached_html(html_path)
+
+    context = Context(request=request).get()
 
     context["notebook"] = {
         "slug": "index",
         "html": html_page
     }
 
-    return render(request=request, template_name="forms/notebook.jinja2", context=context)
+    if cached is False:
+        return render(request=request, template_name="forms/wait.jinja2", context=context)
+    else:
+        return render(request=request, template_name="forms/notebook.jinja2", context=context)
 
 
 def page_login(request, status: str = None):
@@ -137,6 +82,7 @@ def page_data(request, slug):
     cardboxes = Cardbox.objects.filter(data_page__slug=slug).order_by("row", "order")
     cardboxes_json = []
     max_row = -1
+    all_cached = True
 
     for cardbox in cardboxes:
         if cardbox.row > max_row:
@@ -147,7 +93,8 @@ def page_data(request, slug):
         if cardbox.scroll:
             scroll_text = "yes"
 
-        cardbox_html = __get_cached(cardbox.notebook)
+        cardbox_html, cached = CacherUtils.get_cached_html(cardbox.notebook)
+        all_cached = (all_cached and cached)
 
         cardbox_json = {"id": cardbox.id, "row": cardbox.row, "type": cardbox.type, "title": cardbox.title,
                         "icon": cardbox.icon, "notebook": cardbox_html, "scroll": scroll_text,
@@ -186,44 +133,29 @@ def page_data(request, slug):
                 "link1": {"slug": link1.slug}
             }
 
-    return render(request=request, template_name="forms/data.jinja2", context=context)
+    if all_cached:
+        template_name = "forms/data.jinja2"
+    else:
+        template_name = "forms/wait.jinja2"
 
-
-# @login_required
-# def page_notebook(request, notebook_path):
-#    context = Context(request=request).get()
-#
-#    html_path = os.path.join(settings.MEDIA_DIR, notebook_path)
-#    html_page = __get_cached(html_path)
-#
-#    context["notebook"] = {
-#        "slug": notebook_path,
-#        "html": html_page
-#    }
-#
-#    return render(request=request, template_name="forms/notebook.jinja2", context=context)
-
-
-# def password(request):
-#    return render(request=request, template_name="dashboard/password.jinja2", context=None)
-
-
-# def register(request):
-#    return render(request=request, template_name="dashboard/register.jinja2", context=None)
+    return render(request=request, template_name=template_name, context=context)
 
 
 def public_page(request, slug: str):
-    context = Context(request=request).get()
-
     html_path = os.path.join("__prysent", f"{slug}.ipynb")
-    html_page = __get_cached(html_path)
+    html_page, cached = CacherUtils.get_cached_html(html_path)
+
+    context = Context(request=request).get()
 
     context["notebook"] = {
         "slug": slug,
         "html": html_page
     }
 
-    return render(request=request, template_name="forms/notebook.jinja2", context=context)
+    if cached is False:
+        return render(request=request, template_name="forms/wait.jinja2", context=context)
+    else:
+        return render(request=request, template_name="forms/notebook.jinja2", context=context)
 
 
 # @login_required
