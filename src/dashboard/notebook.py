@@ -3,6 +3,7 @@ import os.path
 import uuid
 
 import nbformat
+from bs4 import BeautifulSoup
 from django.conf import settings
 from nbconvert import HTMLExporter
 from nbconvert.preprocessors import ExecutePreprocessor
@@ -47,6 +48,18 @@ class Notebook:
         html_exporter.embed_images = True
 
         html, resources = html_exporter.from_notebook_node(notebook)
+
+        soup = BeautifulSoup(html, features="lxml")
+
+        # Remove code cells that produce not output at all
+        divs = soup.findAll("div", {"class": "jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs jp-mod-noInput"})
+
+        for div in divs:
+            if len(div.get_text(strip=True)) == 0:
+                div.extract()
+
+        html = soup.prettify(encoding="utf-8").decode("utf-8")
+
         file_name, _ = os.path.splitext(os.path.basename(self.path))
 
         with open(os.path.join(settings.HTML_DIR, self.export_path), "w", encoding="utf-8") as html_file:

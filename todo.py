@@ -1,5 +1,4 @@
 # FIXME: cron string is local time whereas we need to store UTC time -> first run goes wrong
-# FIXME: "Afwijking I3 Bedding" has a lot of spacing because there's a lot of cells that produce nothing, but still give a div in html
 # FIXME: Menu is quickly becoming too big: dashboard should also be collapsable
 
 # TODO: FEATURE: clean cache via command url (/commands/clean-cache)
