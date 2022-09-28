@@ -1,0 +1,7 @@
+:root {
+  --navbar-height: 56px;
+  --footer-height: 0px;
+  --notebook-spacing: 0px;
+  --notebook-height: calc(100vh - var(--footer-height) - var(--navbar-height) - var(--notebook-spacing));
+  --sidebar-height: 100vh;
+}

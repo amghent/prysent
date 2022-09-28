@@ -8,7 +8,7 @@ from django.templatetags.static import static
 def environment(**options):
     env = Environment(extensions=['jinja2.ext.i18n'], **options)
 
-    env.install_gettext_callables(gettext=gettext, ngettext=ngettext, newstyle=True)
+    # env.install_gettext_callables(gettext=gettext, ngettext=ngettext, newstyle=True)
 
     env.globals.update({
         'static': static,

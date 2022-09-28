@@ -2,7 +2,7 @@
 
 ## About
 
-This application is for now a demo application to build an application that will provide an easy way for the data scientists at Arcelor Mittal Ghent to display dashboards built with Jupyter notebooks.
+This application allows data scientists at Arcelor Mittal to easily present their notebooks and dashboards without having to worry about a menu structure, Python versions at the client side, ...  All what is needed, is dropping the notebook in a pre-defined location.
 
 ## Technology
 
@@ -13,7 +13,7 @@ This application is for now a demo application to build an application that will
 ### Backend
 
 - Jupyter notebooks 
-- Voila
+- nbconvert (Voila has been replaced in version 1.1)
 
 ## Project setup
 
@@ -31,10 +31,11 @@ conda install -c conda-forge jinja2
 conda install -c conda-forge pyyaml
 conda install -c conda-forge pandas
 conda install -c conda-forge jupyter
+conda install -c conda-forge nbconvert
 conda install -c conda-forge requests
-conda install -c conda-forge voila
 conda install -c conda-forge plotly
 conda install -c conda-forge psycopg2-binary
+conda install -c conda-forge croniter
 
 pip install mssql-django
 ````
@@ -52,9 +53,9 @@ django-admin startproject prysent ./src/
 
 mkdir -p ./src/dashboard
 django-admin startapp dashboard ./src/dashboard
-mkdir -p ./src/_world_api
-django-admin startapp _world_api ./src/_world_api
 ````
+
+startapp is done for each sub-directory found in the project.
 
 ### Makefile
 
