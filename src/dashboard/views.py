@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, logout, login
 from django.shortcuts import render, redirect
 
 from dashboard.context import Context
-from dashboard.models import Cardbox, Link3, Link2, Link1, Block1, Block2, DataPage
+from dashboard.models import Cardbox, Link3, Link2, Link1, Block1, Block2, DataPage, Dashboard
 
 from cacher.utils import Utils as CacherUtils
 
@@ -109,8 +109,10 @@ def page_data(request, slug):
         link3 = Link3.objects.get(data_page__slug=slug)
         block2 = Block2.objects.get(id=link3.block2.id)
         block1 = Block1.objects.get(id=block2.block1.id)
+        dashboard = Dashboard.objects.get(id=block1.dashboard.id)
 
         context["breadcrumb"] = {
+            "dashboard": {"slug": dashboard.slug, "name": dashboard.name},
             "block1": {"slug": block1.slug, "name": block1.name},
             "block2": {"slug": block2.slug, "name": block2.name},
             "link3": {"slug": link3.slug}
@@ -120,16 +122,20 @@ def page_data(request, slug):
         try:
             link2 = Link2.objects.get(data_page__slug=slug)
             block1 = Block1.objects.get(id=link2.block1.id)
+            dashboard = Dashboard.objects.get(id=block1.dashboard.id)
 
             context["breadcrumb"] = {
+                "dashboard": {"slug": dashboard.slug, "name": dashboard.name},
                 "block1": {"slug": block1.slug, "name": block1.name},
                 "link2": {"slug": link2.slug}
             }
 
         except Link2.DoesNotExist:
             link1 = Link1.objects.get(data_page__slug=slug)
+            dashboard = Dashboard.objects.get(id=link1.dashboard.id)
 
             context["breadcrumb"] = {
+                "dashboard": {"slug": dashboard.slug, "name": dashboard.name},
                 "link1": {"slug": link1.slug}
             }
 
