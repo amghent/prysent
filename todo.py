@@ -9,3 +9,4 @@
 # TODO: FEATURE: write install guide
 # TODO: FEATURE: embedded window (only content, no menus)
 # TODO: FEATURE: schedule (now yaml) can also be put in the first cell of the notebook
+# TODO: FEATURE: cache longer by default (5 minutes) and provide "refresh now" menu
