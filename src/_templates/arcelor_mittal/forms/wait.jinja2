@@ -1,0 +1,14 @@
+{% extends "base.jinja2" %}
+
+{% block content %}
+    <div class="mt-5 d-block mx-auto">
+        <img src="{{ static('assets/img/wait.gif')}}" alt="Waiting for the notebook"
+                           class="d-block mx-auto" style="width: 150px;" />
+
+        <p class="text-black center mt-3">Your notebook is being generated on the server and will be prysented when ready</p>
+    </div>
+
+    <script type = "text/JavaScript">
+       setTimeout("location.reload();", 1000);
+    </script>
+{% endblock %}
