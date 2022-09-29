@@ -65,10 +65,10 @@ class Utils:
         for job in jobs:
             notebook_file = os.path.join(settings.MEDIA_DIR, job.notebook)
 
-            cls.logger.info(f"Updating notebook: {notebook_file}")
+            cls.logger.info(f"Updating notebook: {notebook_file[len(settings.MEDIA_DIR)+1:]}")
 
             if not os.path.exists(notebook_file):  # Cleaning up stale jobs
-                cls.logger.warning(f"Found orphaned job: {notebook_file}")
+                cls.logger.warning(f"Found orphaned job: {notebook_file[len(settings.MEDIA_DIR)+1:]}")
                 job.delete()
                 continue
 
@@ -81,7 +81,7 @@ class Utils:
                 old_html_path = os.path.join(settings.MEDIA_DIR, old_html_file)
 
                 if os.path.exists(old_html_path):
-                    cls.logger.info(f"Removing old cached file: {old_html_path}")
+                    cls.logger.info(f"Removing old cached file: {old_html_path[len(settings.MEDIA_DIR)+1:]}")
                     os.remove(old_html_file)
 
             if job.html_file is None:

@@ -29,9 +29,10 @@ class Utils:
 
                 scheduled.html_file = notebook.export_path
                 scheduled.generated = False
+                scheduled.generation_timeout = now() + timedelta(minutes=cache_minutes)
                 scheduled.save()
 
-                return scheduled.html_file, False
+                return "GENERATION_STARTED", False
 
             else:
 
@@ -45,16 +46,22 @@ class Utils:
                         cls.logger.warning("Schedule file does not exist anymore. Starting generation")
 
                         scheduled.generated = False
+                        scheduled.generation_timeout = now() + timedelta(minutes=cache_minutes)
                         scheduled.save()
 
                         notebook = Notebook(path, scheduled.html_file)
                         Thread(target=notebook.convert).start()
 
-                        return scheduled.html_file, False
+                        return "GENERATION_STARTED", False
                     else:
-                        cls.logger.info("Schedule file is not yet generated. Must wait a bit")
+                        if scheduled.generation_timeout is not None and scheduled.generation_timeout < now():
+                            cls.logger.error("Scheduled file generation has timed out")
 
-                        return scheduled.html_file, False
+                            return "GENERATION_TIMEOUT", False
+
+                        cls.logger.info("Scheduled file is not yet generated. Must wait a bit")
+
+                        return "GENERATION_ONGOING", False
 
         except Schedule.DoesNotExist:
             pass
@@ -74,14 +81,24 @@ class Utils:
                     cls.logger.warning("Cached file does not exist anymore. Regenerating")
 
                     cached.generated = False
+                    cached.generation_timeout = now() + timedelta(minutes=cache_minutes)
                     cached.save()
 
                     notebook = Notebook(path, cached.cached_html)
                     Thread(target=notebook.convert).start()
-                else:
-                    cls.logger.info("Cached file does not exist yet. Must wait a bit")
 
-                return cached.cached_html, False
+                    return "GENERATION_STARTED", False
+
+                else:
+                    if cached.generation_timeout is not None and cached.generation_timeout < now():
+                        cls.logger.error("Cached file generation has timeout out")
+
+                        return "GENERATION_TIMEOUT", False
+
+                    else:
+                        cls.logger.info("Cached file does not exist yet. Must wait a bit")
+
+                        return "GENERATION_ONGOING", False
 
         except Cache.DoesNotExist:
             cls.logger.info(f"Not cached: {path}")
@@ -94,9 +111,10 @@ class Utils:
             cache.cached_until = now() + timedelta(minutes=cache_minutes)
             cache.cached_html = notebook.export_path
             cache.generated = False
+            cache.generation_timeout = now() + timedelta(minutes=1)
             cache.save()
 
-            return notebook.export_path, False
+            return "GENERATION_ONGOING", False
 
     @classmethod
     def clean_cache(cls):

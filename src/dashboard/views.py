@@ -27,10 +27,13 @@ def page_index(request):
         "html": html_page
     }
 
+    if html_page == "GENERATION_TIMEOUT":
+        return render(request=request, template_name="forms/timeout.jinja2", context=context)
+
     if cached is False:
         return render(request=request, template_name="forms/wait.jinja2", context=context)
-    else:
-        return render(request=request, template_name="forms/notebook.jinja2", context=context)
+
+    return render(request=request, template_name="forms/notebook.jinja2", context=context)
 
 
 def page_login(request, status: str = None):
@@ -85,7 +88,6 @@ def page_data(request, slug):
     cardboxes = Cardbox.objects.filter(data_page__slug=slug).order_by("row", "order")
     cardboxes_json = []
     max_row = -1
-    all_cached = True
 
     for cardbox in cardboxes:
         if cardbox.row > max_row:
@@ -97,7 +99,12 @@ def page_data(request, slug):
             scroll_text = "yes"
 
         cardbox_html, cached = cacher.utils.Utils.get_cached_html(cardbox.notebook)
-        all_cached = (all_cached and cached)
+
+        if cardbox_html == "GENERATION_TIMEOUT":
+            return render(request=request, template_name="forms/timeout.jinja2", context=context)
+
+        if cached is False:
+            return render(request=request, template_name="forms/wait.jinja2", context=context)
 
         cardbox_json = {"id": cardbox.id, "row": cardbox.row, "type": cardbox.type, "title": cardbox.title,
                         "icon": cardbox.icon, "notebook": cardbox_html, "scroll": scroll_text,
@@ -142,12 +149,7 @@ def page_data(request, slug):
                 "link1": {"slug": link1.slug}
             }
 
-    if all_cached:
-        template_name = "forms/data.jinja2"
-    else:
-        template_name = "forms/wait.jinja2"
-
-    return render(request=request, template_name=template_name, context=context)
+    return render(request=request, template_name="forms/data.jinja2", context=context)
 
 
 def public_page(request, slug: str):
@@ -161,10 +163,13 @@ def public_page(request, slug: str):
         "html": html_page
     }
 
+    if html_page == "GENERATION_TIMEOUT":
+        return render(request=request, template_name="forms/timeout.jinja2", context=context)
+
     if cached is False:
         return render(request=request, template_name="forms/wait.jinja2", context=context)
-    else:
-        return render(request=request, template_name="forms/notebook.jinja2", context=context)
+
+    return render(request=request, template_name="forms/notebook.jinja2", context=context)
 
 
 # @login_required

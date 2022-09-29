@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Model
@@ -179,9 +181,12 @@ class Link3(Link):
 @receiver(models.signals.pre_delete, sender=Link2)
 @receiver(models.signals.pre_delete, sender=Link3)
 def handle_deleted_dashboard(sender, instance, **kwargs):
+    logger = logging.getLogger(__name__)
+
     assert sender  # To avoid JetBrains nagging
     assert kwargs
-    print(f"Deleting {instance.__class__.__name__}: {instance}")
+
+    logger.debug(f"Deleting {instance.__class__.__name__}: {instance}")
 
 
 @receiver(models.signals.post_delete, sender=Link1)
