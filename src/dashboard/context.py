@@ -1,9 +1,13 @@
+import logging
+
 from django.contrib.auth.models import User
 
 from dashboard.models import Dashboard, Link1, Link2, Link3, Block1, Block2
 
 
 class Context:
+    logger = logging.getLogger(__name__)
+
     def __init__(self, request) -> None:
         if str(request.user) == "AnonymousUser":
             self.context = {
@@ -19,9 +23,13 @@ class Context:
         # org_units = OrganizationalUnit.filter(members__username=request.user)
         dashboards = Dashboard.objects.all()  # filter(owner__in=org_units).order_by("order")
 
+        self.logger.debug(f"Found {len(dashboards)} dashboards")
+
         json = []
 
         for dashboard in dashboards:
+            self.logger.debug(f"Generating dashboard: {dashboard.slug}")
+
             dashboard_json = self.__dashboard(dashboard)
 
             links = self.__links_1(dashboard)
@@ -35,6 +43,8 @@ class Context:
                 dashboard_json["blocks"] = blocks
 
             json.append(dashboard_json)
+
+            self.logger.debug(f"JSON for dashboard: {dashboard_json}")
 
         self.context["dashboards"] = json
 
@@ -68,22 +78,27 @@ class Context:
         return menu
 
     def __links_1(self, dashboard: Dashboard):
-        links = Link1.objects.filter(dashboard=dashboard).order_by("order")
+        links = Link1.objects.filter(dashboard=dashboard.id).order_by("slug")
+        self.logger.debug(f"Found {len(links)} links on level 1")
 
         return self.__links_to_menu(links)
 
     def __links_2(self, block: Block1):
-        links = Link2.objects.filter(block1=block).order_by("order")
+        links = Link2.objects.filter(block1=block.id).order_by("slug")
+        self.logger.debug(f"Found {len(links)} links on level 2")
 
         return self.__links_to_menu(links)
 
     def __links_3(self, block: Block2):
-        links = Link3.objects.filter(block2=block.id).order_by("order")
+        links = Link3.objects.filter(block2=block.id).order_by("slug")
+        self.logger.debug(f"Found {len(links)} links on level 3")
 
         return self.__links_to_menu(links)
 
     def __blocks_1(self, dashboard: Dashboard):
-        blocks = Block1.objects.filter(dashboard=dashboard).order_by("order")
+        blocks = Block1.objects.filter(dashboard=dashboard.id).order_by("slug")
+        self.logger.debug(f"Found {len(blocks)} blocks on level 1")
+
         menu = []
 
         for block in blocks:
@@ -104,7 +119,9 @@ class Context:
         return menu
 
     def __blocks_2(self, block: Block1):
-        blocks = Block2.objects.filter(block1=block.id).order_by("order")
+        blocks = Block2.objects.filter(block1=block.id).order_by("slug")
+        self.logger.debug(f"Found {len(blocks)} blocks on level 2")
+
         menu = []
 
         for block in blocks:
