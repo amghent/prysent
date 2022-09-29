@@ -1,13 +1,16 @@
 import logging
 import os
 
+from django.conf import settings
 from django.contrib.auth import authenticate, logout, login
 from django.shortcuts import render, redirect
 
+import cacher.utils
+import configurator.utils
+import media.utils
+import scheduler.utils
 from dashboard.context import Context
 from dashboard.models import Cardbox, Link3, Link2, Link1, Block1, Block2, DataPage, Dashboard
-
-from cacher.utils import Utils as CacherUtils
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +18,7 @@ logger = logging.getLogger(__name__)
 # @login_required
 def page_index(request):
     html_path = os.path.join("__prysent", "index.ipynb")
-    html_page, cached = CacherUtils.get_cached_html(html_path)
+    html_page, cached = cacher.utils.Utils.get_cached_html(html_path)
 
     context = Context(request=request).get()
 
@@ -93,7 +96,7 @@ def page_data(request, slug):
         if cardbox.scroll:
             scroll_text = "yes"
 
-        cardbox_html, cached = CacherUtils.get_cached_html(cardbox.notebook)
+        cardbox_html, cached = cacher.utils.Utils.get_cached_html(cardbox.notebook)
         all_cached = (all_cached and cached)
 
         cardbox_json = {"id": cardbox.id, "row": cardbox.row, "type": cardbox.type, "title": cardbox.title,
@@ -149,7 +152,7 @@ def page_data(request, slug):
 
 def public_page(request, slug: str):
     html_path = os.path.join("__prysent", f"{slug}.ipynb")
-    html_page, cached = CacherUtils.get_cached_html(html_path)
+    html_page, cached = cacher.utils.Utils.get_cached_html(html_path)
 
     context = Context(request=request).get()
 
@@ -167,6 +170,31 @@ def public_page(request, slug: str):
 # @login_required
 def authorized_page(request, slug: str):
     return public_page(request, slug)
+
+
+def clean_cache(request):
+    cacher.utils.Utils.clean_cache()
+
+    return redirect("index")
+
+
+def upload_media(request):
+    media.utils.Utils.upload()
+
+    return redirect("index")
+
+
+def upload_schedule(request):
+    configurator.utils.Utils.check_directory(settings.MEDIA_DIR)
+
+    return redirect("index")
+
+
+def update(request):
+    scheduler.utils.Utils.update_scheduled_notebooks()
+    scheduler.utils.Utils.remove_cached_notebooks()
+
+    return redirect("index")
 
 
 def page_401(request):
