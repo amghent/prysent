@@ -1,3 +1,3 @@
 CALL activate prysent2204
 
-python c:\PythonApps\prysent\src\manage.py update_scheduled_notebooks --settings=prysent.settings.prod >> c:\PythonApps\prysent\logs\update_scheduled_notebooks.log
+python c:\PythonApps\prysent\src\manage.py update_scheduled_notebooks --settings=prysent.settings.prod
