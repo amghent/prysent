@@ -1,9 +1,14 @@
 import logging
 import os
+from datetime import datetime
+
+import pytz
 import yaml as yaml
+from croniter import croniter
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.utils.timezone import now
 
 
 class Utils:
@@ -38,3 +43,13 @@ class Utils:
         User.objects.create_superuser(username=username, password=password, email=email)
 
         cls.logger.info("Created superuser")
+
+    @classmethod
+    def croniter_to_utc(cls, timezone_name: str, cron: str, timestamp: datetime = now()):
+        tz = pytz.timezone(timezone_name)
+        next_run = str(croniter(cron, timestamp).get_next(ret_type=datetime))[:19]
+        next_run = datetime.strptime(next_run, "%Y-%m-%d %H:%M:%S")
+        next_run = tz.localize(next_run, is_dst=None)
+        next_run = next_run.astimezone(pytz.utc)
+
+        return next_run

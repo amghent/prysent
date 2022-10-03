@@ -7,6 +7,7 @@ class Cache(Model):
     cached_html = models.CharField(max_length=1024, null=True, default=None)
     cached_until = models.DateTimeField(null=True, default=None)
     generated = models.BooleanField(null=False, default=False)
+    generation_timeout = models.DateTimeField(null=True, default=None)
 
     class Meta:
         verbose_name_plural = "Cached"

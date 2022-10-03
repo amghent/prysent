@@ -9,6 +9,7 @@ from django.conf import settings
 from django.db.models import Min
 from django.utils.timezone import now
 
+import prysent.utils
 from cacher.models import Cache
 from configurator.utils import Utils as ConfiguratorUtils
 
@@ -65,10 +66,10 @@ class Utils:
         for job in jobs:
             notebook_file = os.path.join(settings.MEDIA_DIR, job.notebook)
 
-            cls.logger.info(f"Updating notebook: {notebook_file}")
+            cls.logger.info(f"Updating notebook: {notebook_file[len(settings.MEDIA_DIR)+1:]}")
 
             if not os.path.exists(notebook_file):  # Cleaning up stale jobs
-                cls.logger.warning(f"Found orphaned job: {notebook_file}")
+                cls.logger.warning(f"Found orphaned job: {notebook_file[len(settings.MEDIA_DIR)+1:]}")
                 job.delete()
                 continue
 
@@ -81,13 +82,13 @@ class Utils:
                 old_html_path = os.path.join(settings.MEDIA_DIR, old_html_file)
 
                 if os.path.exists(old_html_path):
-                    cls.logger.info(f"Removing old cached file: {old_html_path}")
+                    cls.logger.info(f"Removing old cached file: {old_html_path[len(settings.MEDIA_DIR)+1:]}")
                     os.remove(old_html_file)
 
             if job.html_file is None:
                 job.html_file = f"{uuid.uuid4()}.html"
 
-            job.next_run = croniter(job.cron, timestamp).get_next(ret_type=datetime)
+            job.next_run = prysent.utils.Utils.croniter_to_utc("Europe/Brussels", job.cron, timestamp)
             job.generated = False
 
             job.save()

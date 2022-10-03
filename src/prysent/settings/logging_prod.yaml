@@ -1,0 +1,25 @@
+version                   : 1
+disable_existing_loggers  : true
+
+handlers:
+  console:
+    class                 : logging.StreamHandler
+    formatter             : default
+    level                 : INFO
+    stream                : ext://sys.stdout
+
+  file:
+    class                 : logging.handlers.RotatingFileHandler
+    formatter             : default
+    level                 : INFO
+    filename              : c:/PythonApps/prysent/logs/prysent.log
+
+formatters:
+  default:
+    format                : '[%(asctime)-10s] [%(levelname)8s] %(message)s [%(name)s]'
+    datefmt               : '%Y-%m-%d %H:%M:%S'
+
+root:
+    level                 : NOTSET
+    handlers              : [console, file]
+    propagate             : no

@@ -1,13 +1,16 @@
 import logging
 import os
 
+from django.conf import settings
 from django.contrib.auth import authenticate, logout, login
 from django.shortcuts import render, redirect
 
+import cacher.utils
+import configurator.utils
+import media.utils
+import scheduler.utils
 from dashboard.context import Context
-from dashboard.models import Cardbox, Link3, Link2, Link1, Block1, Block2, DataPage
-
-from cacher.utils import Utils as CacherUtils
+from dashboard.models import Cardbox, Link3, Link2, Link1, Block1, Block2, DataPage, Dashboard
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +18,7 @@ logger = logging.getLogger(__name__)
 # @login_required
 def page_index(request):
     html_path = os.path.join("__prysent", "index.ipynb")
-    html_page, cached = CacherUtils.get_cached_html(html_path)
+    html_page, cached = cacher.utils.Utils.get_cached_html(html_path)
 
     context = Context(request=request).get()
 
@@ -24,10 +27,13 @@ def page_index(request):
         "html": html_page
     }
 
+    if html_page == "GENERATION_TIMEOUT":
+        return render(request=request, template_name="forms/timeout.jinja2", context=context)
+
     if cached is False:
         return render(request=request, template_name="forms/wait.jinja2", context=context)
-    else:
-        return render(request=request, template_name="forms/notebook.jinja2", context=context)
+
+    return render(request=request, template_name="forms/notebook.jinja2", context=context)
 
 
 def page_login(request, status: str = None):
@@ -82,7 +88,6 @@ def page_data(request, slug):
     cardboxes = Cardbox.objects.filter(data_page__slug=slug).order_by("row", "order")
     cardboxes_json = []
     max_row = -1
-    all_cached = True
 
     for cardbox in cardboxes:
         if cardbox.row > max_row:
@@ -93,8 +98,13 @@ def page_data(request, slug):
         if cardbox.scroll:
             scroll_text = "yes"
 
-        cardbox_html, cached = CacherUtils.get_cached_html(cardbox.notebook)
-        all_cached = (all_cached and cached)
+        cardbox_html, cached = cacher.utils.Utils.get_cached_html(cardbox.notebook)
+
+        if cardbox_html == "GENERATION_TIMEOUT":
+            return render(request=request, template_name="forms/timeout.jinja2", context=context)
+
+        if cached is False:
+            return render(request=request, template_name="forms/wait.jinja2", context=context)
 
         cardbox_json = {"id": cardbox.id, "row": cardbox.row, "type": cardbox.type, "title": cardbox.title,
                         "icon": cardbox.icon, "notebook": cardbox_html, "scroll": scroll_text,
@@ -109,8 +119,10 @@ def page_data(request, slug):
         link3 = Link3.objects.get(data_page__slug=slug)
         block2 = Block2.objects.get(id=link3.block2.id)
         block1 = Block1.objects.get(id=block2.block1.id)
+        dashboard = Dashboard.objects.get(id=block1.dashboard.id)
 
         context["breadcrumb"] = {
+            "dashboard": {"slug": dashboard.slug, "name": dashboard.name},
             "block1": {"slug": block1.slug, "name": block1.name},
             "block2": {"slug": block2.slug, "name": block2.name},
             "link3": {"slug": link3.slug}
@@ -120,30 +132,29 @@ def page_data(request, slug):
         try:
             link2 = Link2.objects.get(data_page__slug=slug)
             block1 = Block1.objects.get(id=link2.block1.id)
+            dashboard = Dashboard.objects.get(id=block1.dashboard.id)
 
             context["breadcrumb"] = {
+                "dashboard": {"slug": dashboard.slug, "name": dashboard.name},
                 "block1": {"slug": block1.slug, "name": block1.name},
                 "link2": {"slug": link2.slug}
             }
 
         except Link2.DoesNotExist:
             link1 = Link1.objects.get(data_page__slug=slug)
+            dashboard = Dashboard.objects.get(id=link1.dashboard.id)
 
             context["breadcrumb"] = {
+                "dashboard": {"slug": dashboard.slug, "name": dashboard.name},
                 "link1": {"slug": link1.slug}
             }
 
-    if all_cached:
-        template_name = "forms/data.jinja2"
-    else:
-        template_name = "forms/wait.jinja2"
-
-    return render(request=request, template_name=template_name, context=context)
+    return render(request=request, template_name="forms/data.jinja2", context=context)
 
 
 def public_page(request, slug: str):
     html_path = os.path.join("__prysent", f"{slug}.ipynb")
-    html_page, cached = CacherUtils.get_cached_html(html_path)
+    html_page, cached = cacher.utils.Utils.get_cached_html(html_path)
 
     context = Context(request=request).get()
 
@@ -152,15 +163,43 @@ def public_page(request, slug: str):
         "html": html_page
     }
 
+    if html_page == "GENERATION_TIMEOUT":
+        return render(request=request, template_name="forms/timeout.jinja2", context=context)
+
     if cached is False:
         return render(request=request, template_name="forms/wait.jinja2", context=context)
-    else:
-        return render(request=request, template_name="forms/notebook.jinja2", context=context)
+
+    return render(request=request, template_name="forms/notebook.jinja2", context=context)
 
 
 # @login_required
 def authorized_page(request, slug: str):
     return public_page(request, slug)
+
+
+def clean_cache(request):
+    cacher.utils.Utils.clean_cache()
+
+    return redirect("index")
+
+
+def upload_media(request):
+    media.utils.Utils.upload()
+
+    return redirect("index")
+
+
+def upload_schedule(request):
+    configurator.utils.Utils.check_directory(settings.MEDIA_DIR)
+
+    return redirect("index")
+
+
+def update(request):
+    scheduler.utils.Utils.update_scheduled_notebooks()
+    scheduler.utils.Utils.remove_cached_notebooks()
+
+    return redirect("index")
 
 
 def page_401(request):

@@ -1,0 +1,10 @@
+{% extends "base.jinja2" %}
+
+{% block content %}
+    <div class="mt-5 d-block mx-auto">
+        <img src="{{ static('assets/img/timeout.png')}}" alt="Timeout"
+                           class="d-block mx-auto" style="width: 200px;" />
+
+        <p class="text-error center mt-3">Your notebook took too long to be generated.</p>
+    </div>
+{% endblock %}

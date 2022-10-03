@@ -93,6 +93,8 @@
             </nav>
         </div>
     {% endif %}
+
+    {{ get_links(_links, 2, _breadcrumb, true) }}
 {% endmacro %}
 
 {% macro get_three_level_menu(_block, _breadcrumb) %}
@@ -131,6 +133,10 @@
                     {% endif %}
                 {% endfor %}
             </nav>
+
+            <nav class="sb-sidenav-menu-nested nav">
+                {{ get_block_links(_block, 2, _breadcrumb, false) }}
+            </nav>
         </div>
 
     {% else %}
@@ -154,6 +160,11 @@
                     </div>
                 {% endfor %}
             </nav>
+
+            <nav class="sb-sidenav-menu-nested nav">
+                {{ get_block_links(_block, 2, _breadcrumb, false) }}
+            </nav>
+
         </div>
     {% endif %}
 {% endmacro %}

@@ -15,6 +15,13 @@ DATABASES = {
     }
 }
 
+LOGGING_CONFIG = None
+
+with open(os.path.join(os.path.dirname(__file__), 'logging.yaml'), 'r') as config_file:
+    logging_config = yaml.load(config_file, Loader=yaml.FullLoader)
+
+logging.config.dictConfig(logging_config)
+
 # Get rid of the warning about the un-used import
 if DEBUG:
     assert True

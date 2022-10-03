@@ -3,12 +3,12 @@ import os
 import pandas
 import yaml
 
-from datetime import datetime
 from os.path import splitext
-from croniter import croniter
 
 from django.conf import settings
 from django.utils.timezone import now
+
+import prysent.utils
 
 from scheduler.models import Schedule
 
@@ -60,7 +60,7 @@ class Utils:
             schedule = Schedule.objects.get(notebook=stripped_path)
 
             if schedule.cron != cron or schedule.next_run is None:
-                schedule.next_run = croniter(cron, now()).get_next(ret_type=datetime)
+                schedule.next_run = prysent.utils.Utils.croniter_to_utc("Europe/Brussels", cron)
                 schedule.cron = cron
                 schedule.generated = False
 
@@ -74,13 +74,16 @@ class Utils:
             schedule = Schedule()
 
             schedule.notebook = stripped_path
-            schedule.next_run = croniter(cron, now()).get_next(ret_type=datetime)
+            schedule.next_run = prysent.utils.Utils.croniter_to_utc("Europe/Brussels", cron)
             schedule.cron = cron
             schedule.generated = False
 
             schedule.save()
 
             cls.logger.debug(f"Inserted: {config_path[len(media_path)+1:]}")
+
+        cls.logger.debug(f"now: {now()}")
+        cls.logger.debug(f"next: {schedule.next_run}")
 
         cls.logger.debug(f"Uploaded config: {config_path[len(media_path)+1:]}")
 
