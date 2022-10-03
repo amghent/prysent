@@ -9,6 +9,7 @@ from django.conf import settings
 from django.db.models import Min
 from django.utils.timezone import now
 
+import prysent.utils
 from cacher.models import Cache
 from configurator.utils import Utils as ConfiguratorUtils
 
@@ -87,7 +88,7 @@ class Utils:
             if job.html_file is None:
                 job.html_file = f"{uuid.uuid4()}.html"
 
-            job.next_run = croniter(job.cron, timestamp).get_next(ret_type=datetime)
+            job.next_run = prysent.utils.Utils.croniter_to_utc("Europe/Brussels", job.cron, timestamp)
             job.generated = False
 
             job.save()
