@@ -6,6 +6,7 @@
                     {{ sidebar_factory.get_sidebar(dashboards, breadcrumb) }}
                 {% else %}
                     {% set breadcrumb = {
+                        "dashboard": "",
                         "block1": "",
                         "block2": "",
                         "link1": "",

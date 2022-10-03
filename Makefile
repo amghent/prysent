@@ -67,6 +67,7 @@ reset-migrations:
 	rm -f src/cacher/migrations/0001_initial.py
 	rm -f src/dashboard/migrations/0001_initial.py
 	rm -f src/scheduler/migrations/0001_initial.py
+	rm -f src/stats/migrations/0001_initial.py
 	rm -f src/_world_api/migrations/0001_initial.py
 
 migrate: validate

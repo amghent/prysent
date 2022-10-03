@@ -106,12 +106,5 @@ STATICFILES_DIRS = [
 HTML_DIR = os.path.join(BASE_DIR.parent, '_html_cache')
 COMMANDS_DIR = os.path.join(BASE_DIR.parent, "_commands")
 
-LOGGING_CONFIG = None
-
-with open(os.path.join(os.path.dirname(__file__), 'logging.yaml'), 'r') as config_file:
-    logging_config = yaml.load(config_file, Loader=yaml.FullLoader)
-
-logging.config.dictConfig(logging_config)
-
 if DEBUG:
     INSTALLED_APPS.append('_world_api.apps.WorldApiConfig')
