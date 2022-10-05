@@ -1,0 +1,12 @@
+{% extends "base.jinja2" %}
+
+{% block content %}
+    <div class="mt-5 ms-5">
+        <img src="{{ static('assets/img/error.jpg')}}" alt="Notebook with errors" style="width: 500px;" />
+
+        <h4 class="mt-2">An error occured while generating your notebook.</h4>
+        <p class="font-monospace" style="white-space: pre; font-size: small" >
+            {{ message }}
+        </p>
+    </div>
+{% endblock %}

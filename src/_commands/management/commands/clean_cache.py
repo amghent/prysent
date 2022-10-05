@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from cacher.utils import Utils as CacherUtils
+import cacher.utils
 
 
 class Command(BaseCommand):
@@ -8,4 +8,4 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
-        CacherUtils.clean_cache()
+        cacher.utils.Utils.clean_cache()

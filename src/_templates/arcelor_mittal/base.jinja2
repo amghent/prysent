@@ -6,7 +6,13 @@
 <html lang="en">
     {% include "includes/head.jinja2" %}
 
-    <body class="sb-nav-fixed overflow-hidden">
+    {% if message and message != "" %}
+        {%  set overflow = "" %}
+    {% else %}
+        {%  set overflow = "overflow-hidden" %}
+    {% endif %}
+
+    <body class="sb-nav-fixed {{ overflow }}">
         {% include "includes/nav.jinja2" %}
 
         <div id="page_wrapper">

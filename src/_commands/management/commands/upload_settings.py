@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from configurator.utils import Utils as ConfiguratorUtils
+import configurator.utils
 
 
 class Command(BaseCommand):
@@ -8,4 +8,4 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
-        ConfiguratorUtils.upload_settings()
+        configurator.utils.Utils.upload_settings()

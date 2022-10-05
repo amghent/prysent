@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from scheduler.utils import Utils as SchedulerUtils
+import scheduler.utils
 
 
 class Command(BaseCommand):
@@ -8,4 +8,4 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
-        SchedulerUtils.remove_cached_notebooks()
+        scheduler.utils.Utils.remove_cached_notebooks()
