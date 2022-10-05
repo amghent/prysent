@@ -8,5 +8,4 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
-        _samples.utils.Utils.upload()
         _samples.utils.Utils.upload_world_cities()
