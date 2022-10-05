@@ -4,8 +4,9 @@ timezone: "Europe/Brussels"
 
 generation_timeout: 60
 
-remain_cached_errors: 300
-remain_scheduled_errors: 300
+remain_cached: 60
+remain_cached_errors: 60
+remain_scheduled_errors: 60
 
 upload_media_cron: "*/5 * * * * "
 upload_schedule_cron: "*/5 * * * * "

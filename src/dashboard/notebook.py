@@ -111,7 +111,12 @@ class Notebook:
             cache.generated = True
             cache.generation_status = status
             cache.generation_message = message
-            cache.cached_until = now() + timedelta(seconds=int(Setting.objects.get(key="remain_cached_errors").value))
+
+            if status == GENERATION_STATUS_OK:
+                cache.cached_until = now() + timedelta(seconds=int(Setting.objects.get(key="remain_cached").value))
+            else:
+                cache.cached_until = now() + timedelta(seconds=
+                                                       int(Setting.objects.get(key="remain_cached_errors").value))
             cache.save()
 
         except Cache.DoesNotExist:
@@ -122,7 +127,10 @@ class Notebook:
             schedule.generated = True
             schedule.generation_status = status
             schedule.generation_message = message
-            schedule.next_run = now() + timedelta(seconds=int(Setting.objects.get(key="remain_scheduled_errors").value))
+
+            if status == GENERATION_STATUS_FAILED:
+                schedule.next_run = now() + timedelta(seconds=
+                                                      int(Setting.objects.get(key="remain_scheduled_errors").value))
             schedule.save()
 
         except Schedule.DoesNotExist:
