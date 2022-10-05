@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from _samples.utils import Utils as SamplesUtils
+import _samples.utils
 
 
 class Command(BaseCommand):
@@ -8,5 +8,4 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
-        SamplesUtils.upload()
-        SamplesUtils.upload_world_cities()
+        _samples.utils.Utils.upload_world_cities()

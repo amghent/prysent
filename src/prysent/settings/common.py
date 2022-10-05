@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'configurator.apps.ConfiguratorConfig',
     'dashboard.apps.DashboardConfig',
     'media.apps.MediaConfig',
+    'settings.apps.SettingsConfig',
     'scheduler.apps.SchedulerConfig',
 ]
 

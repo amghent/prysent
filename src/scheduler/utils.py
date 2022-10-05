@@ -2,27 +2,88 @@ import logging
 import os
 import uuid
 
-from datetime import datetime
-from croniter import croniter
+from time import sleep
 
 from django.conf import settings
 from django.db.models import Min
 from django.utils.timezone import now
 
+import media.utils
 import prysent.utils
+import configurator.utils
+
 from cacher.models import Cache
-from configurator.utils import Utils as ConfiguratorUtils
 
 from dashboard.notebook import Notebook
 from scheduler.models import Schedule
+from settings.models import Setting
 
 
 class Utils:
     logger = logging.getLogger(__name__)
 
     @classmethod
+    def run(cls):
+        cls.logger.info("Starting scheduler")
+
+        configurator.utils.Utils.create_basic_dirs()
+
+        remove_cached_notebooks_cron = Setting.objects.get(key="remove_cached_notebooks_cron").value
+        upload_media_cron = Setting.objects.get(key="upload_media_cron").value
+        upload_schedule_cron = Setting.objects.get(key="upload_schedule_cron").value
+        upload_settings_cron = Setting.objects.get(key="upload_settings_cron").value
+        update_scheduled_cron = Setting.objects.get(key="update_scheduled_notebooks_cron").value
+
+        timestamp = now()
+        timezone = Setting.objects.get(key="timezone").value
+        cls.logger.info(f"timezone: {timezone}")
+
+        last_second = -1  # Instead of checking on 0, I check on the change of minute
+
+        remove_cached_notebooks_next = prysent.utils.Utils.croniter_to_utc(timezone, remove_cached_notebooks_cron,
+                                                                           timestamp)
+        upload_media_next = prysent.utils.Utils.croniter_to_utc(timezone, upload_media_cron, timestamp)
+        upload_schedule_next = prysent.utils.Utils.croniter_to_utc(timezone, upload_schedule_cron, timestamp)
+        upload_settings_next = prysent.utils.Utils.croniter_to_utc(timezone, upload_settings_cron, timestamp)
+        update_notebooks_next = prysent.utils.Utils.croniter_to_utc(timezone, update_scheduled_cron, timestamp)
+
+        while True:
+            timestamp = now()
+            cls.logger.debug(timestamp)
+
+            if timestamp.second < last_second:
+                cls.logger.info(f"Verifying at {timestamp}")
+
+                if timestamp > upload_settings_next:
+                    configurator.utils.Utils.upload_settings()
+                    upload_settings_next = prysent.utils.Utils.croniter_to_utc(timezone, upload_settings_cron,
+                                                                               timestamp)
+                if timestamp > upload_schedule_next:
+                    configurator.utils.Utils.check_directory(settings.MEDIA_DIR)
+                    upload_schedule_next = prysent.utils.Utils.croniter_to_utc(timezone, upload_schedule_cron,
+                                                                               timestamp)
+
+                if timestamp > upload_media_next:
+                    media.utils.Utils.upload()
+                    upload_media_next = prysent.utils.Utils.croniter_to_utc(timezone, upload_media_cron, timestamp)
+
+                if timestamp > update_notebooks_next:
+                    cls.update_scheduled_notebooks()
+                    update_notebooks_next = prysent.utils.Utils.croniter_to_utc(timezone, update_scheduled_cron,
+                                                                                timestamp)
+
+                if timestamp > remove_cached_notebooks_next:
+                    cls.remove_cached_notebooks()
+                    remove_cached_notebooks_next = prysent.utils.Utils.croniter_to_utc(timezone,
+                                                                                       remove_cached_notebooks_cron,
+                                                                                       timestamp)
+
+            last_second = timestamp.second
+            sleep(1)
+
+    @classmethod
     def update_scheduled_notebooks(cls):
-        ConfiguratorUtils.create_basic_dirs()
+        configurator.utils.Utils.create_basic_dirs()
 
         run_jobs = False
         timestamp = now()
@@ -62,6 +123,7 @@ class Utils:
     @classmethod
     def __run_jobs(cls, timestamp):
         jobs = Schedule.objects.filter(next_run__lte=timestamp) | Schedule.objects.filter(html_file=None)
+        timezone = Setting.objects.get(key="timezone").value
 
         for job in jobs:
             notebook_file = os.path.join(settings.MEDIA_DIR, job.notebook)
@@ -88,7 +150,7 @@ class Utils:
             if job.html_file is None:
                 job.html_file = f"{uuid.uuid4()}.html"
 
-            job.next_run = prysent.utils.Utils.croniter_to_utc("Europe/Brussels", job.cron, timestamp)
+            job.next_run = prysent.utils.Utils.croniter_to_utc(timezone, job.cron, timestamp)
             job.generated = False
 
             job.save()
