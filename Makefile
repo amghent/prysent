@@ -66,6 +66,7 @@ endif
 reset-migrations:
 	rm -f src/cacher/migrations/0001_initial.py
 	rm -f src/dashboard/migrations/0001_initial.py
+	rm -f src/settings/migrations/0001_initial.py
 	rm -f src/scheduler/migrations/0001_initial.py
 	rm -f src/stats/migrations/0001_initial.py
 	rm -f src/_world_api/migrations/0001_initial.py
@@ -90,6 +91,9 @@ upload-media: validate
 
 upload-schedule: validate
 	@python ./src/manage.py upload_schedule --settings=$(SETTINGS)
+
+upload-settings: validate
+	@python ./src/manage.py upload_settings --settings=$(SETTINGS)
 
 run: validate
 	@python ./src/manage.py runserver 8875 --settings=$(SETTINGS)

@@ -12,13 +12,15 @@ import scheduler.utils
 from dashboard.context import Context
 from dashboard.models import Cardbox, Link3, Link2, Link1, Block1, Block2, DataPage, Dashboard
 
+from cacher.utils import CACHER_GENERATION_TIMEOUT, CACHER_GENERATION_ERROR
+
 logger = logging.getLogger(__name__)
 
 
 # @login_required
 def page_index(request):
     html_path = os.path.join("__prysent", "index.ipynb")
-    html_page, cached = cacher.utils.Utils.get_cached_html(html_path)
+    html_page, cached, message = cacher.utils.Utils.get_cached_html(html_path)
 
     context = Context(request=request).get()
 
@@ -26,8 +28,12 @@ def page_index(request):
         "slug": "index",
         "html": html_page
     }
+    context["message"] = message
 
-    if html_page == "GENERATION_TIMEOUT":
+    if html_page == CACHER_GENERATION_ERROR:
+        return render(request=request, template_name="forms/error.jinja2", context=context)
+
+    if html_page == CACHER_GENERATION_TIMEOUT:
         return render(request=request, template_name="forms/timeout.jinja2", context=context)
 
     if cached is False:
@@ -84,10 +90,15 @@ def page_data(request, slug):
 
     context["title"] = data_page.title
     context["slug"] = data_page.slug
+    context["message"] = ""
 
     cardboxes = Cardbox.objects.filter(data_page__slug=slug).order_by("row", "order")
     cardboxes_json = []
     max_row = -1
+
+    cardbox_html = ""
+    cached = True
+    message = ""
 
     for cardbox in cardboxes:
         if cardbox.row > max_row:
@@ -98,19 +109,18 @@ def page_data(request, slug):
         if cardbox.scroll:
             scroll_text = "yes"
 
-        cardbox_html, cached = cacher.utils.Utils.get_cached_html(cardbox.notebook)
-
-        if cardbox_html == "GENERATION_TIMEOUT":
-            return render(request=request, template_name="forms/timeout.jinja2", context=context)
-
-        if cached is False:
-            return render(request=request, template_name="forms/wait.jinja2", context=context)
+        cardbox_html, cached, message = cacher.utils.Utils.get_cached_html(cardbox.notebook)
 
         cardbox_json = {"id": cardbox.id, "row": cardbox.row, "type": cardbox.type, "title": cardbox.title,
                         "icon": cardbox.icon, "notebook": cardbox_html, "scroll": scroll_text,
                         "height": cardbox.height}
 
         cardboxes_json.append(cardbox_json)
+
+        if cardbox_html == CACHER_GENERATION_ERROR:
+            context["message"] = message
+
+            break
 
     context["cardboxes"] = cardboxes_json
     context["cardbox_rows"] = max_row + 1
@@ -149,12 +159,21 @@ def page_data(request, slug):
                 "link1": {"slug": link1.slug}
             }
 
+    if message != "":
+        return render(request=request, template_name="forms/error.jinja2", context=context)
+
+    if cardbox_html == CACHER_GENERATION_TIMEOUT:
+        return render(request=request, template_name="forms/timeout.jinja2", context=context)
+
+    if cached is False:
+        return render(request=request, template_name="forms/wait.jinja2", context=context)
+
     return render(request=request, template_name="forms/data.jinja2", context=context)
 
 
 def public_page(request, slug: str):
     html_path = os.path.join("__prysent", f"{slug}.ipynb")
-    html_page, cached = cacher.utils.Utils.get_cached_html(html_path)
+    html_page, cached, message = cacher.utils.Utils.get_cached_html(html_path)
 
     context = Context(request=request).get()
 
@@ -162,8 +181,12 @@ def public_page(request, slug: str):
         "slug": slug,
         "html": html_page
     }
+    context["message"] = message
 
-    if html_page == "GENERATION_TIMEOUT":
+    if html_page == CACHER_GENERATION_ERROR:
+        return render(request=request, template_name="forms/error.jinja2", context=context)
+
+    if html_page == CACHER_GENERATION_TIMEOUT:
         return render(request=request, template_name="forms/timeout.jinja2", context=context)
 
     if cached is False:

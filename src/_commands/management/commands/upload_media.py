@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from media.utils import Utils as MediaUtils
+import media.utils
 
 
 class Command(BaseCommand):
@@ -8,4 +8,4 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
-        MediaUtils.upload()
+        media.utils.Utils.upload()

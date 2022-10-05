@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-import cacher.utils
+import configurator.utils
 
 
 class Command(BaseCommand):
@@ -8,4 +8,4 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
-        cacher.utils.Utils.clean_cache()
+        configurator.utils.Utils.upload_settings()

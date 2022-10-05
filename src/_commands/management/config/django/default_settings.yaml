@@ -1,0 +1,15 @@
+---
+
+timezone: "Europe/Brussels"
+
+generation_timeout: 60
+
+remain_cached: 60
+remain_cached_errors: 60
+remain_scheduled_errors: 60
+
+upload_media_cron: "*/5 * * * * "
+upload_schedule_cron: "*/5 * * * * "
+upload_settings_cron: "0 * * * * "
+update_scheduled_notebooks_cron: "*/5 * * * * "
+remove_cached_notebooks_cron: "* * * * *"

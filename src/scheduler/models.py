@@ -9,6 +9,8 @@ class Schedule(Model):
     html_file = models.CharField(max_length=1024, null=True, default=None)
     generated = models.BooleanField(null=False, default=False)
     generation_timeout = models.DateTimeField(null=True, default=None)
+    generation_status = models.IntegerField(null=False, default=0)
+    generation_message = models.TextField(null=True, default=None)
 
     class Meta:
         verbose_name_plural = "Schedulers"
