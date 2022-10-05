@@ -11,6 +11,7 @@ from django.utils.timezone import now
 import prysent.utils
 
 from scheduler.models import Schedule
+from settings.models import Setting
 
 
 class Utils:
@@ -86,6 +87,30 @@ class Utils:
         cls.logger.debug(f"next: {schedule.next_run}")
 
         cls.logger.debug(f"Uploaded config: {config_path[len(media_path)+1:]}")
+
+    @classmethod
+    def upload_settings(cls):
+        config_file_path = os.path.join(settings.BASE_DIR.parent, "_commands", "management", "config", "django",
+                                        "default_settings.yaml")
+
+        cls.logger.info(f"Reading config file {config_file_path[len(str(settings.BASE_DIR.parent)) + 1:]}")
+
+        with open(config_file_path, 'r') as config_file:
+            config_yaml = yaml.safe_load(config_file)
+
+        for config in config_yaml:
+            cls.logger.debug(f"Updating: {config}")
+
+            try:
+                setting = Setting.objects.get(key=config)
+            except Setting.DoesNotExist:
+                setting = Setting()
+
+            setting.key = config
+            setting.value = config_yaml[config]
+            setting.save()
+
+            cls.logger.debug(f"Setting value: {setting.value}")
 
     @classmethod
     def create_basic_dirs(cls):
