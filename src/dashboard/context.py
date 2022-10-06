@@ -9,10 +9,13 @@ class Context:
     logger = logging.getLogger(__name__)
 
     def __init__(self, request) -> None:
-        if str(request.user) == "AnonymousUser":
-            self.context = {
-                "user": "Public"
-            }
+        self.logger.debug(f"User: {request.user}")
+
+        # For now, we use user public, until we decide that dashboards can be private again
+        self.context = {"user": "Public"}
+
+        # if str(request.user) == "AnonymousUser":
+        #    self.context["user"] = "Public"
 
         #    return
 
