@@ -12,6 +12,9 @@ class Schedule(Model):
     generation_status = models.IntegerField(null=False, default=0)
     generation_message = models.TextField(null=True, default=None)
 
+    def __str__(self):
+        return self.notebook
+
     class Meta:
         verbose_name_plural = "Schedulers"
 

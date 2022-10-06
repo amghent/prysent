@@ -17,3 +17,6 @@ class Cache(Model):
         constraints = [
             models.UniqueConstraint(fields=['html_file'], name='ux_cache_html_file'),
         ]
+
+    def __str__(self):
+        return self.html_file
