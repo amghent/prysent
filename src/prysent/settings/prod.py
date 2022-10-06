@@ -1,6 +1,12 @@
 from prysent.settings.common import *
 from prysent.settings.secret import *
 
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'Europe/Brussels'
+USE_I18N = True
+USE_L10N = True
+USE_TZ = True
+
 MEDIA_DIR = os.path.join(Path.home(), 'ArcelorMittal', 'AM Python - Documenten', 'Jobs',
                          'Belgium', 'Automatic_notebooks')
 STATICFILES_DIRS.append(os.path.join(MEDIA_DIR, '__prysent'))

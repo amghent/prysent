@@ -1,6 +1,12 @@
 from prysent.settings.common import *
 from prysent.settings.secret import *
 
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'UTC'
+USE_I18N = True
+USE_L10N = True
+USE_TZ = True
+
 MEDIA_DIR = os.path.join(BASE_DIR.parent.parent, 'media')
 STATICFILES_DIRS.append(os.path.join(MEDIA_DIR, '__prysent'))
 
