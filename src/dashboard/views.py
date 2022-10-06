@@ -28,18 +28,8 @@ def page_index(request):
         "slug": "index",
         "html": html_page
     }
-    context["message"] = message
 
-    if html_page == CACHER_GENERATION_ERROR:
-        return render(request=request, template_name="forms/error.jinja2", context=context)
-
-    if html_page == CACHER_GENERATION_TIMEOUT:
-        return render(request=request, template_name="forms/timeout.jinja2", context=context)
-
-    if cached is False:
-        return render(request=request, template_name="forms/wait.jinja2", context=context)
-
-    return render(request=request, template_name="forms/notebook.jinja2", context=context)
+    return __render_cached(request=request, context=context, html_page=html_page, cached=cached, message=message)
 
 
 def page_login(request, status: str = None):
@@ -159,16 +149,7 @@ def page_data(request, slug):
                 "link1": {"slug": link1.slug}
             }
 
-    if message != "":
-        return render(request=request, template_name="forms/error.jinja2", context=context)
-
-    if cardbox_html == CACHER_GENERATION_TIMEOUT:
-        return render(request=request, template_name="forms/timeout.jinja2", context=context)
-
-    if cached is False:
-        return render(request=request, template_name="forms/wait.jinja2", context=context)
-
-    return render(request=request, template_name="forms/data.jinja2", context=context)
+    return __render_cached(request=request, context=context, html_page=cardbox_html, cached=cached, message=message)
 
 
 def public_page(request, slug: str):
@@ -181,18 +162,8 @@ def public_page(request, slug: str):
         "slug": slug,
         "html": html_page
     }
-    context["message"] = message
 
-    if html_page == CACHER_GENERATION_ERROR:
-        return render(request=request, template_name="forms/error.jinja2", context=context)
-
-    if html_page == CACHER_GENERATION_TIMEOUT:
-        return render(request=request, template_name="forms/timeout.jinja2", context=context)
-
-    if cached is False:
-        return render(request=request, template_name="forms/wait.jinja2", context=context)
-
-    return render(request=request, template_name="forms/notebook.jinja2", context=context)
+    return __render_cached(request=request, context=context, html_page=html_page, cached=cached, message=message)
 
 
 # @login_required
@@ -241,3 +212,18 @@ def page_500(request):
     context = Context(request=request).get()
 
     return render(request=request, template_name="forms/500.jinja2", context=context)
+
+
+def __render_cached(request, context, html_page, cached, message):
+    context["message"] = message
+
+    if message != "":
+        return render(request=request, template_name="forms/error.jinja2", context=context)
+
+    if html_page == CACHER_GENERATION_TIMEOUT:
+        return render(request=request, template_name="forms/timeout.jinja2", context=context)
+
+    if cached is False:
+        return render(request=request, template_name="forms/wait.jinja2", context=context)
+
+    return render(request=request, template_name="forms/notebook.jinja2", context=context)
