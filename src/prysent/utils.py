@@ -53,3 +53,16 @@ class Utils:
         next_run = next_run.astimezone(pytz.utc)
 
         return next_run
+
+    @classmethod
+    def filepath_to_internal(cls, path: str) -> str:
+        if path.startswith(settings.HTML_DIR):
+            path = path[len(settings.HTML_DIR)+1:]
+        elif path.startswith(settings.MEDIA_DIR):
+            path = path[len(settings.MEDIA_DIR)+1:]
+        elif path.startswith(settings.COMMANDS_DIR):
+            path = path[len(settings.COMMANDS_DIR)+1:]
+
+        path = path.replace("\\", "/")
+
+        return path

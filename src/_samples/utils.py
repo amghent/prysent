@@ -12,6 +12,8 @@ class Utils:
     def upload_world_cities(cls):
         rows = ConfiguratorUtils.read_csv("world_cities.csv", 0)
 
+        cls.logger.debug(f"Found total rows: {len(rows)}")
+
         for row in rows:
             c = City()
 
