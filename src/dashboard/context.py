@@ -3,6 +3,7 @@ import logging
 from django.contrib.auth.models import User
 
 from dashboard.models import Dashboard, Link1, Link2, Link3, Block1, Block2
+from settings.models import Setting
 
 
 class Context:
@@ -50,6 +51,7 @@ class Context:
             self.logger.debug(f"JSON for dashboard: {dashboard_json}")
 
         self.context["dashboards"] = json
+        self.context["version"] = Setting.objects.get(key="version").value
 
     def get(self) -> dict:
         return self.context
