@@ -29,7 +29,8 @@ def page_index(request):
         "html": html_page
     }
 
-    return __render_cached(request=request, context=context, html_page=html_page, cached=cached, message=message)
+    return __render_cached(request=request, context=context, template="forms/notebook.jinja2", html_page=html_page,
+                           cached=cached, message=message)
 
 
 def page_login(request, status: str = None):
@@ -149,7 +150,8 @@ def page_data(request, slug):
                 "link1": {"slug": link1.slug}
             }
 
-    return __render_cached(request=request, context=context, html_page=cardbox_html, cached=cached, message=message)
+    return __render_cached(request=request, context=context, template="forms/data.jinja2", html_page=cardbox_html,
+                           cached=cached, message=message)
 
 
 def public_page(request, slug: str):
@@ -163,7 +165,8 @@ def public_page(request, slug: str):
         "html": html_page
     }
 
-    return __render_cached(request=request, context=context, html_page=html_page, cached=cached, message=message)
+    return __render_cached(request=request, context=context, template="forms/notebook.jinja2", html_page=html_page,
+                           cached=cached, message=message)
 
 
 # @login_required
@@ -214,7 +217,7 @@ def page_500(request):
     return render(request=request, template_name="forms/500.jinja2", context=context)
 
 
-def __render_cached(request, context, html_page, cached, message):
+def __render_cached(request, context, template, html_page, cached, message):
     context["message"] = message
 
     if message != "":
@@ -226,4 +229,4 @@ def __render_cached(request, context, html_page, cached, message):
     if cached is False:
         return render(request=request, template_name="forms/wait.jinja2", context=context)
 
-    return render(request=request, template_name="forms/notebook.jinja2", context=context)
+    return render(request=request, template_name=template, context=context)

@@ -1,3 +1,7 @@
+import logging
+
+import yaml
+
 from prysent.settings.common import *
 from prysent.settings.secret import *
 

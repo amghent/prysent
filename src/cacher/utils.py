@@ -6,6 +6,8 @@ from threading import Thread
 from django.conf import settings
 from django.utils.timezone import now
 
+import prysent.utils
+
 from cacher.models import Cache
 from dashboard.notebook import Notebook
 from scheduler.models import Schedule
@@ -24,12 +26,14 @@ class Utils:
 
     @classmethod
     def get_cached_html(cls, path, cache_seconds=-1):
+        path = prysent.utils.Utils.filepath_to_internal(path)
+
         cls.logger.info(f"Checking if cached: {path}")
 
         if cache_seconds < 0:
-            cache_seconds = Setting.objects.get(key="cache_seconds").value
+            cache_seconds = int(Setting.objects.get(key="remain_cached").value)
 
-        cls.logger.debug(f"Caching seconds: {path}")
+        cls.logger.debug(f"Caching seconds: {cache_seconds}")
 
         try:
             scheduled = Schedule.objects.get(notebook=path)
@@ -37,7 +41,7 @@ class Utils:
             if scheduled.generation_status == GENERATION_STATUS_FAILED:
                 return CACHER_GENERATION_ERROR, False, scheduled.generation_message
 
-            if scheduled.html_file is None:
+            if scheduled.cached_html is None:
                 cls.logger.warning("Schedule file is not generated yet. Starting generation")
 
                 notebook = Notebook(path)
@@ -52,10 +56,10 @@ class Utils:
 
             else:
 
-                if os.path.exists(os.path.join(settings.HTML_DIR, scheduled.html_file)):
-                    cls.logger.info(f"Returning scheduled file: {scheduled.html_file}")
+                if os.path.exists(os.path.join(settings.HTML_DIR, scheduled.cached_html)):
+                    cls.logger.info(f"Returning scheduled file: {scheduled.cached_html}")
 
-                    return scheduled.html_file, True, ""
+                    return scheduled.cached_html, True, ""
 
                 else:
                     if scheduled.generated is True:
@@ -65,7 +69,7 @@ class Utils:
                         scheduled.generation_timeout = now() + timedelta(minutes=cache_seconds)
                         scheduled.save()
 
-                        notebook = Notebook(path, scheduled.html_file)
+                        notebook = Notebook(path, scheduled.cached_html)
                         Thread(target=notebook.convert).start()
 
                         return CACHER_GENERATION_STARTED, False, ""

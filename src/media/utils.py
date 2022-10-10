@@ -7,6 +7,8 @@ from django.db.models import Max
 from dashboard.models import OrganizationalUnit, CardboxType, Dashboard, Block1, Block2, Link1, Link2, Link3
 from dashboard.models import Cardbox, DataPage
 
+import prysent.utils
+
 
 class Utils:
     logger = logging.getLogger(__name__)
@@ -141,7 +143,7 @@ class Utils:
         cardbox.type = CardboxType.objects.get(slug="none")
         cardbox.title = ""
         cardbox.height = "var(--notebook-height)"
-        cardbox.notebook = notebook_path.replace("\\", "/")
+        cardbox.notebook = prysent.utils.Utils.filepath_to_internal(notebook_path)
         # The path is a URL for the browser, also on Windows where the path.join gives backslashes in the path
         cardbox.scroll = True
 
