@@ -93,7 +93,7 @@ class Utils:
             # If there are expired jobs, run them
             run_jobs = True
 
-        elif Schedule.objects.filter(html_file=None).count() > 0:
+        elif Schedule.objects.filter(cached_html=None).count() > 0:
             # No expired jobs, but maybe other jobs have not yet run at all and don't have a html file available
             run_jobs = True
 
@@ -109,7 +109,7 @@ class Utils:
         page = None
 
         for page in stale:
-            cls.logger.info(f"Removing from cache: {page.html_file}")
+            cls.logger.info(f"Removing from cache: {page.cached_html}")
             cached_file = os.path.join(settings.MEDIA_DIR, page.cached_html)
 
             if os.path.exists(cached_file):
@@ -122,40 +122,42 @@ class Utils:
 
     @classmethod
     def __run_jobs(cls, timestamp):
-        jobs = Schedule.objects.filter(next_run__lte=timestamp) | Schedule.objects.filter(html_file=None)
+        jobs = Schedule.objects.filter(next_run__lte=timestamp) | Schedule.objects.filter(cached_html=None)
         timezone = Setting.objects.get(key="timezone").value
 
         for job in jobs:
             notebook_file = os.path.join(settings.MEDIA_DIR, job.notebook)
+            internal_file = prysent.utils.Utils.filepath_to_internal(notebook_file)
 
-            cls.logger.info(f"Updating notebook: {notebook_file[len(settings.MEDIA_DIR)+1:]}")
+            cls.logger.info(f"Updating notebook: {internal_file}")
 
             if not os.path.exists(notebook_file):  # Cleaning up stale jobs
-                cls.logger.warning(f"Found orphaned job: {notebook_file[len(settings.MEDIA_DIR)+1:]}")
+                cls.logger.warning(f"Found orphaned job: {internal_file}")
                 job.delete()
                 continue
 
             # Getting the old file name before it's overwritten
-            old_html_file = job.html_file
+            old_html_file = job.cached_html
 
             # Deleting old file (removing stale cache, sort of)
             # Done after we have inserted the new file
             if old_html_file is not None:
                 old_html_path = os.path.join(settings.MEDIA_DIR, old_html_file)
+                old_internal_file = prysent.utils.Utils.filepath_to_internal(old_html_path)
 
                 if os.path.exists(old_html_path):
-                    cls.logger.info(f"Removing old cached file: {old_html_path[len(settings.MEDIA_DIR)+1:]}")
+                    cls.logger.info(f"Removing old cached file: {old_internal_file}")
                     os.remove(old_html_file)
 
-            if job.html_file is None:
-                job.html_file = f"{uuid.uuid4()}.html"
+            if job.cached_html is None:
+                job.cached_html = f"{uuid.uuid4()}.html"
 
             job.next_run = prysent.utils.Utils.croniter_to_utc(timezone, job.cron, timestamp)
             job.generated = False
 
             job.save()
 
-            notebook = Notebook(notebook_file, job.html_file)
+            notebook = Notebook(notebook_file, job.cached_html)
             notebook.convert()
 
             cls.logger.info(f"Done, next run at: {job.next_run}")

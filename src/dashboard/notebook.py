@@ -12,6 +12,7 @@ from nbclient.exceptions import CellExecutionError
 from nbconvert import HTMLExporter
 from nbconvert.preprocessors import ExecutePreprocessor
 
+import prysent.utils
 from cacher.models import Cache
 from scheduler.models import Schedule
 from settings.models import Setting
@@ -24,7 +25,9 @@ class Notebook:
     logger = logging.getLogger(__name__)
 
     def __init__(self, path: str, export_path: str = None):
-        self.logger.info(f"Notebook path: {path}")
+        internal_path = prysent.utils.Utils.filepath_to_internal(path)
+
+        self.logger.info(f"Notebook path: {internal_path}")
         self.logger.info(f"Notebook export: {export_path}")
 
         if not path.startswith(settings.MEDIA_DIR):
@@ -39,7 +42,9 @@ class Notebook:
         self.export_path = export_path
 
     def convert(self):
-        self.logger.info(f"Converting notebook: {self.path[len(settings.MEDIA_DIR)+1:]}")
+        internal_path = prysent.utils.Utils.filepath_to_internal(self.path)
+
+        self.logger.info(f"Converting notebook: {internal_path}")
 
         with open(self.path, "r", encoding="utf-8") as notebook_file:
             notebook_json = notebook_file.read()
@@ -49,7 +54,8 @@ class Notebook:
 
         try:
             notebook = nbformat.reads(notebook_json, as_version=4)
-            executor = ExecutePreprocessor(timeout=600, kernel_name="python3")
+            executor = ExecutePreprocessor(timeout=int(Setting.objects.get(key="preprocessor_timeout").value),
+                                           kernel_name=Setting.objects.get(key="preprocessor_kernel").value)
 
             executor.preprocess(notebook, {"metadata": {"path": f"{os.path.dirname(self.path)}"}})
 
@@ -81,7 +87,7 @@ class Notebook:
             with open(os.path.join(settings.HTML_DIR, self.export_path), "w", encoding="utf-8") as html_file:
                 html_file.write(html)
 
-            self.logger.info(f"Finished converting notebook: {self.path[len(settings.MEDIA_DIR)+1:]}")
+            self.logger.info(f"Finished converting notebook: {internal_path}")
 
         except CellExecutionError as e:
             status = GENERATION_STATUS_FAILED
@@ -95,14 +101,14 @@ class Notebook:
 
             message += f"Traceback\n: {error_message}"
 
-            self.logger.error(f"Could not generate notebook: {self.path[len(settings.MEDIA_DIR)+1:]}")
+            self.logger.error(f"Could not generate notebook: {internal_path}")
             self.logger.info(message)
 
         except Exception as e:
             message = f"Type: {type(e)}"
             message += f"Traceback\n: {self.escape_ansi(str(e))}"
 
-            self.logger.error(f"Could not generate notebook: {self.path[len(settings.MEDIA_DIR)+1:]}")
+            self.logger.error(f"Could not generate notebook: {internal_path}")
             self.logger.info(f"Error while converting the notebook of type: {type(e)}")
             self.logger.info(message)
 
@@ -123,7 +129,7 @@ class Notebook:
             pass
 
         try:
-            schedule = Schedule.objects.get(html_file=self.export_path)
+            schedule = Schedule.objects.get(cached_html=self.export_path)
             schedule.generated = True
             schedule.generation_status = status
             schedule.generation_message = message
@@ -138,6 +144,6 @@ class Notebook:
 
     @staticmethod
     def escape_ansi(text):
-        ansi_escape = re.compile(r'(\x9B|\x1B\[)[0-?]*[ -\/]*[@-~]')
+        ansi_escape = re.compile(r"(\x9B|\x1B\[)[0-?]*[ -\/]*[@-~]")
 
-        return ansi_escape.sub('', text)
+        return ansi_escape.sub("", text)

@@ -3,7 +3,7 @@ from django.db.models import Model
 
 
 class Cache(Model):
-    html_file = models.CharField(max_length=1024, null=True, default=None)
+    notebook = models.CharField(max_length=1024, null=True, default=None)
     cached_html = models.CharField(max_length=1024, null=True, default=None)
     cached_until = models.DateTimeField(null=True, default=None)
     generated = models.BooleanField(null=False, default=False)
@@ -12,8 +12,11 @@ class Cache(Model):
     generation_message = models.TextField(null=True, default=None)
 
     class Meta:
-        verbose_name_plural = "Cached"
+        verbose_name_plural = "Cached Pages"
 
         constraints = [
-            models.UniqueConstraint(fields=['html_file'], name='ux_cache_html_file'),
+            models.UniqueConstraint(fields=['notebook'], name='ux_cache_notebook'),
         ]
+
+    def __str__(self):
+        return self.notebook

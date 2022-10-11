@@ -1,7 +1,11 @@
 ---
 
+version: 1.1.5
+
 timezone: "Europe/Brussels"
 
+preprocessor_kernel: "python3"
+preprocessor_timeout: 60
 generation_timeout: 60
 
 remain_cached: 60

@@ -18,11 +18,18 @@ class Utils:
     logger = logging.getLogger(__name__)
 
     @classmethod
+    def check_media_directory(cls):
+        cls.check_directory(settings.MEDIA_DIR)
+
+    @classmethod
     def check_directory(cls, path):
         cls.logger.debug(f"Checking folder: {path}")
 
         for entry in os.listdir(path):
             entry_path = os.path.join(path, entry)
+
+            if entry_path.startswith("_"):
+                continue
 
             if os.path.isdir(entry_path):
                 cls.check_directory(entry_path)
@@ -43,11 +50,10 @@ class Utils:
 
     @classmethod
     def upload_config(cls, config_path, notebook_path):
-        media_path = settings.MEDIA_DIR
-        stripped_path = notebook_path[len(media_path)+1:]
-        stripped_path = stripped_path.replace("\\", "/")
+        stripped_path = prysent.utils.Utils.filepath_to_internal(notebook_path)
+        internal_path = prysent.utils.Utils.filepath_to_internal(config_path)
 
-        cls.logger.info(f"Uploading config: {config_path[len(media_path)+1:]}")
+        cls.logger.info(f"Uploading config: {internal_path}")
 
         with open(config_path, 'r') as config_file:
             config_yaml = yaml.safe_load(config_file)
@@ -56,7 +62,7 @@ class Utils:
         exists = (Schedule.objects.filter(notebook=stripped_path).count() > 0)
 
         if exists:
-            cls.logger.debug(f"Config exists, updating: {config_path[len(media_path)+1:]}")
+            cls.logger.debug(f"Config exists, updating: {internal_path}")
 
             schedule = Schedule.objects.get(notebook=stripped_path)
 
@@ -67,10 +73,10 @@ class Utils:
 
                 schedule.save()
 
-            cls.logger.debug(f"Updated: {config_path[len(media_path)+1:]}")
+            cls.logger.debug(f"Updated: {internal_path}")
 
         else:
-            cls.logger.debug(f"New config, inserting: {config_path[len(media_path)+1:]}")
+            cls.logger.debug(f"New config, inserting: {internal_path}")
 
             schedule = Schedule()
 
@@ -81,19 +87,20 @@ class Utils:
 
             schedule.save()
 
-            cls.logger.debug(f"Inserted: {config_path[len(media_path)+1:]}")
+            cls.logger.debug(f"Inserted: {internal_path}")
 
         cls.logger.debug(f"now: {now()}")
         cls.logger.debug(f"next: {schedule.next_run}")
 
-        cls.logger.debug(f"Uploaded config: {config_path[len(media_path)+1:]}")
+        cls.logger.debug(f"Uploaded config: {internal_path}")
 
     @classmethod
     def upload_settings(cls):
         config_file_path = os.path.join(settings.BASE_DIR.parent, "_commands", "management", "config", "django",
                                         "default_settings.yaml")
+        internal_path = prysent.utils.Utils.filepath_to_internal(config_file_path)
 
-        cls.logger.info(f"Reading config file {config_file_path[len(str(settings.BASE_DIR.parent)) + 1:]}")
+        cls.logger.info(f"Reading config file {internal_path}")
 
         with open(config_file_path, 'r') as config_file:
             config_yaml = yaml.safe_load(config_file)
