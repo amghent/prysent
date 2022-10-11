@@ -26,6 +26,10 @@ class Utils:
         cls.__flag_start_sync()
 
         for dashboard_entry in os.listdir(media_folder):
+            if len(os.listdir(os.path.join(media_folder, dashboard_entry))) == 0:
+                cls.logger.info(f"Skipping empty dashboard: {dashboard_entry}")
+                continue
+
             if dashboard_entry.startswith("_"):
                 cls.logger.info(f"Skipping dashboard: {dashboard_entry}")
                 continue
@@ -44,6 +48,10 @@ class Utils:
                     if not os.path.isdir(os.path.join(media_folder, dashboard_entry, level_1_entry)):
                         cls.__handle_level_1_link(level_1_entry, dashboard, accepted_extensions)
                     else:
+                        if len(os.listdir(os.path.join(media_folder, dashboard_entry, level_1_entry))) == 0:
+                            cls.logger.info(f"Skipping empty level 1 entry: {level_1_entry}")
+                            continue
+
                         menu_1 = cls.__handle_level_1_block(level_1_entry, dashboard)
 
                         for level_2_entry in os.listdir(os.path.join(media_folder, dashboard_entry, level_1_entry)):
@@ -55,11 +63,15 @@ class Utils:
                                                               level_2_entry)):
                                 cls.__handle_level_2_link(level_2_entry, menu_1, dashboard, accepted_extensions)
                             else:
+                                if len(os.listdir(os.path.join(media_folder, dashboard_entry, level_1_entry,
+                                                               level_2_entry))) == 0:
+                                    cls.logger.info(f"Skipping empty level 2 entry: {level_2_entry}")
+                                    continue
+
                                 menu_2 = cls.__handle_level_2_block(level_2_entry, menu_1)
 
                                 for level_3_entry in os.listdir(os.path.join(media_folder, dashboard_entry,
                                                                              level_1_entry, level_2_entry)):
-
                                     if level_3_entry.startswith("_"):
                                         cls.logger.info(f"Skipping level 3 entry: {level_3_entry}")
                                         continue
