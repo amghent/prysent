@@ -4,6 +4,7 @@ import threading
 
 from django.conf import settings
 from django.contrib.auth import authenticate, logout, login
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 import cacher.utils
@@ -16,6 +17,15 @@ from dashboard.models import Cardbox, Link3, Link2, Link1, Block1, Block2, DataP
 from cacher.utils import CACHER_GENERATION_TIMEOUT, CACHER_GENERATION_ERROR
 
 logger = logging.getLogger(__name__)
+
+
+def favicon(request):
+    ico = open(os.path.join(settings.TEMPLATES[0]["DIRS"][0], "static", "assets", "img",
+                            "favicon.ico"), "rb")
+    response = HttpResponse(content=ico)
+    response['Content-Type'] = "image/x-icon"
+
+    return response
 
 
 # @login_required

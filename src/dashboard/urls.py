@@ -3,6 +3,8 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path("favicon.ico", views.favicon, name="favicon"),
+
     path("index.html", views.page_index, name="index"),
     path("index.html/<str:status>", views.page_index, name="index"),
     path("", views.page_index, name="index"),
