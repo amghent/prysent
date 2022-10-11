@@ -1,5 +1,6 @@
 import logging
 import os
+import threading
 
 from django.conf import settings
 from django.contrib.auth import authenticate, logout, login
@@ -18,11 +19,37 @@ logger = logging.getLogger(__name__)
 
 
 # @login_required
-def page_index(request):
+def page_index(request, status: str = None):
     html_path = os.path.join("__prysent", "index.ipynb")
     html_page, cached, message = cacher.utils.Utils.get_cached_html(html_path)
 
     context = Context(request=request).get()
+
+    if status == "executed=clean_cache":
+        context["notification"] = {
+            "status": "SUCCESS",
+            "text": "Cache is being cleaned in the background. "
+                    "You may close this notification when you see the home page."}
+
+    if status == "executed=upload_media":
+        context["notification"] = {
+            "status": "SUCCESS",
+            "text": "Media is being uploaded in the background. You may close this notification."}
+
+    if status == "executed=upload_schedule":
+        context["notification"] = {
+            "status": "SUCCESS",
+            "text": "Schedule is being uploaded in the background. You may close this notification."}
+
+    if status == "executed=upload_settings":
+        context["notification"] = {
+            "status": "SUCCESS",
+            "text": "Settings are being uploaded in the background. You may close this notification."}
+
+    if status == "executed=update":
+        context["notification"] = {
+            "status": "SUCCESS",
+            "text": "Notebooks are being updated in the background. You may close this notification."}
 
     context["notebook"] = {
         "slug": "index",
@@ -175,28 +202,34 @@ def authorized_page(request, slug: str):
 
 
 def clean_cache(request):
-    cacher.utils.Utils.clean_cache()
+    threading.Thread(target=cacher.utils.Utils.clean_cache).start()
 
-    return redirect("index")
+    return redirect("index", status="executed=clean_cache")
 
 
 def upload_media(request):
-    media.utils.Utils.upload()
+    threading.Thread(target=media.utils.Utils.upload).start()
 
-    return redirect("index")
+    return redirect("index", status="executed=upload_media")
 
 
 def upload_schedule(request):
-    configurator.utils.Utils.check_directory(settings.MEDIA_DIR)
+    threading.Thread(target=configurator.utils.Utils.check_media_directory).start()
 
-    return redirect("index")
+    return redirect("index", status="executed=upload_schedule")
+
+
+def upload_settings(request):
+    threading.Thread(target=configurator.utils.Utils.upload_settings).start()
+
+    return redirect("index", status="executed=upload_settings")
 
 
 def update(request):
-    scheduler.utils.Utils.update_scheduled_notebooks()
-    scheduler.utils.Utils.remove_cached_notebooks()
+    threading.Thread(target=scheduler.utils.Utils.update_scheduled_notebooks).start()
+    threading.Thread(target=scheduler.utils.Utils.remove_cached_notebooks).start()
 
-    return redirect("index")
+    return redirect("index", status="executed=update")
 
 
 def page_401(request):

@@ -18,6 +18,10 @@ class Utils:
     logger = logging.getLogger(__name__)
 
     @classmethod
+    def check_media_directory(cls):
+        cls.check_directory(settings.MEDIA_DIR)
+
+    @classmethod
     def check_directory(cls, path):
         cls.logger.debug(f"Checking folder: {path}")
 

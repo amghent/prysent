@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     path("index.html", views.page_index, name="index"),
+    path("index.html/<str:status>", views.page_index, name="index"),
     path("", views.page_index, name="index"),
 
     path("data/<str:slug>", views.page_data, name="data"),
@@ -19,6 +20,7 @@ urlpatterns = [
     path("commands/clean_cache", views.clean_cache, name="clean_cache"),
     path("commands/upload_media", views.upload_media, name="upload_media"),
     path("commands/upload_schedule", views.upload_schedule, name="upload_schedule"),
+    path("commands/upload_settings", views.upload_settings, name="upload_settings"),
     path("commands/update", views.update, name="update"),
 
     path("401.html", views.page_401, name="401"),

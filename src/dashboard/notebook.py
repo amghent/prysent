@@ -25,7 +25,9 @@ class Notebook:
     logger = logging.getLogger(__name__)
 
     def __init__(self, path: str, export_path: str = None):
-        self.logger.info(f"Notebook path: {path}")
+        internal_path = prysent.utils.Utils.filepath_to_internal(path)
+
+        self.logger.info(f"Notebook path: {internal_path}")
         self.logger.info(f"Notebook export: {export_path}")
 
         if not path.startswith(settings.MEDIA_DIR):

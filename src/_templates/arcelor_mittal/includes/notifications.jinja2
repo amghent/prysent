@@ -1,0 +1,28 @@
+{#####
+#
+#   Version:    1.0.0
+#   Date:       2022-08-01
+#   Author:     Yves Vindevogel
+#
+#####}
+
+{% macro show_alert(_type) %}
+    <div class="alert {{ _type }} alert-dismissible fade show float-none" id="prysent-alert" role="alert">
+        {{ notification.text }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+{% endmacro %}
+
+{% if notification is defined %}
+    <div class="position-absolute w-100 p-2" style="z-index: 2147483647">
+        {% if notification.status == "SUCCESS" %}
+            {{ show_alert("alert-success") }}
+        {% elif notification.status == "INFO" %}
+            {{ show_alert("alert-info") }}
+        {% elif notification.status == "WARN" %}
+            {{ show_alert("alert-warning") }}
+        {% elif notification.status == "ERROR" %}
+            {{ show_alert("alert-danger") }}
+        {% endif %}
+    </div>
+{% endif %}
