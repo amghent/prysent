@@ -6,11 +6,14 @@ from threading import Thread
 from django.conf import settings
 from django.utils.timezone import now
 
+import prysent.utils
+
 from cacher.models import Cache
 from dashboard.notebook import Notebook
 from scheduler.models import Schedule
 
 from dashboard.notebook import GENERATION_STATUS_FAILED
+from settings.models import Setting
 
 CACHER_GENERATION_STARTED = "GENERATION_STARTED"
 CACHER_GENERATION_TIMEOUT = "GENERATION_TIMEOUT"
@@ -22,8 +25,15 @@ class Utils:
     logger = logging.getLogger(__name__)
 
     @classmethod
-    def get_cached_html(cls, path, cache_minutes=1):
+    def get_cached_html(cls, path, cache_seconds=-1):
+        path = prysent.utils.Utils.filepath_to_internal(path)
+
         cls.logger.info(f"Checking if cached: {path}")
+
+        if cache_seconds < 0:
+            cache_seconds = int(Setting.objects.get(key="remain_cached").value)
+
+        cls.logger.debug(f"Caching seconds: {cache_seconds}")
 
         try:
             scheduled = Schedule.objects.get(notebook=path)
@@ -31,35 +41,35 @@ class Utils:
             if scheduled.generation_status == GENERATION_STATUS_FAILED:
                 return CACHER_GENERATION_ERROR, False, scheduled.generation_message
 
-            if scheduled.html_file is None:
+            if scheduled.cached_html is None:
                 cls.logger.warning("Schedule file is not generated yet. Starting generation")
 
                 notebook = Notebook(path)
                 Thread(target=notebook.convert).start()
 
-                scheduled.html_file = notebook.export_path
+                scheduled.cached_html = notebook.export_path
                 scheduled.generated = False
-                scheduled.generation_timeout = now() + timedelta(minutes=cache_minutes)
+                scheduled.generation_timeout = now() + timedelta(minutes=cache_seconds)
                 scheduled.save()
 
                 return CACHER_GENERATION_STARTED, False, ""
 
             else:
 
-                if os.path.exists(os.path.join(settings.HTML_DIR, scheduled.html_file)):
-                    cls.logger.info(f"Returning scheduled file: {scheduled.html_file}")
+                if os.path.exists(os.path.join(settings.HTML_DIR, scheduled.cached_html)):
+                    cls.logger.info(f"Returning scheduled file: {scheduled.cached_html}")
 
-                    return scheduled.html_file, True, ""
+                    return scheduled.cached_html, True, ""
 
                 else:
                     if scheduled.generated is True:
                         cls.logger.warning("Schedule file does not exist anymore. Starting generation")
 
                         scheduled.generated = False
-                        scheduled.generation_timeout = now() + timedelta(minutes=cache_minutes)
+                        scheduled.generation_timeout = now() + timedelta(minutes=cache_seconds)
                         scheduled.save()
 
-                        notebook = Notebook(path, scheduled.html_file)
+                        notebook = Notebook(path, scheduled.cached_html)
                         Thread(target=notebook.convert).start()
 
                         return CACHER_GENERATION_STARTED, False, ""
@@ -77,13 +87,13 @@ class Utils:
             pass
 
         try:
-            cached = Cache.objects.get(html_file=path)
+            cached = Cache.objects.get(notebook=path)
 
             if cached.generation_status == GENERATION_STATUS_FAILED:
                 return CACHER_GENERATION_ERROR, False, cached.generation_message
 
             if os.path.exists(os.path.join(settings.HTML_DIR, cached.cached_html)):
-                cached.cached_until = now() + timedelta(minutes=cache_minutes)
+                cached.cached_until = now() + timedelta(minutes=cache_seconds)
                 cached.save()
 
                 cls.logger.info(f"returning scheduled file: {cached.cached_html}")
@@ -94,7 +104,7 @@ class Utils:
                     cls.logger.warning("Cached file does not exist anymore. Regenerating")
 
                     cached.generated = False
-                    cached.generation_timeout = now() + timedelta(minutes=cache_minutes)
+                    cached.generation_timeout = now() + timedelta(minutes=cache_seconds)
                     cached.save()
 
                     notebook = Notebook(path, cached.cached_html)
@@ -120,8 +130,8 @@ class Utils:
             Thread(target=notebook.convert).start()
 
             cache = Cache()
-            cache.html_file = path
-            cache.cached_until = now() + timedelta(minutes=cache_minutes)
+            cache.notebook = path
+            cache.cached_until = now() + timedelta(minutes=cache_seconds)
             cache.cached_html = notebook.export_path
             cache.generated = False
             cache.generation_timeout = now() + timedelta(minutes=1)
@@ -153,7 +163,12 @@ class Utils:
 
         for schedule in scheduler:
             schedule.next_run = now()
+            schedule.cached_html = None
+            schedule.generated = False
+            schedule.generation_status = 0
+            schedule.generation_message = None
 
-        Schedule.objects.bulk_update(scheduler, fields=["next_run"])
+        Schedule.objects.bulk_update(scheduler, fields=["next_run", "cached_html", "generated", "generation_status",
+                                                        "generation_message"])
 
         cls.logger.info("Finished cleaning cache")

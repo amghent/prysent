@@ -160,7 +160,7 @@ class Link2(Link):
 class Link3(Link):
     block2 = models.ForeignKey(Block2, on_delete=models.CASCADE)
 
-    def __repr__(self):
+    def __str__(self):
         return f"{self.block2.block1.dashboard.slug}_{self.block2.block1.slug}_{self.block2.slug}_{self.slug}" \
                f" <{self.id}>"
 

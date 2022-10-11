@@ -1,8 +1,10 @@
 import logging
 import os
+import threading
 
 from django.conf import settings
 from django.contrib.auth import authenticate, logout, login
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 import cacher.utils
@@ -17,29 +19,55 @@ from cacher.utils import CACHER_GENERATION_TIMEOUT, CACHER_GENERATION_ERROR
 logger = logging.getLogger(__name__)
 
 
+def favicon(request):
+    ico = open(os.path.join(settings.TEMPLATES[0]["DIRS"][0], "static", "assets", "img",
+                            "favicon.ico"), "rb")
+    response = HttpResponse(content=ico)
+    response['Content-Type'] = "image/x-icon"
+
+    return response
+
+
 # @login_required
-def page_index(request):
+def page_index(request, status: str = None):
     html_path = os.path.join("__prysent", "index.ipynb")
     html_page, cached, message = cacher.utils.Utils.get_cached_html(html_path)
 
     context = Context(request=request).get()
 
+    if status == "executed=clean_cache":
+        context["notification"] = {
+            "status": "SUCCESS",
+            "text": "Cache is being cleaned in the background. "
+                    "You may close this notification when you see the home page."}
+
+    if status == "executed=upload_media":
+        context["notification"] = {
+            "status": "SUCCESS",
+            "text": "Media is being uploaded in the background. You may close this notification."}
+
+    if status == "executed=upload_schedule":
+        context["notification"] = {
+            "status": "SUCCESS",
+            "text": "Schedule is being uploaded in the background. You may close this notification."}
+
+    if status == "executed=upload_settings":
+        context["notification"] = {
+            "status": "SUCCESS",
+            "text": "Settings are being uploaded in the background. You may close this notification."}
+
+    if status == "executed=update":
+        context["notification"] = {
+            "status": "SUCCESS",
+            "text": "Notebooks are being updated in the background. You may close this notification."}
+
     context["notebook"] = {
         "slug": "index",
         "html": html_page
     }
-    context["message"] = message
 
-    if html_page == CACHER_GENERATION_ERROR:
-        return render(request=request, template_name="forms/error.jinja2", context=context)
-
-    if html_page == CACHER_GENERATION_TIMEOUT:
-        return render(request=request, template_name="forms/timeout.jinja2", context=context)
-
-    if cached is False:
-        return render(request=request, template_name="forms/wait.jinja2", context=context)
-
-    return render(request=request, template_name="forms/notebook.jinja2", context=context)
+    return __render_cached(request=request, context=context, template="forms/notebook.jinja2", html_page=html_page,
+                           cached=cached, message=message)
 
 
 def page_login(request, status: str = None):
@@ -159,16 +187,8 @@ def page_data(request, slug):
                 "link1": {"slug": link1.slug}
             }
 
-    if message != "":
-        return render(request=request, template_name="forms/error.jinja2", context=context)
-
-    if cardbox_html == CACHER_GENERATION_TIMEOUT:
-        return render(request=request, template_name="forms/timeout.jinja2", context=context)
-
-    if cached is False:
-        return render(request=request, template_name="forms/wait.jinja2", context=context)
-
-    return render(request=request, template_name="forms/data.jinja2", context=context)
+    return __render_cached(request=request, context=context, template="forms/data.jinja2", html_page=cardbox_html,
+                           cached=cached, message=message)
 
 
 def public_page(request, slug: str):
@@ -181,18 +201,9 @@ def public_page(request, slug: str):
         "slug": slug,
         "html": html_page
     }
-    context["message"] = message
 
-    if html_page == CACHER_GENERATION_ERROR:
-        return render(request=request, template_name="forms/error.jinja2", context=context)
-
-    if html_page == CACHER_GENERATION_TIMEOUT:
-        return render(request=request, template_name="forms/timeout.jinja2", context=context)
-
-    if cached is False:
-        return render(request=request, template_name="forms/wait.jinja2", context=context)
-
-    return render(request=request, template_name="forms/notebook.jinja2", context=context)
+    return __render_cached(request=request, context=context, template="forms/notebook.jinja2", html_page=html_page,
+                           cached=cached, message=message)
 
 
 # @login_required
@@ -201,28 +212,34 @@ def authorized_page(request, slug: str):
 
 
 def clean_cache(request):
-    cacher.utils.Utils.clean_cache()
+    threading.Thread(target=cacher.utils.Utils.clean_cache).start()
 
-    return redirect("index")
+    return redirect("index", status="executed=clean_cache")
 
 
 def upload_media(request):
-    media.utils.Utils.upload()
+    threading.Thread(target=media.utils.Utils.upload).start()
 
-    return redirect("index")
+    return redirect("index", status="executed=upload_media")
 
 
 def upload_schedule(request):
-    configurator.utils.Utils.check_directory(settings.MEDIA_DIR)
+    threading.Thread(target=configurator.utils.Utils.check_media_directory).start()
 
-    return redirect("index")
+    return redirect("index", status="executed=upload_schedule")
+
+
+def upload_settings(request):
+    threading.Thread(target=configurator.utils.Utils.upload_settings).start()
+
+    return redirect("index", status="executed=upload_settings")
 
 
 def update(request):
-    scheduler.utils.Utils.update_scheduled_notebooks()
-    scheduler.utils.Utils.remove_cached_notebooks()
+    threading.Thread(target=scheduler.utils.Utils.update_scheduled_notebooks).start()
+    threading.Thread(target=scheduler.utils.Utils.remove_cached_notebooks).start()
 
-    return redirect("index")
+    return redirect("index", status="executed=update")
 
 
 def page_401(request):
@@ -241,3 +258,18 @@ def page_500(request):
     context = Context(request=request).get()
 
     return render(request=request, template_name="forms/500.jinja2", context=context)
+
+
+def __render_cached(request, context, template, html_page, cached, message):
+    context["message"] = message
+
+    if message != "":
+        return render(request=request, template_name="forms/error.jinja2", context=context)
+
+    if html_page == CACHER_GENERATION_TIMEOUT:
+        return render(request=request, template_name="forms/timeout.jinja2", context=context)
+
+    if cached is False:
+        return render(request=request, template_name="forms/wait.jinja2", context=context)
+
+    return render(request=request, template_name=template, context=context)

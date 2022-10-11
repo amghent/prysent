@@ -7,6 +7,8 @@ from django.db.models import Max
 from dashboard.models import OrganizationalUnit, CardboxType, Dashboard, Block1, Block2, Link1, Link2, Link3
 from dashboard.models import Cardbox, DataPage
 
+import prysent.utils
+
 
 class Utils:
     logger = logging.getLogger(__name__)
@@ -24,6 +26,14 @@ class Utils:
         cls.__flag_start_sync()
 
         for dashboard_entry in os.listdir(media_folder):
+            if len(os.listdir(os.path.join(media_folder, dashboard_entry))) == 0:
+                cls.logger.info(f"Skipping empty dashboard: {dashboard_entry}")
+                continue
+
+            if dashboard_entry.startswith("_"):
+                cls.logger.info(f"Skipping dashboard: {dashboard_entry}")
+                continue
+
             if os.path.isdir(os.path.join(media_folder, dashboard_entry)):
                 dashboard = cls.__handle_dashboard(dashboard_entry, ou_public)
 
@@ -31,20 +41,41 @@ class Utils:
                     continue
 
                 for level_1_entry in os.listdir(os.path.join(media_folder, dashboard_entry)):
+                    if level_1_entry.startswith("_"):
+                        cls.logger.info(f"Skipping level 1 entry: {level_1_entry}")
+                        continue
+
                     if not os.path.isdir(os.path.join(media_folder, dashboard_entry, level_1_entry)):
                         cls.__handle_level_1_link(level_1_entry, dashboard, accepted_extensions)
                     else:
+                        if len(os.listdir(os.path.join(media_folder, dashboard_entry, level_1_entry))) == 0:
+                            cls.logger.info(f"Skipping empty level 1 entry: {level_1_entry}")
+                            continue
+
                         menu_1 = cls.__handle_level_1_block(level_1_entry, dashboard)
 
                         for level_2_entry in os.listdir(os.path.join(media_folder, dashboard_entry, level_1_entry)):
+                            if level_2_entry.startswith("_"):
+                                cls.logger.info(f"Skipping level 2 entry: {level_2_entry}")
+                                continue
+
                             if not os.path.isdir(os.path.join(media_folder, dashboard_entry, level_1_entry,
                                                               level_2_entry)):
                                 cls.__handle_level_2_link(level_2_entry, menu_1, dashboard, accepted_extensions)
                             else:
+                                if len(os.listdir(os.path.join(media_folder, dashboard_entry, level_1_entry,
+                                                               level_2_entry))) == 0:
+                                    cls.logger.info(f"Skipping empty level 2 entry: {level_2_entry}")
+                                    continue
+
                                 menu_2 = cls.__handle_level_2_block(level_2_entry, menu_1)
 
                                 for level_3_entry in os.listdir(os.path.join(media_folder, dashboard_entry,
                                                                              level_1_entry, level_2_entry)):
+                                    if level_3_entry.startswith("_"):
+                                        cls.logger.info(f"Skipping level 3 entry: {level_3_entry}")
+                                        continue
+
                                     cls.__handle_level_3_link(level_3_entry, menu_2, menu_1, dashboard,
                                                               accepted_extensions)
 
@@ -141,7 +172,7 @@ class Utils:
         cardbox.type = CardboxType.objects.get(slug="none")
         cardbox.title = ""
         cardbox.height = "var(--notebook-height)"
-        cardbox.notebook = notebook_path.replace("\\", "/")
+        cardbox.notebook = prysent.utils.Utils.filepath_to_internal(notebook_path)
         # The path is a URL for the browser, also on Windows where the path.join gives backslashes in the path
         cardbox.scroll = True
 

@@ -3,16 +3,20 @@ import logging
 from django.contrib.auth.models import User
 
 from dashboard.models import Dashboard, Link1, Link2, Link3, Block1, Block2
+from settings.models import Setting
 
 
 class Context:
     logger = logging.getLogger(__name__)
 
     def __init__(self, request) -> None:
-        if str(request.user) == "AnonymousUser":
-            self.context = {
-                "user": "Public"
-            }
+        self.logger.debug(f"User: {request.user}")
+
+        # For now, we use user public, until we decide that dashboards can be private again
+        self.context = {"user": "Public"}
+
+        # if str(request.user) == "AnonymousUser":
+        #    self.context["user"] = "Public"
 
         #    return
 
@@ -47,6 +51,7 @@ class Context:
             self.logger.debug(f"JSON for dashboard: {dashboard_json}")
 
         self.context["dashboards"] = json
+        self.context["version"] = Setting.objects.get(key="version").value
 
     def get(self) -> dict:
         return self.context

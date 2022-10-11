@@ -1,6 +1,14 @@
 <div style="width: 225px; background: #dd3910">
-    <a class="navbar-brand ps-3" href="{{ url('index') }}">
-        <img src="{{ static('assets/img/am-logo.png') }}" style="height: var(--navbar-height)" />
-        <span style="font-size: x-small">Notebooks</span>
+    <a class="navbar-brand m-0" href="{{ url('index') }}">
+        <div class="row">
+            <div class="w-50">
+                <img src="{{ static('assets/img/am-logo.png') }}" style="height: var(--navbar-height)" />
+            </div>
+
+            <div class="w-50">
+                <p class="m-0 p-0" style="font-size: small">Notebooks</p>
+                <p class="m-0 p-0" style="font-size: xx-small">v. {{ version }}</p>
+            </div>
+        </div>
     </a>
 </div>

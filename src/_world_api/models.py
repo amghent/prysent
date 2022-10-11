@@ -14,3 +14,6 @@ class City(Model):
     admin_name = models.CharField(max_length=100, null=False, blank=False)
     capital = models.CharField(max_length=100, null=False, blank=False)
     population = models.BigIntegerField(null=False)
+
+    def __str__(self):
+        return self.name_ascii
