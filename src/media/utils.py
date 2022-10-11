@@ -26,6 +26,10 @@ class Utils:
         cls.__flag_start_sync()
 
         for dashboard_entry in os.listdir(media_folder):
+            if dashboard_entry.startswith("_"):
+                cls.logger.info(f"Skipping dashboard: {dashboard_entry}")
+                continue
+
             if os.path.isdir(os.path.join(media_folder, dashboard_entry)):
                 dashboard = cls.__handle_dashboard(dashboard_entry, ou_public)
 
@@ -33,12 +37,20 @@ class Utils:
                     continue
 
                 for level_1_entry in os.listdir(os.path.join(media_folder, dashboard_entry)):
+                    if level_1_entry.startswith("_"):
+                        cls.logger.info(f"Skipping level 1 entry: {level_1_entry}")
+                        continue
+
                     if not os.path.isdir(os.path.join(media_folder, dashboard_entry, level_1_entry)):
                         cls.__handle_level_1_link(level_1_entry, dashboard, accepted_extensions)
                     else:
                         menu_1 = cls.__handle_level_1_block(level_1_entry, dashboard)
 
                         for level_2_entry in os.listdir(os.path.join(media_folder, dashboard_entry, level_1_entry)):
+                            if level_2_entry.startswith("_"):
+                                cls.logger.info(f"Skipping level 2 entry: {level_2_entry}")
+                                continue
+
                             if not os.path.isdir(os.path.join(media_folder, dashboard_entry, level_1_entry,
                                                               level_2_entry)):
                                 cls.__handle_level_2_link(level_2_entry, menu_1, dashboard, accepted_extensions)
@@ -47,6 +59,11 @@ class Utils:
 
                                 for level_3_entry in os.listdir(os.path.join(media_folder, dashboard_entry,
                                                                              level_1_entry, level_2_entry)):
+
+                                    if level_3_entry.startswith("_"):
+                                        cls.logger.info(f"Skipping level 3 entry: {level_3_entry}")
+                                        continue
+
                                     cls.__handle_level_3_link(level_3_entry, menu_2, menu_1, dashboard,
                                                               accepted_extensions)
 

@@ -24,6 +24,9 @@ class Utils:
         for entry in os.listdir(path):
             entry_path = os.path.join(path, entry)
 
+            if entry_path.startswith("_"):
+                continue
+
             if os.path.isdir(entry_path):
                 cls.check_directory(entry_path)
             else:
@@ -43,7 +46,6 @@ class Utils:
 
     @classmethod
     def upload_config(cls, config_path, notebook_path):
-        media_path = settings.MEDIA_DIR
         stripped_path = prysent.utils.Utils.filepath_to_internal(notebook_path)
         internal_path = prysent.utils.Utils.filepath_to_internal(config_path)
 
