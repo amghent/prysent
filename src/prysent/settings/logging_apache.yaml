@@ -1,0 +1,34 @@
+version                   : 1
+disable_existing_loggers  : true
+
+handlers:
+  console:
+    class                 : logging.StreamHandler
+    formatter             : default
+    level                 : INFO
+    stream                : ext://sys.stdout
+
+  file:
+    class                 : logging.handlers.RotatingFileHandler
+    formatter             : default
+    level                 : DEBUG
+    filename              : c:/Users/sidviny/Development/prysent/logs/apache.log
+
+  email:
+    class                 : logging.handlers.SMTPHandler
+    mailhost              : mail.sidmar.be
+    fromaddr              : prysent@sidmar.be
+    toaddrs               : ['yves.vindevogel.external@arcelormittal.com']
+    subject               : ERROR in Prysent
+    formatter             : default
+    level                 : ERROR
+
+formatters:
+  default:
+    format                : '[%(asctime)-10s] [%(levelname)8s] %(message)s [%(name)s]'
+    datefmt               : '%Y-%m-%d %H:%M:%S'
+
+root:
+    level                 : NOTSET
+    handlers              : [console, email, file]
+    propagate             : no
