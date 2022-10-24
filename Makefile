@@ -95,6 +95,9 @@ upload-schedule: validate
 upload-settings: validate
 	@python ./src/manage.py upload_settings --settings=$(SETTINGS)
 
+static: validate
+	@python ./src/manage.py collectstatic --settings=$(SETTINGS)
+
 run: validate
 	@python ./src/manage.py runserver 8875 --settings=$(SETTINGS)
 
