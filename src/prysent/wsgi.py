@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'prysent.settings.sqlite3')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'prysent.settings.apache')
 
 application = get_wsgi_application()

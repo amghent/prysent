@@ -93,11 +93,12 @@ LOGOUT_REDIRECT_URL = 'login'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR.parent, '_templates', 'arcelor_mittal', 'static'),
-    os.path.join(BASE_DIR.parent, '_html_cache'),
 ]
 
 HTML_DIR = os.path.join(BASE_DIR.parent, '_html_cache')
 COMMANDS_DIR = os.path.join(BASE_DIR.parent, "_commands")
+
+STATIC_ROOT = HTML_DIR
 
 if DEBUG:
     INSTALLED_APPS.append('_world_api.apps.WorldApiConfig')

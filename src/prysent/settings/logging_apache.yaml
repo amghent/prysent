@@ -11,8 +11,8 @@ handlers:
   file:
     class                 : logging.handlers.RotatingFileHandler
     formatter             : default
-    level                 : INFO
-    filename              : c:/PythonApps/prysent/logs/prysent.log
+    level                 : DEBUG
+    filename              : c:/Users/sidviny/Development/prysent/logs/apache.log
 
   email:
     class                 : logging.handlers.SMTPHandler
@@ -30,5 +30,5 @@ formatters:
 
 root:
     level                 : NOTSET
-    handlers              : [console, email]
+    handlers              : [console, email, file]
     propagate             : no

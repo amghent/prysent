@@ -28,3 +28,6 @@ db.sqlite3-journal
 
 # Output directory for the html files
 _html_cache/
+
+# Output directory for the static files
+_static/
